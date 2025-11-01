@@ -1,7 +1,6 @@
 import { LayoutDashboard, FileText, FolderCheck, Eye, FileBarChart, DollarSign, Users, Inbox, ChevronDown, ChevronRight, CheckCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { useState } from "react";
 
 interface SidebarProps {
@@ -10,71 +9,67 @@ interface SidebarProps {
   onNavigate: (view: string) => void;
 }
 
-const menuGroups = [
-  {
-    title: "Principal",
-    items: [
-      { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
-      { id: "expedientes", label: "Expedientes Internos e Externos", icon: Inbox },
+const menuItems = [
+  { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { id: "expedientes", label: "Expedientes Internos e Externos", icon: Inbox },
+  { 
+    id: "prestacao-contas", 
+    label: "Prestação de Contas", 
+    icon: FolderCheck,
+    submenu: [
+      { id: "prestacao-contas", label: "Prestação de Contas" },
+      { id: "expediente-prestacao", label: "Expediente de Relatório" },
+      { id: "tramitacao-prestacao", label: "Tramitação do Processo" },
+      { id: "cumprimento-despachos-prestacao", label: "Cumprimento de Despachos" },
+      { id: "saida-expediente-prestacao", label: "Saída de Expediente" },
+      { id: "prestacao-soberania", label: "Órgãos de Soberania" },
     ]
   },
-  {
-    title: "Prestação de Contas",
-    items: [
-      { id: "prestacao-contas", label: "Processos", icon: FolderCheck },
-      { id: "expediente-prestacao", label: "Expediente de Relatório", icon: FileText },
-      { id: "tramitacao-prestacao", label: "Tramitação do Processo", icon: FileBarChart },
-      { id: "cumprimento-despachos-prestacao", label: "Cumprimento de Despachos", icon: CheckCircle },
-      { id: "saida-expediente-prestacao", label: "Saída de Expediente", icon: Inbox },
-      { id: "prestacao-soberania", label: "Órgãos de Soberania", icon: FolderCheck },
+  { 
+    id: "visto", 
+    label: "Processos de Visto", 
+    icon: Eye,
+    submenu: [
+      { id: "visto", label: "Processos de Visto" },
+      { id: "expediente-processual", label: "Expediente Processual" },
+      { id: "tramitacao-visto", label: "Tramitação do Processo" },
+      { id: "cumprimento-despachos", label: "Cumprimento de Despachos" },
+      { id: "saida-expediente-visto", label: "Saída de Expediente" },
     ]
   },
-  {
-    title: "Processo de Visto",
-    items: [
-      { id: "visto", label: "Processos de Visto", icon: Eye },
-      { id: "expediente-processual", label: "Expediente Processual", icon: FileText },
-      { id: "tramitacao-visto", label: "Tramitação do Processo", icon: FileBarChart },
-      { id: "cumprimento-despachos", label: "Cumprimento de Despachos", icon: CheckCircle },
-      { id: "saida-expediente-visto", label: "Saída de Expediente", icon: Inbox },
-      { id: "cobranca-emolumentos", label: "Cobrança de Emolumentos", icon: FileText },
-      { id: "despacho-promocao", label: "Despacho de Promoção", icon: FileBarChart },
-      { id: "cumprimento-despachos-geral", label: "Cumprimento de Despachos", icon: CheckCircle },
-      { id: "oficios-remessa", label: "Ofícios de Remessa", icon: FileText },
-      { id: "expedientes-saida", label: "Expediente de Saída", icon: Inbox },
+  { 
+    id: "fiscalizacao", 
+    label: "Fiscalização OGE", 
+    icon: FileBarChart,
+    submenu: [
+      { id: "fiscalizacao", label: "Fiscalização OGE" },
+      { id: "expediente-fiscalizacao", label: "Expediente de Relatórios" },
+      { id: "tramitacao-fiscalizacao", label: "Tramitação OGE" },
+      { id: "parecer-trimestral", label: "Parecer Trimestral" },
+      { id: "saida-expediente-fiscalizacao", label: "Saída de Expediente" },
     ]
   },
-  {
-    title: "Fiscalização OGE",
-    items: [
-      { id: "fiscalizacao", label: "Fiscalização OGE", icon: FileBarChart },
-      { id: "expediente-fiscalizacao", label: "Expediente de Relatórios", icon: FileText },
-      { id: "tramitacao-fiscalizacao", label: "Tramitação OGE", icon: FileBarChart },
-      { id: "parecer-trimestral", label: "Parecer Trimestral", icon: FileText },
-      { id: "saida-expediente-fiscalizacao", label: "Saída de Expediente", icon: Inbox },
-    ]
-  },
-  {
-    title: "Processo de Multa",
-    items: [
-      { id: "multas", label: "Processos de Multa", icon: DollarSign },
-    ]
-  }
+  { id: "multas", label: "Processos de Multa", icon: DollarSign },
+  { id: "cobranca-emolumentos", label: "Cobrança de Emolumentos", icon: FileText },
+  { id: "despacho-promocao", label: "Despacho de Promoção", icon: FileBarChart },
+  { id: "cumprimento-despachos-geral", label: "Cumprimento de Despachos", icon: CheckCircle },
+  { id: "oficios-remessa", label: "Ofícios de Remessa", icon: FileText },
+  { id: "expedientes-saida", label: "Expediente de Saída", icon: Inbox },
 ];
 
 export const Sidebar = ({ isOpen, currentView, onNavigate }: SidebarProps) => {
-  const [expandedGroups, setExpandedGroups] = useState<string[]>(["Principal"]);
+  const [expandedMenus, setExpandedMenus] = useState<string[]>(["prestacao-contas", "visto", "fiscalizacao"]);
 
-  const toggleGroup = (groupTitle: string) => {
-    setExpandedGroups(prev => 
-      prev.includes(groupTitle) 
-        ? prev.filter(title => title !== groupTitle)
-        : [...prev, groupTitle]
+  const toggleSubmenu = (itemId: string) => {
+    setExpandedMenus(prev => 
+      prev.includes(itemId) 
+        ? prev.filter(id => id !== itemId)
+        : [...prev, itemId]
     );
   };
 
-  const isGroupActive = (items: any[]) => {
-    return items?.some(item => currentView === item.id);
+  const isSubmenuActive = (submenuItems: any[]) => {
+    return submenuItems?.some(subItem => currentView === subItem.id);
   };
 
   return (
@@ -85,58 +80,64 @@ export const Sidebar = ({ isOpen, currentView, onNavigate }: SidebarProps) => {
       )}
     >
       <div className="h-full overflow-y-auto">
-        <nav className="p-4 space-y-3">
-          {menuGroups.map((group) => {
-            const isExpanded = expandedGroups.includes(group.title);
-            const hasActiveItem = isGroupActive(group.items);
+        <nav className="p-5 space-y-1.5">
+          {menuItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = currentView === item.id;
+            const hasSubmenu = item.submenu && item.submenu.length > 0;
+            const isExpanded = expandedMenus.includes(item.id);
+            const isSubmenuItemActive = hasSubmenu && isSubmenuActive(item.submenu);
             
             return (
-              <Card key={group.title} className={cn(
-                "overflow-hidden transition-all",
-                hasActiveItem && "border-primary/50"
-              )}>
+              <div key={item.id} className="space-y-1">
                 <button
-                  onClick={() => toggleGroup(group.title)}
+                  onClick={() => {
+                    if (hasSubmenu) {
+                      toggleSubmenu(item.id);
+                    } else {
+                      onNavigate(item.id);
+                    }
+                  }}
                   className={cn(
-                    "w-full flex items-center justify-between px-4 py-3 text-left font-semibold text-sm transition-colors",
-                    hasActiveItem 
+                    "w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all text-left text-sm font-bold",
+                    (isActive || isSubmenuItemActive)
                       ? "bg-primary/10 text-primary" 
-                      : "bg-muted/50 text-foreground hover:bg-muted"
+                      : "text-muted-foreground hover:bg-secondary hover:text-foreground"
                   )}
                 >
-                  <span>{group.title}</span>
-                  {isExpanded ? (
-                    <ChevronDown className="h-4 w-4" />
-                  ) : (
-                    <ChevronRight className="h-4 w-4" />
+                  <Icon className="h-5 w-5 flex-shrink-0" />
+                  <span className="flex-1">{item.label}</span>
+                  {hasSubmenu && (
+                    isExpanded ? (
+                      <ChevronDown className="h-4 w-4 flex-shrink-0" />
+                    ) : (
+                      <ChevronRight className="h-4 w-4 flex-shrink-0" />
+                    )
                   )}
                 </button>
                 
-                {isExpanded && (
-                  <div className="p-2 space-y-1">
-                    {group.items.map((item) => {
-                      const Icon = item.icon;
-                      const isActive = currentView === item.id;
-                      
+                {hasSubmenu && isExpanded && (
+                  <div className="ml-8 space-y-1">
+                    {item.submenu.map((subItem) => {
+                      const isSubActive = currentView === subItem.id;
                       return (
                         <button
-                          key={item.id}
-                          onClick={() => onNavigate(item.id)}
+                          key={subItem.id}
+                          onClick={() => onNavigate(subItem.id)}
                           className={cn(
-                            "w-full flex items-center gap-3 px-3 py-2.5 rounded-md transition-all text-left text-sm",
-                            isActive
-                              ? "bg-primary text-primary-foreground font-medium shadow-sm" 
+                            "w-full flex items-center gap-2 px-3 py-2 rounded-lg transition-all text-left text-xs font-medium",
+                            isSubActive
+                              ? "bg-primary/10 text-primary"
                               : "text-muted-foreground hover:bg-secondary hover:text-foreground"
                           )}
                         >
-                          <Icon className="h-4 w-4 flex-shrink-0" />
-                          <span className="flex-1">{item.label}</span>
+                          <span>{subItem.label}</span>
                         </button>
                       );
                     })}
                   </div>
                 )}
-              </Card>
+              </div>
             );
           })}
         </nav>
