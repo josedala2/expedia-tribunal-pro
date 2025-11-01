@@ -87,12 +87,20 @@ export const NovoProcessoPrestacao = ({ onBack }: NovoProcessoPrestacaoProps) =>
 
           <div className="space-y-2">
             <Label htmlFor="exercicio">Ano de Exercício *</Label>
-            <Input 
-              id="exercicio" 
-              {...register("exercicio")} 
-              placeholder="2024"
-              maxLength={4}
-            />
+            <Select onValueChange={(value) => setValue("exercicio", value)}>
+              <SelectTrigger>
+                <SelectValue placeholder="Selecione o ano" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="2024">2024</SelectItem>
+                <SelectItem value="2023">2023</SelectItem>
+                <SelectItem value="2022">2022</SelectItem>
+                <SelectItem value="2021">2021</SelectItem>
+                <SelectItem value="2020">2020</SelectItem>
+                <SelectItem value="2019">2019</SelectItem>
+                <SelectItem value="2018">2018</SelectItem>
+              </SelectContent>
+            </Select>
             {errors.exercicio && <p className="text-sm text-destructive">{errors.exercicio.message}</p>}
           </div>
 
