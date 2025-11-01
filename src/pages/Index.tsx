@@ -26,8 +26,13 @@ import { ExpedienteProcessual } from "@/pages/visto/ExpedienteProcessual";
 import { TramitacaoProcessoVisto } from "@/pages/visto/TramitacaoProcessoVisto";
 import { CumprimentoDespachos } from "@/pages/visto/CumprimentoDespachos";
 import { SaidaExpedienteProcessoVisto } from "@/pages/visto/SaidaExpedienteProcessoVisto";
+import { ExpedientePrestacaoContas } from "@/pages/prestacao/ExpedientePrestacaoContas";
+import { TramitacaoPrestacaoContas } from "@/pages/prestacao/TramitacaoPrestacaoContas";
+import { CumprimentoDespachosPrestacao } from "@/pages/prestacao/CumprimentoDespachosPrestacao";
+import { SaidaExpedientePrestacao } from "@/pages/prestacao/SaidaExpedientePrestacao";
+import { PrestacaoOrgaosSoberania } from "@/pages/prestacao/PrestacaoOrgaosSoberania";
 
-type View = "dashboard" | "processes" | "process-detail" | "prestacao-contas" | "visto" | "fiscalizacao" | "multas" | "usuarios" | "relatorios" | "documentos" | "configuracoes" | "expedientes" | "novo-expediente" | "detalhe-expediente" | "novo-prestacao" | "detalhe-prestacao" | "novo-visto" | "detalhe-visto" | "novo-fiscalizacao" | "detalhe-fiscalizacao" | "detalhe-multa" | "expediente-processual" | "tramitacao-visto" | "cumprimento-despachos" | "saida-expediente-visto";
+type View = "dashboard" | "processes" | "process-detail" | "prestacao-contas" | "visto" | "fiscalizacao" | "multas" | "usuarios" | "relatorios" | "documentos" | "configuracoes" | "expedientes" | "novo-expediente" | "detalhe-expediente" | "novo-prestacao" | "detalhe-prestacao" | "novo-visto" | "detalhe-visto" | "novo-fiscalizacao" | "detalhe-fiscalizacao" | "detalhe-multa" | "expediente-processual" | "tramitacao-visto" | "cumprimento-despachos" | "saida-expediente-visto" | "expediente-prestacao" | "tramitacao-prestacao" | "cumprimento-despachos-prestacao" | "saida-expediente-prestacao" | "prestacao-soberania";
 
 const Index = () => {
   const [currentView, setCurrentView] = useState<View>("dashboard");
@@ -89,6 +94,11 @@ const Index = () => {
             {currentView === "tramitacao-visto" && <TramitacaoProcessoVisto onBack={() => handleNavigate("visto")} onNavigate={handleNavigate} />}
             {currentView === "cumprimento-despachos" && <CumprimentoDespachos onBack={() => handleNavigate("visto")} onNavigate={handleNavigate} />}
             {currentView === "saida-expediente-visto" && <SaidaExpedienteProcessoVisto onBack={() => handleNavigate("visto")} onNavigate={handleNavigate} />}
+            {currentView === "expediente-prestacao" && <ExpedientePrestacaoContas onBack={() => handleNavigate("prestacao-contas")} onNavigate={handleNavigate} />}
+            {currentView === "tramitacao-prestacao" && <TramitacaoPrestacaoContas onBack={() => handleNavigate("prestacao-contas")} onNavigate={handleNavigate} />}
+            {currentView === "cumprimento-despachos-prestacao" && <CumprimentoDespachosPrestacao onBack={() => handleNavigate("prestacao-contas")} onNavigate={handleNavigate} />}
+            {currentView === "saida-expediente-prestacao" && <SaidaExpedientePrestacao onBack={() => handleNavigate("prestacao-contas")} onNavigate={handleNavigate} />}
+            {currentView === "prestacao-soberania" && <PrestacaoOrgaosSoberania onBack={() => handleNavigate("prestacao-contas")} onNavigate={handleNavigate} />}
             {currentView === "usuarios" && <Usuarios onBack={() => handleNavigate("dashboard")} />}
             {currentView === "relatorios" && <Relatorios onBack={() => handleNavigate("dashboard")} />}
             {currentView === "documentos" && <Documentos onBack={() => handleNavigate("dashboard")} />}

@@ -12,7 +12,19 @@ interface SidebarProps {
 const menuItems = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
   { id: "expedientes", label: "Expedientes Internos e Externos", icon: Inbox },
-  { id: "prestacao-contas", label: "Prestação de Contas", icon: FolderCheck },
+  { 
+    id: "prestacao-contas", 
+    label: "Prestação de Contas", 
+    icon: FolderCheck,
+    submenu: [
+      { id: "prestacao-contas", label: "Prestação de Contas" },
+      { id: "expediente-prestacao", label: "Expediente de Relatório" },
+      { id: "tramitacao-prestacao", label: "Tramitação do Processo" },
+      { id: "cumprimento-despachos-prestacao", label: "Cumprimento de Despachos" },
+      { id: "saida-expediente-prestacao", label: "Saída de Expediente" },
+      { id: "prestacao-soberania", label: "Órgãos de Soberania" },
+    ]
+  },
   { 
     id: "visto", 
     label: "Processos de Visto", 
@@ -30,7 +42,7 @@ const menuItems = [
 ];
 
 export const Sidebar = ({ isOpen, currentView, onNavigate }: SidebarProps) => {
-  const [expandedMenus, setExpandedMenus] = useState<string[]>(["visto"]);
+  const [expandedMenus, setExpandedMenus] = useState<string[]>(["prestacao-contas", "visto"]);
 
   const toggleSubmenu = (itemId: string) => {
     setExpandedMenus(prev => 
