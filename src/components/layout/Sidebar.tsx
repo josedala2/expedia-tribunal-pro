@@ -10,7 +10,7 @@ interface SidebarProps {
 
 const menuItems = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { id: "expedientes", label: "Expedientes Internos", icon: Inbox },
+  { id: "expedientes", label: "Expedientes Internos e Externos", icon: Inbox },
   { id: "prestacao-contas", label: "Prestação de Contas", icon: FolderCheck },
   { id: "visto", label: "Processos de Visto", icon: Eye },
   { id: "fiscalizacao", label: "Fiscalização OGE", icon: FileBarChart },

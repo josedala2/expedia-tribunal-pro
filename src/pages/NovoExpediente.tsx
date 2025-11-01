@@ -47,7 +47,7 @@ export const NovoExpediente = ({ onBack }: NovoExpedienteProps) => {
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Novo Expediente Interno</h1>
+          <h1 className="text-3xl font-bold text-foreground">Novo Expediente Interno/Externo</h1>
           <p className="text-muted-foreground">Preencha os dados do expediente</p>
         </div>
       </div>

@@ -97,9 +97,9 @@ export const Expedientes = ({ onBack, onNavigate }: ExpedientesProps) => {
           <div>
             <h1 className="text-3xl font-bold text-foreground flex items-center gap-3">
               <Inbox className="h-8 w-8 text-primary" />
-              Expedientes Internos
+              Expedientes Internos e Externos
             </h1>
-            <p className="text-muted-foreground">Gestão de comunicações e documentos internos</p>
+            <p className="text-muted-foreground">Gestão de comunicações e documentos internos e externos</p>
           </div>
         </div>
         <Button 
