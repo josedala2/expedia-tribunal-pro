@@ -32,7 +32,10 @@ export const Fiscalizacao = ({ onBack, onNavigate }: FiscalizacaoProps) => {
             <p className="text-muted-foreground">Acompanhamento e controlo da execução orçamental</p>
           </div>
         </div>
-        <Button className="bg-primary hover:bg-primary-hover text-primary-foreground gap-2">
+        <Button 
+          className="bg-primary hover:bg-primary-hover text-primary-foreground gap-2"
+          onClick={() => onNavigate?.("novo-fiscalizacao")}
+        >
           <Plus className="h-5 w-5" />
           Nova Fiscalização
         </Button>
