@@ -12,10 +12,16 @@ interface SidebarProps {
 
 const menuGroups = [
   {
-    id: "principal",
-    title: "Principal",
+    id: "dashboard-group",
+    title: "Dashboard",
     items: [
       { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
+    ]
+  },
+  {
+    id: "expedientes-group",
+    title: "Expedientes Internos e Externos",
+    items: [
       { id: "expedientes", label: "Expedientes Internos e Externos", icon: Inbox },
     ]
   },
@@ -89,7 +95,7 @@ const menuGroups = [
 ];
 
 export const Sidebar = ({ isOpen, currentView, onNavigate }: SidebarProps) => {
-  const [expandedGroups, setExpandedGroups] = useState<string[]>(["principal", "prestacao-contas-group", "visto-group", "fiscalizacao-group", "multas-group"]);
+  const [expandedGroups, setExpandedGroups] = useState<string[]>(["dashboard-group", "expedientes-group", "prestacao-contas-group", "visto-group", "fiscalizacao-group", "multas-group"]);
   const [expandedMenus, setExpandedMenus] = useState<string[]>(["prestacao-contas", "visto", "fiscalizacao"]);
 
   const toggleGroup = (groupId: string) => {
