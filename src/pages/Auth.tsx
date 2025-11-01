@@ -14,6 +14,14 @@ const authSchema = z.object({
   nomeCompleto: z.string().min(3, { message: "Nome completo é obrigatório" }).optional(),
 });
 
+const mockUsers = [
+  { nome: "Admin Geral", email: "admin@tc.gov.ao", password: "admin123", role: "Administrador" },
+  { nome: "João Silva", email: "joao.silva@tc.gov.ao", password: "tecnico123", role: "Técnico SG" },
+  { nome: "Maria Santos", email: "maria.santos@tc.gov.ao", password: "chefe123", role: "Chefe CG" },
+  { nome: "Carlos Neto", email: "carlos.neto@tc.gov.ao", password: "juiz123", role: "Juiz Relator" },
+  { nome: "Ana Costa", email: "ana.costa@tc.gov.ao", password: "dst123", role: "DST" },
+];
+
 export const Auth = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState("");
@@ -52,6 +60,15 @@ export const Auth = () => {
     }
   };
 
+  const handleQuickLogin = (user: typeof mockUsers[0]) => {
+    setEmail(user.email);
+    setPassword(user.password);
+    // Auto login after 100ms
+    setTimeout(() => {
+      handleSignIn(new Event("submit") as any);
+    }, 100);
+  };
+
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -87,9 +104,29 @@ export const Auth = () => {
           <CardDescription>Entre na sua conta ou crie uma nova</CardDescription>
         </CardHeader>
         <CardContent>
+          <div className="mb-6 p-4 bg-muted rounded-lg">
+            <h3 className="text-sm font-semibold mb-3 text-center">Acesso Rápido (Teste)</h3>
+            <div className="grid grid-cols-1 gap-2">
+              {mockUsers.map((user) => (
+                <Button
+                  key={user.email}
+                  variant="outline"
+                  onClick={() => handleQuickLogin(user)}
+                  disabled={isLoading}
+                  className="justify-start gap-2 h-auto py-3"
+                >
+                  <div className="flex flex-col items-start">
+                    <span className="font-semibold">{user.nome}</span>
+                    <span className="text-xs text-muted-foreground">{user.role}</span>
+                  </div>
+                </Button>
+              ))}
+            </div>
+          </div>
+
           <Tabs defaultValue="login" className="w-full">
             <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="login">Login</TabsTrigger>
+              <TabsTrigger value="login">Login Manual</TabsTrigger>
               <TabsTrigger value="signup">Criar Conta</TabsTrigger>
             </TabsList>
             
