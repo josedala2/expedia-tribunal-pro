@@ -5,12 +5,14 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useTheme } from "next-themes";
 
 interface ConfiguracoesProps {
   onBack: () => void;
 }
 
 export const Configuracoes = ({ onBack }: ConfiguracoesProps) => {
+  const { theme, setTheme } = useTheme();
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
@@ -175,7 +177,10 @@ export const Configuracoes = ({ onBack }: ConfiguracoesProps) => {
                   <Label className="text-base">Modo Escuro</Label>
                   <p className="text-sm text-muted-foreground">Alternar tema da interface</p>
                 </div>
-                <Switch />
+                <Switch 
+                  checked={theme === "dark"}
+                  onCheckedChange={(checked) => setTheme(checked ? "dark" : "light")}
+                />
               </div>
 
               <div className="flex items-center justify-between">
