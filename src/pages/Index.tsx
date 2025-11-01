@@ -31,8 +31,12 @@ import { TramitacaoPrestacaoContas } from "@/pages/prestacao/TramitacaoPrestacao
 import { CumprimentoDespachosPrestacao } from "@/pages/prestacao/CumprimentoDespachosPrestacao";
 import { SaidaExpedientePrestacao } from "@/pages/prestacao/SaidaExpedientePrestacao";
 import { PrestacaoOrgaosSoberania } from "@/pages/prestacao/PrestacaoOrgaosSoberania";
+import { ExpedienteFiscalizacaoOGE } from "@/pages/fiscalizacao/ExpedienteFiscalizacaoOGE";
+import { TramitacaoFiscalizacaoOGE } from "@/pages/fiscalizacao/TramitacaoFiscalizacaoOGE";
+import { ParecerTrimestral } from "@/pages/fiscalizacao/ParecerTrimestral";
+import { SaidaExpedienteFiscalizacao } from "@/pages/fiscalizacao/SaidaExpedienteFiscalizacao";
 
-type View = "dashboard" | "processes" | "process-detail" | "prestacao-contas" | "visto" | "fiscalizacao" | "multas" | "usuarios" | "relatorios" | "documentos" | "configuracoes" | "expedientes" | "novo-expediente" | "detalhe-expediente" | "novo-prestacao" | "detalhe-prestacao" | "novo-visto" | "detalhe-visto" | "novo-fiscalizacao" | "detalhe-fiscalizacao" | "detalhe-multa" | "expediente-processual" | "tramitacao-visto" | "cumprimento-despachos" | "saida-expediente-visto" | "expediente-prestacao" | "tramitacao-prestacao" | "cumprimento-despachos-prestacao" | "saida-expediente-prestacao" | "prestacao-soberania";
+type View = "dashboard" | "processes" | "process-detail" | "prestacao-contas" | "visto" | "fiscalizacao" | "multas" | "usuarios" | "relatorios" | "documentos" | "configuracoes" | "expedientes" | "novo-expediente" | "detalhe-expediente" | "novo-prestacao" | "detalhe-prestacao" | "novo-visto" | "detalhe-visto" | "novo-fiscalizacao" | "detalhe-fiscalizacao" | "detalhe-multa" | "expediente-processual" | "tramitacao-visto" | "cumprimento-despachos" | "saida-expediente-visto" | "expediente-prestacao" | "tramitacao-prestacao" | "cumprimento-despachos-prestacao" | "saida-expediente-prestacao" | "prestacao-soberania" | "expediente-fiscalizacao" | "tramitacao-fiscalizacao" | "parecer-trimestral" | "saida-expediente-fiscalizacao";
 
 const Index = () => {
   const [currentView, setCurrentView] = useState<View>("dashboard");
@@ -99,6 +103,15 @@ const Index = () => {
             {currentView === "cumprimento-despachos-prestacao" && <CumprimentoDespachosPrestacao onBack={() => handleNavigate("prestacao-contas")} onNavigate={handleNavigate} />}
             {currentView === "saida-expediente-prestacao" && <SaidaExpedientePrestacao onBack={() => handleNavigate("prestacao-contas")} onNavigate={handleNavigate} />}
             {currentView === "prestacao-soberania" && <PrestacaoOrgaosSoberania onBack={() => handleNavigate("prestacao-contas")} onNavigate={handleNavigate} />}
+            {currentView === "fiscalizacao" && <Fiscalizacao onBack={() => handleNavigate("dashboard")} onNavigate={handleNavigate} />}
+            {currentView === "expediente-fiscalizacao" && <ExpedienteFiscalizacaoOGE onBack={() => handleNavigate("fiscalizacao")} onNavigate={handleNavigate} />}
+            {currentView === "tramitacao-fiscalizacao" && <TramitacaoFiscalizacaoOGE onBack={() => handleNavigate("fiscalizacao")} onNavigate={handleNavigate} />}
+            {currentView === "parecer-trimestral" && <ParecerTrimestral onBack={() => handleNavigate("fiscalizacao")} onNavigate={handleNavigate} />}
+            {currentView === "saida-expediente-fiscalizacao" && <SaidaExpedienteFiscalizacao onBack={() => handleNavigate("fiscalizacao")} onNavigate={handleNavigate} />}
+            {currentView === "novo-fiscalizacao" && <NovoProcessoFiscalizacao onBack={() => handleNavigate("fiscalizacao")} />}
+            {currentView === "detalhe-fiscalizacao" && <DetalheFiscalizacao onBack={() => handleNavigate("fiscalizacao")} />}
+            {currentView === "multas" && <ProcessosMulta onBack={() => handleNavigate("dashboard")} onNavigate={handleNavigate} />}
+            {currentView === "detalhe-multa" && <DetalheProcessoMulta onBack={() => handleNavigate("multas")} />}
             {currentView === "usuarios" && <Usuarios onBack={() => handleNavigate("dashboard")} />}
             {currentView === "relatorios" && <Relatorios onBack={() => handleNavigate("dashboard")} />}
             {currentView === "documentos" && <Documentos onBack={() => handleNavigate("dashboard")} />}

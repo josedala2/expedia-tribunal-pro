@@ -37,12 +37,23 @@ const menuItems = [
       { id: "saida-expediente-visto", label: "Saída de Expediente" },
     ]
   },
-  { id: "fiscalizacao", label: "Fiscalização OGE", icon: FileBarChart },
+  { 
+    id: "fiscalizacao", 
+    label: "Fiscalização OGE", 
+    icon: FileBarChart,
+    submenu: [
+      { id: "fiscalizacao", label: "Fiscalização OGE" },
+      { id: "expediente-fiscalizacao", label: "Expediente de Relatórios" },
+      { id: "tramitacao-fiscalizacao", label: "Tramitação OGE" },
+      { id: "parecer-trimestral", label: "Parecer Trimestral" },
+      { id: "saida-expediente-fiscalizacao", label: "Saída de Expediente" },
+    ]
+  },
   { id: "multas", label: "Processos de Multa", icon: DollarSign },
 ];
 
 export const Sidebar = ({ isOpen, currentView, onNavigate }: SidebarProps) => {
-  const [expandedMenus, setExpandedMenus] = useState<string[]>(["prestacao-contas", "visto"]);
+  const [expandedMenus, setExpandedMenus] = useState<string[]>(["prestacao-contas", "visto", "fiscalizacao"]);
 
   const toggleSubmenu = (itemId: string) => {
     setExpandedMenus(prev => 
