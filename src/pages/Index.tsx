@@ -31,6 +31,8 @@ const Index = () => {
       <Header 
         onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
         isSidebarOpen={isSidebarOpen}
+        currentView={currentView}
+        onNavigate={handleNavigate}
       />
       
       <div className="flex">
@@ -40,7 +42,7 @@ const Index = () => {
           onNavigate={handleNavigate}
         />
         
-        <main className={`flex-1 transition-all duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-0'}`}>
+        <main className={`flex-1 transition-all duration-300 ${isSidebarOpen ? 'ml-72' : 'ml-0'}`}>
           <div className="container mx-auto p-6">
             {currentView === "dashboard" && <Dashboard onNavigate={handleNavigate} />}
             {currentView === "processes" && <ProcessList onViewProcess={handleViewProcess} />}

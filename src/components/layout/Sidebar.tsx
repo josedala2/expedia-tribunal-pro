@@ -22,31 +22,35 @@ export const Sidebar = ({ isOpen, currentView, onNavigate }: SidebarProps) => {
   return (
     <aside
       className={cn(
-        "fixed left-0 top-16 h-[calc(100vh-4rem)] bg-card border-r border-border transition-all duration-300 z-40",
-        isOpen ? "w-64" : "w-0 -translate-x-full"
+        "fixed left-0 top-[8.5rem] h-[calc(100vh-8.5rem)] bg-secondary border-r-2 border-accent transition-all duration-300 z-40 shadow-xl",
+        isOpen ? "w-72" : "w-0 -translate-x-full"
       )}
     >
-      <nav className="p-4 space-y-2">
-        {menuItems.map((item) => {
-          const Icon = item.icon;
-          const isActive = currentView === item.id;
-          
-          return (
-            <Button
-              key={item.id}
-              variant={isActive ? "secondary" : "ghost"}
-              className={cn(
-                "w-full justify-start gap-3 h-11",
-                isActive && "bg-primary text-primary-foreground hover:bg-primary/90"
-              )}
-              onClick={() => onNavigate(item.id)}
-            >
-              <Icon className="h-5 w-5" />
-              <span>{item.label}</span>
-            </Button>
-          );
-        })}
-      </nav>
+      <div className="h-full overflow-y-auto">
+        <nav className="p-3 space-y-1">
+          {menuItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = currentView === item.id;
+            
+            return (
+              <button
+                key={item.id}
+                onClick={() => onNavigate(item.id)}
+                className={cn(
+                  "w-full flex items-center gap-3 px-4 py-3 rounded transition-all text-left font-medium",
+                  "border-l-4 hover:bg-secondary/80",
+                  isActive 
+                    ? "bg-primary/10 border-accent text-accent shadow-md" 
+                    : "border-transparent text-sidebar-foreground hover:border-accent/50 hover:text-accent"
+                )}
+              >
+                <Icon className="h-5 w-5 flex-shrink-0" />
+                <span className="uppercase tracking-wide text-sm">{item.label}</span>
+              </button>
+            );
+          })}
+        </nav>
+      </div>
     </aside>
   );
 };
