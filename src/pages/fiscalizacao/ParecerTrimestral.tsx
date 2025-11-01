@@ -1,4 +1,24 @@
-import { ArrowLeft, Plus, Search, Filter, FileCheck, Clock, CheckCircle } from "lucide-react";
+import { ArrowLeft, Plus, Search, Filter, FileCheck, Clock, CheckCircle, Eye, Trash2, Edit } from "lucide-react";
+import { toast } from "sonner";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,6 +31,18 @@ interface ParecerTrimestralProps {
 }
 
 export const ParecerTrimestral = ({ onBack, onNavigate }: ParecerTrimestralProps) => {
+  const handleView = (id: string) => {
+    toast.info(`A visualizar parecer ${id}`);
+  };
+
+  const handleChangeStatus = (id: string, newStatus: string) => {
+    toast.success(`Estado do parecer ${id} alterado para: ${newStatus}`);
+  };
+
+  const handleDelete = (id: string) => {
+    toast.success(`Parecer ${id} eliminado com sucesso!`);
+  };
+
   const pareceres = [
     {
       id: "PAR-OGE-2024-001",
@@ -209,9 +241,60 @@ export const ParecerTrimestral = ({ onBack, onNavigate }: ParecerTrimestralProps
                     )}
                   </TableCell>
                   <TableCell className="text-right">
-                    <Button variant="ghost" size="sm">
-                      Ver Detalhes
-                    </Button>
+                    <div className="flex items-center justify-end gap-2">
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={() => handleView(parecer.id)}
+                        title="Ver detalhes"
+                      >
+                        <Eye className="h-4 w-4 mr-1" />
+                        Ver
+                      </Button>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="sm" title="Alterar estado">
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="bg-card">
+                          <DropdownMenuLabel>Alterar Estado</DropdownMenuLabel>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem onClick={() => handleChangeStatus(parecer.id, "Em Elaboração")}>
+                            Em Elaboração
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleChangeStatus(parecer.id, "Concluído")}>
+                            Concluído
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            title="Eliminar"
+                            className="text-destructive hover:text-destructive"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Confirmar eliminação</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Tem certeza que deseja eliminar o parecer {parecer.id}? Esta ação não pode ser desfeita.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => handleDelete(parecer.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                              Eliminar
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}

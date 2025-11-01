@@ -1,9 +1,29 @@
-import { ArrowLeft, Plus, Search, Filter, Eye } from "lucide-react";
+import { ArrowLeft, Plus, Search, Filter, Eye, Trash2, Edit } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { toast } from "sonner";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface ProcessosVistoProps {
   onBack: () => void;
@@ -11,6 +31,19 @@ interface ProcessosVistoProps {
 }
 
 export const ProcessosVisto = ({ onBack, onNavigate }: ProcessosVistoProps) => {
+  const handleView = (numero: string) => {
+    toast.info(`A visualizar processo ${numero}`);
+    onNavigate?.("detalhe-visto");
+  };
+
+  const handleChangeStatus = (numero: string, newStatus: string) => {
+    toast.success(`Estado do processo ${numero} alterado para: ${newStatus}`);
+  };
+
+  const handleDelete = (numero: string) => {
+    toast.success(`Processo ${numero} eliminado com sucesso!`);
+  };
+
   const processos = [
     { numero: "PV/2024/001", tipo: "Visto Prévio", entidade: "Ministério das Finanças", valor: "150.000.000 Kz", status: "Aguardando Análise" },
     { numero: "PV/2024/002", tipo: "Visto Sucessivo", entidade: "MINSA", valor: "85.000.000 Kz", status: "Em Análise" },
@@ -103,14 +136,66 @@ export const ProcessosVisto = ({ onBack, onNavigate }: ProcessosVistoProps) => {
                   </Badge>
                 </TableCell>
                 <TableCell>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="text-accent border-accent hover:bg-accent/10"
-                    onClick={() => onNavigate?.("detalhe-visto")}
-                  >
-                    Ver Detalhes
-                  </Button>
+                  <div className="flex items-center gap-2">
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      onClick={() => handleView(processo.numero)}
+                      title="Ver detalhes"
+                    >
+                      <Eye className="h-4 w-4 mr-1" />
+                      Ver
+                    </Button>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="sm" title="Alterar estado">
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="bg-card">
+                        <DropdownMenuLabel>Alterar Estado</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={() => handleChangeStatus(processo.numero, "Aguardando Análise")}>
+                          Aguardando Análise
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleChangeStatus(processo.numero, "Em Análise")}>
+                          Em Análise
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleChangeStatus(processo.numero, "Visado")}>
+                          Visado
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleChangeStatus(processo.numero, "Recusado")}>
+                          Recusado
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          title="Eliminar"
+                          className="text-destructive hover:text-destructive"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Confirmar eliminação</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Tem certeza que deseja eliminar o processo {processo.numero}? Esta ação não pode ser desfeita.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                          <AlertDialogAction onClick={() => handleDelete(processo.numero)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                            Eliminar
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
                 </TableCell>
               </TableRow>
             ))}
