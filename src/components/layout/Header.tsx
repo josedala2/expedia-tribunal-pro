@@ -21,7 +21,7 @@ export const Header = ({ onToggleSidebar, isSidebarOpen, currentView, onNavigate
   return (
     <div className="sticky top-0 z-50 bg-card border-b-2 border-border shadow-md">
       {/* Top Bar */}
-      <div className="h-44 bg-card">
+      <div className="h-auto py-[5mm] bg-card">
         <div className="h-full px-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Button
@@ -43,12 +43,20 @@ export const Header = ({ onToggleSidebar, isSidebarOpen, currentView, onNavigate
           </div>
 
           <div className="flex items-center gap-3">
-            <Button variant="ghost" size="icon" className="relative hover:bg-secondary h-16 w-16">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="relative hover:bg-secondary h-16 w-16 border-2 border-border rounded-lg"
+            >
               <Bell className="h-8 w-8" />
               <span className="absolute top-1.5 right-1.5 h-3 w-3 bg-primary rounded-full"></span>
             </Button>
             
-            <Button variant="ghost" size="icon" className="hover:bg-secondary h-16 w-16">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="hover:bg-secondary h-16 w-16 border-2 border-border rounded-lg"
+            >
               <User className="h-8 w-8" />
             </Button>
           </div>
