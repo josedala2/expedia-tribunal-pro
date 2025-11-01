@@ -1,4 +1,4 @@
-import { Menu, Bell, Search, User, Settings, FileText, BarChart3 } from "lucide-react";
+import { Menu, Bell, Search, User, Settings, FileText, BarChart3, MessagesSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import logoTC from "@/assets/logo-tc.png";
@@ -11,6 +11,7 @@ interface HeaderProps {
 }
 
 const horizontalMenuItemsLeft = [
+  { id: "comunicacoes-internas", label: "Comunicações Internas", icon: MessagesSquare },
   { id: "relatorios", label: "Relatórios", icon: BarChart3 },
   { id: "documentos", label: "Documentos", icon: FileText },
   { id: "configuracoes", label: "Configurações", icon: Settings },
