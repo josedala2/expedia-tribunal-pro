@@ -10,11 +10,14 @@ interface HeaderProps {
   onNavigate: (view: string) => void;
 }
 
-const horizontalMenuItems = [
-  { id: "usuarios", label: "Utilizadores", icon: User },
+const horizontalMenuItemsLeft = [
   { id: "relatorios", label: "Relatórios", icon: BarChart3 },
   { id: "documentos", label: "Documentos", icon: FileText },
   { id: "configuracoes", label: "Configurações", icon: Settings },
+];
+
+const horizontalMenuItemsRight = [
+  { id: "usuarios", label: "Utilizadores", icon: User },
 ];
 
 export const Header = ({ onToggleSidebar, isSidebarOpen, currentView, onNavigate }: HeaderProps) => {
@@ -65,28 +68,54 @@ export const Header = ({ onToggleSidebar, isSidebarOpen, currentView, onNavigate
 
       {/* Horizontal Menu */}
       <nav className="bg-card border-t border-border h-16">
-        <div className="h-full px-10 flex items-center gap-3">
-          {horizontalMenuItems.map((item) => {
-            const isActive = currentView === item.id;
-            const Icon = item.icon;
-            return (
-              <button
-                key={item.id}
-                onClick={() => onNavigate(item.id)}
-                className={`
-                  px-6 py-4 text-sm font-bold transition-all
-                  flex items-center gap-2.5 border-b-3 h-full
-                  ${isActive 
-                    ? 'border-primary text-primary bg-primary/5' 
-                    : 'border-transparent text-muted-foreground hover:text-foreground hover:bg-secondary/50'
-                  }
-                `}
-              >
-                <Icon className="h-5 w-5" />
-                {item.label}
-              </button>
-            );
-          })}
+        <div className="h-full px-10 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            {horizontalMenuItemsLeft.map((item) => {
+              const isActive = currentView === item.id;
+              const Icon = item.icon;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => onNavigate(item.id)}
+                  className={`
+                    px-6 py-4 text-sm font-bold transition-all
+                    flex items-center gap-2.5 border-b-3 h-full
+                    ${isActive 
+                      ? 'border-primary text-primary bg-primary/5' 
+                      : 'border-transparent text-muted-foreground hover:text-foreground hover:bg-secondary/50'
+                    }
+                  `}
+                >
+                  <Icon className="h-5 w-5" />
+                  {item.label}
+                </button>
+              );
+            })}
+          </div>
+          
+          <div className="flex items-center gap-3">
+            {horizontalMenuItemsRight.map((item) => {
+              const isActive = currentView === item.id;
+              const Icon = item.icon;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => onNavigate(item.id)}
+                  className={`
+                    px-6 py-4 text-sm font-bold transition-all
+                    flex items-center gap-2.5 border-b-3 h-full
+                    ${isActive 
+                      ? 'border-primary text-primary bg-primary/5' 
+                      : 'border-transparent text-muted-foreground hover:text-foreground hover:bg-secondary/50'
+                    }
+                  `}
+                >
+                  <Icon className="h-5 w-5" />
+                  {item.label}
+                </button>
+              );
+            })}
+          </div>
         </div>
       </nav>
     </div>
