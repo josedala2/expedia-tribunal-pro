@@ -51,6 +51,7 @@ const menuItems = [
   },
   { id: "multas", label: "Processos de Multa", icon: DollarSign },
   { id: "cobranca-emolumentos", label: "Cobrança de Emolumentos", icon: FileText },
+  { id: "despacho-promocao", label: "Despacho de Promoção", icon: FileBarChart },
 ];
 
 export const Sidebar = ({ isOpen, currentView, onNavigate }: SidebarProps) => {
