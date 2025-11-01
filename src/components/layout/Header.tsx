@@ -21,7 +21,7 @@ export const Header = ({ onToggleSidebar, isSidebarOpen, currentView, onNavigate
   return (
     <div className="sticky top-0 z-50 bg-card border-b-2 border-border shadow-md">
       {/* Top Bar */}
-      <div className="h-auto pt-[2mm] pb-[2mm] bg-card">
+      <div className="h-auto pt-[2mm] pb-[2mm] bg-muted">
         <div className="h-full px-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Button
