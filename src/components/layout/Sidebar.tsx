@@ -1,6 +1,7 @@
-import { LayoutDashboard, FileText, FolderCheck, Eye, FileBarChart, DollarSign, Users, Inbox } from "lucide-react";
+import { LayoutDashboard, FileText, FolderCheck, Eye, FileBarChart, DollarSign, Users, Inbox, ChevronDown, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { useState } from "react";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -12,12 +13,37 @@ const menuItems = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
   { id: "expedientes", label: "Expedientes Internos e Externos", icon: Inbox },
   { id: "prestacao-contas", label: "Prestação de Contas", icon: FolderCheck },
-  { id: "visto", label: "Processos de Visto", icon: Eye },
+  { 
+    id: "visto", 
+    label: "Processos de Visto", 
+    icon: Eye,
+    submenu: [
+      { id: "visto", label: "Processos de Visto" },
+      { id: "expediente-processual", label: "Expediente Processual" },
+      { id: "tramitacao-visto", label: "Tramitação do Processo" },
+      { id: "cumprimento-despachos", label: "Cumprimento de Despachos" },
+      { id: "saida-expediente-visto", label: "Saída de Expediente" },
+    ]
+  },
   { id: "fiscalizacao", label: "Fiscalização OGE", icon: FileBarChart },
   { id: "multas", label: "Processos de Multa", icon: DollarSign },
 ];
 
 export const Sidebar = ({ isOpen, currentView, onNavigate }: SidebarProps) => {
+  const [expandedMenus, setExpandedMenus] = useState<string[]>(["visto"]);
+
+  const toggleSubmenu = (itemId: string) => {
+    setExpandedMenus(prev => 
+      prev.includes(itemId) 
+        ? prev.filter(id => id !== itemId)
+        : [...prev, itemId]
+    );
+  };
+
+  const isSubmenuActive = (submenuItems: any[]) => {
+    return submenuItems?.some(subItem => currentView === subItem.id);
+  };
+
   return (
     <aside
       className={cn(
@@ -30,21 +56,60 @@ export const Sidebar = ({ isOpen, currentView, onNavigate }: SidebarProps) => {
           {menuItems.map((item) => {
             const Icon = item.icon;
             const isActive = currentView === item.id;
+            const hasSubmenu = item.submenu && item.submenu.length > 0;
+            const isExpanded = expandedMenus.includes(item.id);
+            const isSubmenuItemActive = hasSubmenu && isSubmenuActive(item.submenu);
             
             return (
-              <button
-                key={item.id}
-                onClick={() => onNavigate(item.id)}
-                className={cn(
-                  "w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all text-left text-sm font-bold",
-                  isActive 
-                    ? "bg-primary/10 text-primary" 
-                    : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+              <div key={item.id} className="space-y-1">
+                <button
+                  onClick={() => {
+                    if (hasSubmenu) {
+                      toggleSubmenu(item.id);
+                    } else {
+                      onNavigate(item.id);
+                    }
+                  }}
+                  className={cn(
+                    "w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all text-left text-sm font-bold",
+                    (isActive || isSubmenuItemActive)
+                      ? "bg-primary/10 text-primary" 
+                      : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+                  )}
+                >
+                  <Icon className="h-5 w-5 flex-shrink-0" />
+                  <span className="flex-1">{item.label}</span>
+                  {hasSubmenu && (
+                    isExpanded ? (
+                      <ChevronDown className="h-4 w-4 flex-shrink-0" />
+                    ) : (
+                      <ChevronRight className="h-4 w-4 flex-shrink-0" />
+                    )
+                  )}
+                </button>
+                
+                {hasSubmenu && isExpanded && (
+                  <div className="ml-8 space-y-1">
+                    {item.submenu.map((subItem) => {
+                      const isSubActive = currentView === subItem.id;
+                      return (
+                        <button
+                          key={subItem.id}
+                          onClick={() => onNavigate(subItem.id)}
+                          className={cn(
+                            "w-full flex items-center gap-2 px-3 py-2 rounded-lg transition-all text-left text-xs font-medium",
+                            isSubActive
+                              ? "bg-primary/10 text-primary"
+                              : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+                          )}
+                        >
+                          <span>{subItem.label}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
                 )}
-              >
-                <Icon className="h-5 w-5 flex-shrink-0" />
-                <span>{item.label}</span>
-              </button>
+              </div>
             );
           })}
         </nav>

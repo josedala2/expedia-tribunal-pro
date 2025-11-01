@@ -22,8 +22,12 @@ import { DetalheProcessoVisto } from "@/pages/DetalheProcessoVisto";
 import { DetalheFiscalizacao } from "@/pages/DetalheFiscalizacao";
 import { NovoProcessoFiscalizacao } from "@/pages/NovoProcessoFiscalizacao";
 import { DetalheProcessoMulta } from "@/pages/DetalheProcessoMulta";
+import { ExpedienteProcessual } from "@/pages/visto/ExpedienteProcessual";
+import { TramitacaoProcessoVisto } from "@/pages/visto/TramitacaoProcessoVisto";
+import { CumprimentoDespachos } from "@/pages/visto/CumprimentoDespachos";
+import { SaidaExpedienteProcessoVisto } from "@/pages/visto/SaidaExpedienteProcessoVisto";
 
-type View = "dashboard" | "processes" | "process-detail" | "prestacao-contas" | "visto" | "fiscalizacao" | "multas" | "usuarios" | "relatorios" | "documentos" | "configuracoes" | "expedientes" | "novo-expediente" | "detalhe-expediente" | "novo-prestacao" | "detalhe-prestacao" | "novo-visto" | "detalhe-visto" | "novo-fiscalizacao" | "detalhe-fiscalizacao" | "detalhe-multa";
+type View = "dashboard" | "processes" | "process-detail" | "prestacao-contas" | "visto" | "fiscalizacao" | "multas" | "usuarios" | "relatorios" | "documentos" | "configuracoes" | "expedientes" | "novo-expediente" | "detalhe-expediente" | "novo-prestacao" | "detalhe-prestacao" | "novo-visto" | "detalhe-visto" | "novo-fiscalizacao" | "detalhe-fiscalizacao" | "detalhe-multa" | "expediente-processual" | "tramitacao-visto" | "cumprimento-despachos" | "saida-expediente-visto";
 
 const Index = () => {
   const [currentView, setCurrentView] = useState<View>("dashboard");
@@ -81,6 +85,10 @@ const Index = () => {
             {currentView === "detalhe-fiscalizacao" && <DetalheFiscalizacao onBack={() => handleNavigate("fiscalizacao")} />}
             {currentView === "multas" && <ProcessosMulta onBack={() => handleNavigate("dashboard")} onNavigate={handleNavigate} />}
             {currentView === "detalhe-multa" && <DetalheProcessoMulta onBack={() => handleNavigate("multas")} />}
+            {currentView === "expediente-processual" && <ExpedienteProcessual onBack={() => handleNavigate("visto")} onNavigate={handleNavigate} />}
+            {currentView === "tramitacao-visto" && <TramitacaoProcessoVisto onBack={() => handleNavigate("visto")} onNavigate={handleNavigate} />}
+            {currentView === "cumprimento-despachos" && <CumprimentoDespachos onBack={() => handleNavigate("visto")} onNavigate={handleNavigate} />}
+            {currentView === "saida-expediente-visto" && <SaidaExpedienteProcessoVisto onBack={() => handleNavigate("visto")} onNavigate={handleNavigate} />}
             {currentView === "usuarios" && <Usuarios onBack={() => handleNavigate("dashboard")} />}
             {currentView === "relatorios" && <Relatorios onBack={() => handleNavigate("dashboard")} />}
             {currentView === "documentos" && <Documentos onBack={() => handleNavigate("dashboard")} />}
