@@ -21,12 +21,12 @@ export const Sidebar = ({ isOpen, currentView, onNavigate }: SidebarProps) => {
   return (
     <aside
       className={cn(
-        "fixed left-0 top-[19rem] h-[calc(100vh-19rem)] bg-card border-r border-border transition-all duration-300 z-40 shadow-sm",
-        isOpen ? "w-72" : "w-0 -translate-x-full"
+        "fixed left-0 top-[15rem] h-[calc(100vh-15rem)] bg-card border-r border-border transition-all duration-300 z-40 shadow-sm",
+        isOpen ? "w-60" : "w-0 -translate-x-full"
       )}
     >
       <div className="h-full overflow-y-auto">
-        <nav className="p-6 space-y-2">
+        <nav className="p-5 space-y-1.5">
           {menuItems.map((item) => {
             const Icon = item.icon;
             const isActive = currentView === item.id;
@@ -36,13 +36,13 @@ export const Sidebar = ({ isOpen, currentView, onNavigate }: SidebarProps) => {
                 key={item.id}
                 onClick={() => onNavigate(item.id)}
                 className={cn(
-                  "w-full flex items-center gap-4 px-5 py-3.5 rounded-lg transition-all text-left text-base font-bold",
+                  "w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all text-left text-sm font-bold",
                   isActive 
                     ? "bg-primary/10 text-primary" 
                     : "text-muted-foreground hover:bg-secondary hover:text-foreground"
                 )}
               >
-                <Icon className="h-6 w-6 flex-shrink-0" />
+                <Icon className="h-5 w-5 flex-shrink-0" />
                 <span>{item.label}</span>
               </button>
             );
