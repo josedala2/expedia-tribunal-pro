@@ -54,6 +54,7 @@ const menuItems = [
   { id: "despacho-promocao", label: "Despacho de Promoção", icon: FileBarChart },
   { id: "cumprimento-despachos-geral", label: "Cumprimento de Despachos", icon: CheckCircle },
   { id: "oficios-remessa", label: "Ofícios de Remessa", icon: FileText },
+  { id: "expedientes-saida", label: "Expediente de Saída", icon: Inbox },
 ];
 
 export const Sidebar = ({ isOpen, currentView, onNavigate }: SidebarProps) => {
