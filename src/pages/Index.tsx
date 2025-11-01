@@ -39,8 +39,10 @@ import CobrancaEmolumentos from "@/pages/CobrancaEmolumentos";
 import NovaGuiaCobranca from "@/pages/NovaGuiaCobranca";
 import DespachoPromocao from "@/pages/DespachoPromocao";
 import NovoDespachoPromocao from "@/pages/NovoDespachoPromocao";
+import CumprimentoDespachosGeral from "@/pages/CumprimentoDespachos";
+import CumprimentoDespachoDetail from "@/pages/CumprimentoDespachoDetail";
 
-type View = "dashboard" | "processes" | "process-detail" | "prestacao-contas" | "visto" | "fiscalizacao" | "multas" | "usuarios" | "relatorios" | "documentos" | "configuracoes" | "expedientes" | "novo-expediente" | "detalhe-expediente" | "novo-prestacao" | "detalhe-prestacao" | "novo-visto" | "detalhe-visto" | "novo-fiscalizacao" | "detalhe-fiscalizacao" | "detalhe-multa" | "expediente-processual" | "tramitacao-visto" | "cumprimento-despachos" | "saida-expediente-visto" | "expediente-prestacao" | "tramitacao-prestacao" | "cumprimento-despachos-prestacao" | "saida-expediente-prestacao" | "prestacao-soberania" | "expediente-fiscalizacao" | "tramitacao-fiscalizacao" | "parecer-trimestral" | "saida-expediente-fiscalizacao" | "cobranca-emolumentos" | "nova-guia-cobranca" | "despacho-promocao" | "novo-despacho-promocao";
+type View = "dashboard" | "processes" | "process-detail" | "prestacao-contas" | "visto" | "fiscalizacao" | "multas" | "usuarios" | "relatorios" | "documentos" | "configuracoes" | "expedientes" | "novo-expediente" | "detalhe-expediente" | "novo-prestacao" | "detalhe-prestacao" | "novo-visto" | "detalhe-visto" | "novo-fiscalizacao" | "detalhe-fiscalizacao" | "detalhe-multa" | "expediente-processual" | "tramitacao-visto" | "cumprimento-despachos" | "saida-expediente-visto" | "expediente-prestacao" | "tramitacao-prestacao" | "cumprimento-despachos-prestacao" | "saida-expediente-prestacao" | "prestacao-soberania" | "expediente-fiscalizacao" | "tramitacao-fiscalizacao" | "parecer-trimestral" | "saida-expediente-fiscalizacao" | "cobranca-emolumentos" | "nova-guia-cobranca" | "despacho-promocao" | "novo-despacho-promocao" | "cumprimento-despachos-geral" | "cumprimento-despacho-detail";
 
 const Index = () => {
   const [currentView, setCurrentView] = useState<View>("dashboard");
@@ -124,6 +126,8 @@ const Index = () => {
             {currentView === "nova-guia-cobranca" && <NovaGuiaCobranca onBack={() => handleNavigate("cobranca-emolumentos")} />}
             {currentView === "despacho-promocao" && <DespachoPromocao onNavigate={handleNavigate} />}
             {currentView === "novo-despacho-promocao" && <NovoDespachoPromocao onBack={() => handleNavigate("despacho-promocao")} />}
+            {currentView === "cumprimento-despachos-geral" && <CumprimentoDespachosGeral onNavigate={handleNavigate} />}
+            {currentView === "cumprimento-despacho-detail" && <CumprimentoDespachoDetail onBack={() => handleNavigate("cumprimento-despachos-geral")} />}
           </div>
         </main>
       </div>

@@ -1,4 +1,4 @@
-import { LayoutDashboard, FileText, FolderCheck, Eye, FileBarChart, DollarSign, Users, Inbox, ChevronDown, ChevronRight } from "lucide-react";
+import { LayoutDashboard, FileText, FolderCheck, Eye, FileBarChart, DollarSign, Users, Inbox, ChevronDown, ChevronRight, CheckCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
@@ -52,6 +52,7 @@ const menuItems = [
   { id: "multas", label: "Processos de Multa", icon: DollarSign },
   { id: "cobranca-emolumentos", label: "Cobrança de Emolumentos", icon: FileText },
   { id: "despacho-promocao", label: "Despacho de Promoção", icon: FileBarChart },
+  { id: "cumprimento-despachos-geral", label: "Cumprimento de Despachos", icon: CheckCircle },
 ];
 
 export const Sidebar = ({ isOpen, currentView, onNavigate }: SidebarProps) => {
