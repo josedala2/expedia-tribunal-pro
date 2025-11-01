@@ -1,11 +1,11 @@
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useToast } from "@/hooks/use-toast";
-import { CheckCircle, XCircle, ArrowLeft, FileText } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { toast } from "@/hooks/use-toast";
+import { CheckCircle, XCircle, AlertCircle, Users, FileText } from "lucide-react";
 
 interface AcaoProcessoProps {
   processoId: string;
@@ -13,33 +13,48 @@ interface AcaoProcessoProps {
 }
 
 export const AcaoProcesso = ({ processoId, etapaAtual }: AcaoProcessoProps) => {
-  const { toast } = useToast();
-  const [acao, setAcao] = useState("");
-  const [comentarios, setComentarios] = useState("");
+  const [acao, setAcao] = useState<string>("");
+  const [comentarios, setComentarios] = useState<string>("");
+  const [responsavelDistribuicao, setResponsavelDistribuicao] = useState<string>("");
+  const [justificativa, setJustificativa] = useState<string>("");
 
-  const handleAcao = (tipoAcao: "aprovar" | "rejeitar" | "solicitar") => {
+  const handleAcao = (tipoAcao: "aprovar" | "rejeitar" | "solicitar" | "distribuir" | "analisar") => {
     if (!comentarios.trim()) {
       toast({
-        title: "Campos obrigatórios",
-        description: "Por favor, adicione comentários sobre a ação.",
+        title: "Atenção",
+        description: "Por favor, adicione comentários sobre sua decisão.",
         variant: "destructive",
       });
       return;
     }
 
+    if (tipoAcao === "distribuir" && !responsavelDistribuicao.trim()) {
+      toast({
+        title: "Atenção",
+        description: "Por favor, selecione o responsável para distribuição.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Aqui seria a lógica real de envio para o backend
     const acaoTexto = {
-      aprovar: "aprovada",
-      rejeitar: "rejeitada",
-      solicitar: "solicitada",
+      aprovar: "aprovado e avançado",
+      rejeitar: "rejeitado",
+      solicitar: "devolvido para correção",
+      distribuir: "distribuído",
+      analisar: "encaminhado para análise"
     }[tipoAcao];
 
     toast({
-      title: `Ação ${acaoTexto} com sucesso!`,
-      description: `A etapa "${etapaAtual}" foi ${acaoTexto}.`,
+      title: "Ação realizada com sucesso!",
+      description: `Processo ${processoId} foi ${acaoTexto}.`,
     });
 
     setComentarios("");
     setAcao("");
+    setResponsavelDistribuicao("");
+    setJustificativa("");
   };
 
   return (
@@ -53,67 +68,133 @@ export const AcaoProcesso = ({ processoId, etapaAtual }: AcaoProcessoProps) => {
           <p className="text-sm text-muted-foreground">
             Etapa Atual: <span className="font-semibold text-foreground">{etapaAtual}</span>
           </p>
+          <p className="text-xs text-muted-foreground mt-1">
+            Processo: {processoId}
+          </p>
         </div>
 
         <div className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="tipoAcao">Tipo de Ação</Label>
+            <Label htmlFor="tipoAcao">Tipo de Ação *</Label>
             <Select value={acao} onValueChange={setAcao}>
               <SelectTrigger>
                 <SelectValue placeholder="Selecione uma ação" />
               </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="analise">Análise Técnica</SelectItem>
-                <SelectItem value="verificacao">Verificação de Documentos</SelectItem>
-                <SelectItem value="aprovacao">Aprovação</SelectItem>
-                <SelectItem value="rejeicao">Rejeição</SelectItem>
-                <SelectItem value="solicitar-correcao">Solicitar Correção</SelectItem>
-                <SelectItem value="encaminhar">Encaminhar para Revisão</SelectItem>
+              <SelectContent className="bg-card z-50">
+                <SelectItem value="analisar">Analisar Processo</SelectItem>
+                <SelectItem value="distribuir">Distribuir Processo</SelectItem>
+                <SelectItem value="aprovar">Aprovar e Avançar</SelectItem>
+                <SelectItem value="solicitar">Solicitar Correção</SelectItem>
+                <SelectItem value="despachar">Despachar</SelectItem>
+                <SelectItem value="rejeitar">Rejeitar Processo</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
+          {acao === "distribuir" && (
+            <div className="space-y-2">
+              <Label htmlFor="responsavel">Distribuir Para *</Label>
+              <Select value={responsavelDistribuicao} onValueChange={setResponsavelDistribuicao}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione o responsável" />
+                </SelectTrigger>
+                <SelectContent className="bg-card z-50">
+                  <SelectItem value="chefe-secao-1">Chefe de Secção - Maria Santos</SelectItem>
+                  <SelectItem value="chefe-secao-2">Chefe de Secção - João Silva</SelectItem>
+                  <SelectItem value="tecnico-1">Técnico - Carlos Mendes</SelectItem>
+                  <SelectItem value="tecnico-2">Técnico - Ana Costa</SelectItem>
+                  <SelectItem value="tecnico-3">Técnico - Paulo Alves</SelectItem>
+                  <SelectItem value="auditor-1">Auditor - Rita Fernandes</SelectItem>
+                  <SelectItem value="auditor-2">Auditor - Miguel Sousa</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
           <div className="space-y-2">
-            <Label htmlFor="comentarios">Comentários / Pareceres *</Label>
+            <Label htmlFor="comentarios">Comentários e Observações *</Label>
             <Textarea
               id="comentarios"
               value={comentarios}
               onChange={(e) => setComentarios(e.target.value)}
-              placeholder="Descreva o parecer técnico, justificativas e recomendações..."
-              rows={6}
-              className="resize-none"
+              placeholder="Adicione seus comentários sobre esta etapa do processo..."
+              className="min-h-[120px]"
             />
             <p className="text-xs text-muted-foreground">
-              Mínimo de 20 caracteres
+              Seus comentários serão registrados no histórico do processo.
             </p>
           </div>
 
-          <div className="flex gap-3 pt-4 border-t">
-            <Button
-              onClick={() => handleAcao("aprovar")}
-              className="flex-1 bg-success hover:bg-success/90 gap-2"
-            >
-              <CheckCircle className="h-5 w-5" />
-              Aprovar e Avançar
-            </Button>
+          {(acao === "rejeitar" || acao === "solicitar") && (
+            <div className="space-y-2">
+              <Label htmlFor="justificativa">Justificativa Detalhada *</Label>
+              <Textarea
+                id="justificativa"
+                value={justificativa}
+                onChange={(e) => setJustificativa(e.target.value)}
+                placeholder="Forneça uma justificativa detalhada para esta decisão..."
+                className="min-h-[100px]"
+              />
+            </div>
+          )}
 
-            <Button
-              onClick={() => handleAcao("solicitar")}
-              variant="outline"
-              className="flex-1 gap-2"
-            >
-              <ArrowLeft className="h-5 w-5" />
-              Solicitar Correção
-            </Button>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+            {acao === "distribuir" && (
+              <Button 
+                onClick={() => handleAcao("distribuir")}
+                disabled={!acao || !responsavelDistribuicao}
+                className="w-full"
+              >
+                <Users className="mr-2 h-4 w-4" />
+                Distribuir
+              </Button>
+            )}
 
-            <Button
-              onClick={() => handleAcao("rejeitar")}
-              variant="destructive"
-              className="flex-1 gap-2"
-            >
-              <XCircle className="h-5 w-5" />
-              Rejeitar
-            </Button>
+            {acao === "analisar" && (
+              <Button 
+                onClick={() => handleAcao("analisar")}
+                disabled={!acao}
+                className="w-full"
+              >
+                <FileText className="mr-2 h-4 w-4" />
+                Iniciar Análise
+              </Button>
+            )}
+
+            {(acao === "aprovar" || acao === "despachar") && (
+              <Button 
+                onClick={() => handleAcao("aprovar")}
+                disabled={!acao}
+                className="w-full"
+              >
+                <CheckCircle className="mr-2 h-4 w-4" />
+                Aprovar e Avançar
+              </Button>
+            )}
+
+            {acao === "solicitar" && (
+              <Button 
+                variant="outline"
+                onClick={() => handleAcao("solicitar")}
+                disabled={!acao || !justificativa}
+                className="w-full"
+              >
+                <AlertCircle className="mr-2 h-4 w-4" />
+                Solicitar Correção
+              </Button>
+            )}
+
+            {acao === "rejeitar" && (
+              <Button 
+                variant="destructive"
+                onClick={() => handleAcao("rejeitar")}
+                disabled={!acao || !justificativa}
+                className="w-full"
+              >
+                <XCircle className="mr-2 h-4 w-4" />
+                Rejeitar
+              </Button>
+            )}
           </div>
         </div>
 
@@ -122,11 +203,15 @@ export const AcaoProcesso = ({ processoId, etapaAtual }: AcaoProcessoProps) => {
           <div className="space-y-2 text-sm">
             <div className="flex items-center gap-2 text-muted-foreground">
               <div className="h-2 w-2 rounded-full bg-accent"></div>
-              <span>Se aprovado: Encaminhado para Chefe de Divisão</span>
+              <span>Se distribuído: Processo encaminhado ao responsável selecionado</span>
+            </div>
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <div className="h-2 w-2 rounded-full bg-success"></div>
+              <span>Se aprovado: Encaminhado para próxima etapa do workflow</span>
             </div>
             <div className="flex items-center gap-2 text-muted-foreground">
               <div className="h-2 w-2 rounded-full bg-warning"></div>
-              <span>Se solicitar correção: Retorna à Entidade</span>
+              <span>Se solicitar correção: Retorna à Entidade para ajustes</span>
             </div>
             <div className="flex items-center gap-2 text-muted-foreground">
               <div className="h-2 w-2 rounded-full bg-destructive"></div>

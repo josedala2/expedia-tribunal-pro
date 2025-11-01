@@ -196,7 +196,12 @@ export const Expedientes = ({ onBack, onNavigate }: ExpedientesProps) => {
                 </TableCell>
                 <TableCell className="text-sm">{expediente.data}</TableCell>
                 <TableCell>
-                  <Button variant="outline" size="sm" className="hover:bg-secondary">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="hover:bg-secondary"
+                    onClick={() => onNavigate?.("detalhe-expediente")}
+                  >
                     Ver Detalhes
                   </Button>
                 </TableCell>

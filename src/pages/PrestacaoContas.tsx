@@ -96,7 +96,12 @@ export const PrestacaoContas = ({ onBack, onNavigate }: PrestacaoContasProps) =>
                 </TableCell>
                 <TableCell>{processo.prazo}</TableCell>
                 <TableCell>
-                  <Button variant="outline" size="sm" className="text-accent border-accent hover:bg-accent/10">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="text-accent border-accent hover:bg-accent/10"
+                    onClick={() => onNavigate?.("detalhe-prestacao")}
+                  >
                     Ver Detalhes
                   </Button>
                 </TableCell>
