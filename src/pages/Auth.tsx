@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { z } from "zod";
+import { createMockUsers } from "@/scripts/createMockUsers";
 
 const authSchema = z.object({
   email: z.string().email({ message: "Email inválido" }),
@@ -27,6 +28,18 @@ export const Auth = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [nomeCompleto, setNomeCompleto] = useState("");
+  const [setupComplete, setSetupComplete] = useState(false);
+
+  useEffect(() => {
+    // Criar usuários mock na primeira renderização
+    const setup = async () => {
+      if (!setupComplete) {
+        await createMockUsers();
+        setSetupComplete(true);
+      }
+    };
+    setup();
+  }, [setupComplete]);
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
