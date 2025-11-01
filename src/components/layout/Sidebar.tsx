@@ -10,12 +10,10 @@ interface SidebarProps {
 
 const menuItems = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { id: "processes", label: "Processos", icon: FileText },
   { id: "prestacao-contas", label: "Prestação de Contas", icon: FolderCheck },
   { id: "visto", label: "Processos de Visto", icon: Eye },
   { id: "fiscalizacao", label: "Fiscalização OGE", icon: FileBarChart },
   { id: "multas", label: "Processos de Multa", icon: DollarSign },
-  { id: "usuarios", label: "Utilizadores", icon: Users },
 ];
 
 export const Sidebar = ({ isOpen, currentView, onNavigate }: SidebarProps) => {
@@ -27,6 +25,9 @@ export const Sidebar = ({ isOpen, currentView, onNavigate }: SidebarProps) => {
       )}
     >
       <div className="h-full overflow-y-auto">
+        <div className="p-4 border-b border-accent">
+          <h2 className="text-accent font-bold uppercase tracking-widest text-xs">Módulos do Sistema</h2>
+        </div>
         <nav className="p-3 space-y-1">
           {menuItems.map((item) => {
             const Icon = item.icon;

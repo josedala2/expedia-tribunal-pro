@@ -1,6 +1,7 @@
-import { Menu, Bell, Search, User, Scale } from "lucide-react";
+import { Menu, Bell, Search, User, Settings, FileText, BarChart3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import logoTC from "@/assets/logo-tc.png";
 
 interface HeaderProps {
   onToggleSidebar: () => void;
@@ -10,10 +11,10 @@ interface HeaderProps {
 }
 
 const horizontalMenuItems = [
-  { id: "dashboard", label: "Dashboard" },
-  { id: "processes", label: "Processos" },
-  { id: "prestacao-contas", label: "Prestação de Contas" },
-  { id: "visto", label: "Visto" },
+  { id: "usuarios", label: "Utilizadores", icon: User },
+  { id: "relatorios", label: "Relatórios", icon: BarChart3 },
+  { id: "documentos", label: "Documentos", icon: FileText },
+  { id: "configuracoes", label: "Configurações", icon: Settings },
 ];
 
 export const Header = ({ onToggleSidebar, isSidebarOpen, currentView, onNavigate }: HeaderProps) => {
@@ -32,13 +33,11 @@ export const Header = ({ onToggleSidebar, isSidebarOpen, currentView, onNavigate
               <Menu className="h-5 w-5" />
             </Button>
             
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-sm bg-accent flex items-center justify-center shadow-lg">
-                <Scale className="h-6 w-6 text-secondary" />
-              </div>
+            <div className="flex items-center gap-4">
+              <img src={logoTC} alt="Tribunal de Contas Angola" className="h-12 w-12 object-contain" />
               <div>
                 <h1 className="text-xl font-bold text-primary-foreground tracking-wide">TRIBUNAL DE CONTAS</h1>
-                <p className="text-xs text-primary-foreground/90 uppercase tracking-widest">Sistema de Gestão de Processos</p>
+                <p className="text-xs text-primary-foreground/90 uppercase tracking-widest">República de Angola</p>
               </div>
             </div>
           </div>
@@ -64,28 +63,35 @@ export const Header = ({ onToggleSidebar, isSidebarOpen, currentView, onNavigate
         </div>
       </div>
 
-      {/* Horizontal Menu - Preto */}
+      {/* Horizontal Menu - Administrativo */}
       <nav className="bg-secondary border-b border-accent">
-        <div className="px-6 flex items-center gap-1">
-          {horizontalMenuItems.map((item) => {
-            const isActive = currentView === item.id;
-            return (
-              <button
-                key={item.id}
-                onClick={() => onNavigate(item.id)}
-                className={`
-                  px-6 py-3 text-sm font-medium uppercase tracking-wider transition-all
-                  border-b-2 hover:bg-secondary/80
-                  ${isActive 
-                    ? 'border-accent text-accent' 
-                    : 'border-transparent text-secondary-foreground hover:text-accent'
-                  }
-                `}
-              >
-                {item.label}
-              </button>
-            );
-          })}
+        <div className="px-6 flex items-center justify-between">
+          <div className="flex items-center gap-1">
+            {horizontalMenuItems.map((item) => {
+              const isActive = currentView === item.id;
+              const Icon = item.icon;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => onNavigate(item.id)}
+                  className={`
+                    px-5 py-3 text-sm font-medium uppercase tracking-wider transition-all
+                    flex items-center gap-2 border-b-2 hover:bg-secondary/80
+                    ${isActive 
+                      ? 'border-accent text-accent' 
+                      : 'border-transparent text-secondary-foreground hover:text-accent'
+                    }
+                  `}
+                >
+                  <Icon className="h-4 w-4" />
+                  {item.label}
+                </button>
+              );
+            })}
+          </div>
+          <div className="text-xs text-secondary-foreground/60 uppercase tracking-wide">
+            Área Administrativa
+          </div>
         </div>
       </nav>
     </div>

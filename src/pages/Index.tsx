@@ -4,8 +4,14 @@ import { Sidebar } from "@/components/layout/Sidebar";
 import { Dashboard } from "@/components/dashboard/Dashboard";
 import { ProcessList } from "@/components/processes/ProcessList";
 import { ProcessDetail } from "@/components/processes/ProcessDetail";
+import { PrestacaoContas } from "@/pages/PrestacaoContas";
+import { ProcessosVisto } from "@/pages/ProcessosVisto";
+import { Fiscalizacao } from "@/pages/Fiscalizacao";
+import { ProcessosMulta } from "@/pages/ProcessosMulta";
+import { Usuarios } from "@/pages/Usuarios";
+import { Relatorios } from "@/pages/Relatorios";
 
-type View = "dashboard" | "processes" | "process-detail";
+type View = "dashboard" | "processes" | "process-detail" | "prestacao-contas" | "visto" | "fiscalizacao" | "multas" | "usuarios" | "relatorios" | "documentos" | "configuracoes";
 
 const Index = () => {
   const [currentView, setCurrentView] = useState<View>("dashboard");
@@ -49,6 +55,12 @@ const Index = () => {
             {currentView === "process-detail" && selectedProcessId && (
               <ProcessDetail processId={selectedProcessId} onBack={handleBackToList} />
             )}
+            {currentView === "prestacao-contas" && <PrestacaoContas onBack={() => handleNavigate("dashboard")} />}
+            {currentView === "visto" && <ProcessosVisto onBack={() => handleNavigate("dashboard")} />}
+            {currentView === "fiscalizacao" && <Fiscalizacao onBack={() => handleNavigate("dashboard")} />}
+            {currentView === "multas" && <ProcessosMulta onBack={() => handleNavigate("dashboard")} />}
+            {currentView === "usuarios" && <Usuarios onBack={() => handleNavigate("dashboard")} />}
+            {currentView === "relatorios" && <Relatorios onBack={() => handleNavigate("dashboard")} />}
           </div>
         </main>
       </div>
