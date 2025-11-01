@@ -1,21 +1,72 @@
-import { ArrowLeft, FileText, Download, Upload, Search, Filter } from "lucide-react";
+import { ArrowLeft, FileText, Download, Upload, Search, Filter, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
 
 interface DocumentosProps {
   onBack: () => void;
 }
 
 export const Documentos = ({ onBack }: DocumentosProps) => {
+  const { toast } = useToast();
+  const [showUploadDialog, setShowUploadDialog] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [tipoFiltro, setTipoFiltro] = useState<string>("");
+  const [categoriaFiltro, setCategoriaFiltro] = useState<string>("");
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  
   const documentos = [
-    { nome: "Regulamento Interno 2024.pdf", tipo: "PDF", tamanho: "2.5 MB", categoria: "Normativo", data: "15/01/2024" },
-    { nome: "Manual de Procedimentos.docx", tipo: "DOCX", tamanho: "1.8 MB", categoria: "Manual", data: "10/01/2024" },
-    { nome: "Modelo Relatório Auditoria.xlsx", tipo: "XLSX", tamanho: "450 KB", categoria: "Modelo", data: "08/01/2024" },
-    { nome: "Lei Orgânica TC.pdf", tipo: "PDF", tamanho: "3.2 MB", categoria: "Legislação", data: "05/01/2024" },
+    { id: "1", nome: "Regulamento Interno 2024.pdf", tipo: "PDF", tamanho: "2.5 MB", categoria: "Normativo", data: "15/01/2024", url: "#" },
+    { id: "2", nome: "Manual de Procedimentos.docx", tipo: "DOCX", tamanho: "1.8 MB", categoria: "Manual", data: "10/01/2024", url: "#" },
+    { id: "3", nome: "Modelo Relatório Auditoria.xlsx", tipo: "XLSX", tamanho: "450 KB", categoria: "Modelo", data: "08/01/2024", url: "#" },
+    { id: "4", nome: "Lei Orgânica TC.pdf", tipo: "PDF", tamanho: "3.2 MB", categoria: "Legislação", data: "05/01/2024", url: "#" },
   ];
+
+  const documentosFiltrados = documentos.filter(doc => {
+    const matchSearch = doc.nome.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchTipo = !tipoFiltro || doc.tipo === tipoFiltro;
+    const matchCategoria = !categoriaFiltro || doc.categoria === categoriaFiltro;
+    return matchSearch && matchTipo && matchCategoria;
+  });
+
+  const handleFileUpload = () => {
+    if (!selectedFile) {
+      toast({
+        title: "Erro",
+        description: "Por favor, selecione um arquivo para carregar.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    toast({
+      title: "Documento carregado com sucesso!",
+      description: `${selectedFile.name} foi adicionado à biblioteca.`,
+    });
+    setShowUploadDialog(false);
+    setSelectedFile(null);
+  };
+
+  const handleDownload = (doc: typeof documentos[0]) => {
+    toast({
+      title: "Download iniciado",
+      description: `Baixando ${doc.nome}...`,
+    });
+    // Simulação de download - em produção, use o URL real
+  };
+
+  const limparFiltros = () => {
+    setTipoFiltro("");
+    setCategoriaFiltro("");
+  };
 
   return (
     <div className="space-y-6">
@@ -32,7 +83,10 @@ export const Documentos = ({ onBack }: DocumentosProps) => {
             <p className="text-muted-foreground">Gestão de documentos e modelos institucionais</p>
           </div>
         </div>
-        <Button className="bg-primary hover:bg-primary-hover text-primary-foreground gap-2">
+        <Button 
+          onClick={() => setShowUploadDialog(true)}
+          className="bg-primary hover:bg-primary-hover text-primary-foreground gap-2"
+        >
           <Upload className="h-5 w-5" />
           Carregar Documento
         </Button>
@@ -61,12 +115,73 @@ export const Documentos = ({ onBack }: DocumentosProps) => {
         <div className="flex gap-4 mb-6">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input placeholder="Pesquisar documentos..." className="pl-9" />
+            <Input 
+              placeholder="Pesquisar documentos..." 
+              className="pl-9"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
           </div>
-          <Button variant="outline" className="gap-2">
-            <Filter className="h-4 w-4" />
-            Filtros
-          </Button>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" className="gap-2">
+                <Filter className="h-4 w-4" />
+                Filtros
+                {(tipoFiltro || categoriaFiltro) && (
+                  <Badge variant="secondary" className="ml-1">
+                    {[tipoFiltro, categoriaFiltro].filter(Boolean).length}
+                  </Badge>
+                )}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-80" align="end">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h4 className="font-semibold">Filtros</h4>
+                  {(tipoFiltro || categoriaFiltro) && (
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      onClick={limparFiltros}
+                    >
+                      Limpar
+                    </Button>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="tipo-filtro">Tipo de Documento</Label>
+                  <Select value={tipoFiltro} onValueChange={setTipoFiltro}>
+                    <SelectTrigger id="tipo-filtro">
+                      <SelectValue placeholder="Todos os tipos" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value=" ">Todos os tipos</SelectItem>
+                      <SelectItem value="PDF">PDF</SelectItem>
+                      <SelectItem value="DOCX">DOCX</SelectItem>
+                      <SelectItem value="XLSX">XLSX</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="categoria-filtro">Categoria</Label>
+                  <Select value={categoriaFiltro} onValueChange={setCategoriaFiltro}>
+                    <SelectTrigger id="categoria-filtro">
+                      <SelectValue placeholder="Todas as categorias" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value=" ">Todas as categorias</SelectItem>
+                      <SelectItem value="Normativo">Normativo</SelectItem>
+                      <SelectItem value="Manual">Manual</SelectItem>
+                      <SelectItem value="Modelo">Modelo</SelectItem>
+                      <SelectItem value="Legislação">Legislação</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
         </div>
 
         <Table>
@@ -81,31 +196,114 @@ export const Documentos = ({ onBack }: DocumentosProps) => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {documentos.map((doc, index) => (
-              <TableRow key={index}>
-                <TableCell className="font-medium flex items-center gap-2">
-                  <FileText className="h-4 w-4 text-primary" />
-                  {doc.nome}
-                </TableCell>
-                <TableCell>
-                  <Badge variant="outline">{doc.tipo}</Badge>
-                </TableCell>
-                <TableCell>
-                  <Badge variant="secondary">{doc.categoria}</Badge>
-                </TableCell>
-                <TableCell>{doc.tamanho}</TableCell>
-                <TableCell>{doc.data}</TableCell>
-                <TableCell>
-                  <Button variant="outline" size="sm" className="gap-2">
-                    <Download className="h-4 w-4" />
-                    Baixar
-                  </Button>
+            {documentosFiltrados.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                  Nenhum documento encontrado.
                 </TableCell>
               </TableRow>
-            ))}
+            ) : (
+              documentosFiltrados.map((doc) => (
+                <TableRow key={doc.id}>
+                  <TableCell className="font-medium flex items-center gap-2">
+                    <FileText className="h-4 w-4 text-primary" />
+                    {doc.nome}
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant="outline">{doc.tipo}</Badge>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant="secondary">{doc.categoria}</Badge>
+                  </TableCell>
+                  <TableCell>{doc.tamanho}</TableCell>
+                  <TableCell>{doc.data}</TableCell>
+                  <TableCell>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="gap-2"
+                      onClick={() => handleDownload(doc)}
+                    >
+                      <Download className="h-4 w-4" />
+                      Baixar
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </Card>
+
+      {/* Dialog de Upload de Documentos */}
+      <Dialog open={showUploadDialog} onOpenChange={setShowUploadDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Carregar Novo Documento</DialogTitle>
+            <DialogDescription>
+              Selecione um arquivo para adicionar à biblioteca de documentos.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="categoria-upload">Categoria *</Label>
+              <Select>
+                <SelectTrigger id="categoria-upload">
+                  <SelectValue placeholder="Selecione a categoria" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="normativo">Normativo</SelectItem>
+                  <SelectItem value="manual">Manual</SelectItem>
+                  <SelectItem value="modelo">Modelo</SelectItem>
+                  <SelectItem value="legislacao">Legislação</SelectItem>
+                  <SelectItem value="outro">Outro</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="file-upload">Arquivo *</Label>
+              <Input
+                id="file-upload"
+                type="file"
+                accept=".pdf,.doc,.docx,.xls,.xlsx"
+                onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
+                className="cursor-pointer"
+              />
+              {selectedFile && (
+                <p className="text-sm text-muted-foreground">
+                  Arquivo selecionado: {selectedFile.name}
+                </p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="descricao-upload">Descrição (opcional)</Label>
+              <Input
+                id="descricao-upload"
+                placeholder="Breve descrição do documento"
+              />
+            </div>
+          </div>
+
+          <div className="flex gap-3 justify-end">
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setShowUploadDialog(false);
+                setSelectedFile(null);
+              }}
+            >
+              Cancelar
+            </Button>
+            <Button onClick={handleFileUpload} className="gap-2">
+              <Upload className="h-4 w-4" />
+              Carregar
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
