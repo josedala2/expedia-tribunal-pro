@@ -117,10 +117,10 @@ export const Auth = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <Card className="w-full max-w-md">
+      <Card className="w-full max-w-lg">
         <CardHeader className="text-center">
-          <img src="/src/assets/logo-tc.png" alt="Logo TC" className="h-16 mx-auto mb-4" />
-          <CardTitle>Sistema de Gestão TC</CardTitle>
+          <img src="/src/assets/logo-tc.png" alt="Logo TC" className="h-20 mx-auto mb-4" />
+          <CardTitle className="text-2xl">Sistema de Gestão TC</CardTitle>
           <CardDescription>Entre na sua conta ou crie uma nova</CardDescription>
         </CardHeader>
         <CardContent>
