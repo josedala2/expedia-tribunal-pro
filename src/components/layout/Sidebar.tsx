@@ -21,7 +21,7 @@ export const Sidebar = ({ isOpen, currentView, onNavigate }: SidebarProps) => {
   return (
     <aside
       className={cn(
-        "fixed left-0 top-[8.5rem] h-[calc(100vh-8.5rem)] bg-card border-r border-border transition-all duration-300 z-40 shadow-sm",
+        "fixed left-0 top-[10.5rem] h-[calc(100vh-10.5rem)] bg-card border-r border-border transition-all duration-300 z-40 shadow-sm",
         isOpen ? "w-64" : "w-0 -translate-x-full"
       )}
     >

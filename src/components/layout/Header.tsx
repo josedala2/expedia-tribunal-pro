@@ -21,35 +21,35 @@ export const Header = ({ onToggleSidebar, isSidebarOpen, currentView, onNavigate
   return (
     <div className="sticky top-0 z-50 bg-card border-b-2 border-border shadow-md">
       {/* Top Bar */}
-      <div className="h-20 bg-card">
+      <div className="h-28 bg-card">
         <div className="h-full px-8 flex items-center justify-between">
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-8">
             <Button
               variant="ghost"
               size="icon"
               onClick={onToggleSidebar}
-              className="hover:bg-secondary"
+              className="hover:bg-secondary h-12 w-12"
             >
-              <Menu className="h-6 w-6 text-foreground" />
+              <Menu className="h-7 w-7 text-foreground" />
             </Button>
             
-            <div className="flex items-center gap-4">
-              <img src={logoTC} alt="Tribunal de Contas Angola" className="h-16 w-16 object-contain" />
+            <div className="flex items-center gap-6">
+              <img src={logoTC} alt="Tribunal de Contas Angola" className="h-20 w-20 object-contain" />
               <div>
-                <h1 className="text-xl font-bold text-foreground">Tribunal de Contas</h1>
-                <p className="text-sm text-muted-foreground font-medium">Sistema Nacional de Gestão de Processos</p>
+                <h1 className="text-2xl font-bold text-foreground">Tribunal de Contas</h1>
+                <p className="text-base text-muted-foreground font-semibold">Sistema Nacional de Gestão de Processos</p>
               </div>
             </div>
           </div>
 
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" className="relative hover:bg-secondary">
-              <Bell className="h-5 w-5" />
-              <span className="absolute top-1 right-1 h-2 w-2 bg-primary rounded-full"></span>
+            <Button variant="ghost" size="icon" className="relative hover:bg-secondary h-12 w-12">
+              <Bell className="h-6 w-6" />
+              <span className="absolute top-1 right-1 h-2.5 w-2.5 bg-primary rounded-full"></span>
             </Button>
             
-            <Button variant="ghost" size="icon" className="hover:bg-secondary">
-              <User className="h-5 w-5" />
+            <Button variant="ghost" size="icon" className="hover:bg-secondary h-12 w-12">
+              <User className="h-6 w-6" />
             </Button>
           </div>
         </div>
