@@ -2,6 +2,7 @@ import { StatsCards } from "./StatsCards";
 import { ProcessChart } from "./ProcessChart";
 import { RecentProcesses } from "./RecentProcesses";
 import { ProcessByStatus } from "./ProcessByStatus";
+import { MenuCards } from "./MenuCards";
 
 interface DashboardProps {
   onNavigate: (view: string) => void;
@@ -14,6 +15,8 @@ export const Dashboard = ({ onNavigate }: DashboardProps) => {
         <h2 className="text-3xl font-bold text-foreground">Dashboard</h2>
         <p className="text-muted-foreground mt-1">Visão geral dos processos e expedientes</p>
       </div>
+
+      <MenuCards onNavigate={onNavigate} />
 
       <StatsCards />
       
