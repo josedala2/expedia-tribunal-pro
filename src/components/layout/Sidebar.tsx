@@ -1,4 +1,4 @@
-import { LayoutDashboard, FileText, FolderCheck, Eye, FileBarChart, DollarSign, Users } from "lucide-react";
+import { LayoutDashboard, FileText, FolderCheck, Eye, FileBarChart, DollarSign, Users, Inbox } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
@@ -10,6 +10,7 @@ interface SidebarProps {
 
 const menuItems = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { id: "expedientes", label: "Expedientes Internos", icon: Inbox },
   { id: "prestacao-contas", label: "Prestação de Contas", icon: FolderCheck },
   { id: "visto", label: "Processos de Visto", icon: Eye },
   { id: "fiscalizacao", label: "Fiscalização OGE", icon: FileBarChart },

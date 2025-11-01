@@ -10,8 +10,9 @@ import { Fiscalizacao } from "@/pages/Fiscalizacao";
 import { ProcessosMulta } from "@/pages/ProcessosMulta";
 import { Usuarios } from "@/pages/Usuarios";
 import { Relatorios } from "@/pages/Relatorios";
+import { Expedientes } from "@/pages/Expedientes";
 
-type View = "dashboard" | "processes" | "process-detail" | "prestacao-contas" | "visto" | "fiscalizacao" | "multas" | "usuarios" | "relatorios" | "documentos" | "configuracoes";
+type View = "dashboard" | "processes" | "process-detail" | "prestacao-contas" | "visto" | "fiscalizacao" | "multas" | "usuarios" | "relatorios" | "documentos" | "configuracoes" | "expedientes";
 
 const Index = () => {
   const [currentView, setCurrentView] = useState<View>("dashboard");
@@ -55,6 +56,7 @@ const Index = () => {
             {currentView === "process-detail" && selectedProcessId && (
               <ProcessDetail processId={selectedProcessId} onBack={handleBackToList} />
             )}
+            {currentView === "expedientes" && <Expedientes onBack={() => handleNavigate("dashboard")} />}
             {currentView === "prestacao-contas" && <PrestacaoContas onBack={() => handleNavigate("dashboard")} />}
             {currentView === "visto" && <ProcessosVisto onBack={() => handleNavigate("dashboard")} />}
             {currentView === "fiscalizacao" && <Fiscalizacao onBack={() => handleNavigate("dashboard")} />}
