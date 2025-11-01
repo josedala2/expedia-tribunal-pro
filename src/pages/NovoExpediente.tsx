@@ -1,4 +1,4 @@
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Printer } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -11,6 +11,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useState } from "react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { ActaRecepcaoTemplate, ActaRecepcaoData } from "@/components/documents/ActaRecepcaoTemplate";
 
 const expedienteSchema = z.object({
   natureza: z.enum(["interno", "externo"]),
@@ -36,6 +38,8 @@ export const NovoExpediente = ({ onBack }: NovoExpedienteProps) => {
   const { toast } = useToast();
   const [natureza, setNatureza] = useState<"interno" | "externo">("interno");
   const [isResposta, setIsResposta] = useState(false);
+  const [showActa, setShowActa] = useState(false);
+  const [actaData, setActaData] = useState<ActaRecepcaoData | null>(null);
   
   const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm<ExpedienteForm>({
     resolver: zodResolver(expedienteSchema),
@@ -44,14 +48,55 @@ export const NovoExpediente = ({ onBack }: NovoExpedienteProps) => {
     }
   });
 
+  const gerarNumeroExpediente = () => {
+    const ano = new Date().getFullYear();
+    const numero = Math.floor(Math.random() * 9000) + 1000;
+    return `EXP/${ano}/${numero}`;
+  };
+
+  const gerarNumeroActa = () => {
+    const ano = new Date().getFullYear();
+    const numero = Math.floor(Math.random() * 9000) + 1000;
+    return `ACTA/${ano}/${numero}`;
+  };
+
+  const imprimirActa = () => {
+    window.print();
+  };
+
   const onSubmit = (data: ExpedienteForm) => {
     console.log("Expediente criado:", data);
     const tipoExp = data.natureza === "externo" ? "externo" : "interno";
-    toast({
-      title: "Expediente criado com sucesso!",
-      description: `${data.tipo} ${tipoExp} registado no sistema.`,
-    });
-    onBack();
+    
+    // Se for expediente externo e NÃO for resposta, gera a acta
+    if (data.natureza === "externo" && !isResposta) {
+      const numeroExpediente = gerarNumeroExpediente();
+      const numeroActa = gerarNumeroActa();
+      const urlVerificacao = `${window.location.origin}/verificar-expediente?exp=${numeroExpediente}`;
+      
+      const novaActa: ActaRecepcaoData = {
+        numeroExpediente,
+        numeroActa,
+        tipo: data.tipo,
+        assunto: data.assunto,
+        entidade: data.entidadeExterna || "N/A",
+        remetente: data.origem,
+        email: data.emailExterno,
+        telefone: data.telefoneExterno,
+        dataRecepcao: new Date().toISOString(),
+        recebidoPor: "Sistema de Gestão de Processos",
+        urlVerificacao,
+      };
+      
+      setActaData(novaActa);
+      setShowActa(true);
+    } else {
+      toast({
+        title: "Expediente criado com sucesso!",
+        description: `${data.tipo} ${tipoExp} registado no sistema.`,
+      });
+      onBack();
+    }
   };
 
   return (
@@ -304,6 +349,37 @@ export const NovoExpediente = ({ onBack }: NovoExpedienteProps) => {
           </div>
         </form>
       </Card>
+
+      {/* Dialog para mostrar a Acta de Recepção */}
+      <Dialog open={showActa} onOpenChange={setShowActa}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Acta de Recepção Gerada</DialogTitle>
+          </DialogHeader>
+          
+          {actaData && <ActaRecepcaoTemplate data={actaData} />}
+          
+          <div className="flex gap-4 justify-end pt-4 border-t print:hidden">
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setShowActa(false);
+                toast({
+                  title: "Expediente criado com sucesso!",
+                  description: "Acta de recepção gerada.",
+                });
+                onBack();
+              }}
+            >
+              Fechar
+            </Button>
+            <Button onClick={imprimirActa} className="gap-2">
+              <Printer className="h-4 w-4" />
+              Imprimir Acta
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
