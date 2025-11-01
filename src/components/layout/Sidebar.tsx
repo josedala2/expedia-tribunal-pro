@@ -20,15 +20,12 @@ export const Sidebar = ({ isOpen, currentView, onNavigate }: SidebarProps) => {
   return (
     <aside
       className={cn(
-        "fixed left-0 top-[8.5rem] h-[calc(100vh-8.5rem)] bg-secondary border-r-2 border-accent transition-all duration-300 z-40 shadow-xl",
-        isOpen ? "w-72" : "w-0 -translate-x-full"
+        "fixed left-0 top-[7.5rem] h-[calc(100vh-7.5rem)] bg-card border-r border-border transition-all duration-300 z-40",
+        isOpen ? "w-64" : "w-0 -translate-x-full"
       )}
     >
       <div className="h-full overflow-y-auto">
-        <div className="p-4 border-b border-accent">
-          <h2 className="text-accent font-bold uppercase tracking-widest text-xs">Módulos do Sistema</h2>
-        </div>
-        <nav className="p-3 space-y-1">
+        <nav className="p-4 space-y-1">
           {menuItems.map((item) => {
             const Icon = item.icon;
             const isActive = currentView === item.id;
@@ -38,15 +35,14 @@ export const Sidebar = ({ isOpen, currentView, onNavigate }: SidebarProps) => {
                 key={item.id}
                 onClick={() => onNavigate(item.id)}
                 className={cn(
-                  "w-full flex items-center gap-3 px-4 py-3 rounded transition-all text-left font-medium",
-                  "border-l-4 hover:bg-secondary/80",
+                  "w-full flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all text-left text-sm",
                   isActive 
-                    ? "bg-primary/10 border-accent text-accent shadow-md" 
-                    : "border-transparent text-sidebar-foreground hover:border-accent/50 hover:text-accent"
+                    ? "bg-primary/10 text-primary font-medium" 
+                    : "text-muted-foreground hover:bg-secondary hover:text-foreground"
                 )}
               >
                 <Icon className="h-5 w-5 flex-shrink-0" />
-                <span className="uppercase tracking-wide text-sm">{item.label}</span>
+                <span>{item.label}</span>
               </button>
             );
           })}
