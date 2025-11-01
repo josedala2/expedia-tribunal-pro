@@ -9,14 +9,21 @@ import { useToast } from "@/hooks/use-toast";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { useState } from "react";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 const expedienteSchema = z.object({
+  natureza: z.enum(["interno", "externo"]),
   tipo: z.string().min(1, "Tipo é obrigatório"),
   assunto: z.string().min(5, "Assunto deve ter no mínimo 5 caracteres").max(200, "Assunto muito longo"),
   origem: z.string().min(1, "Origem é obrigatória"),
   destino: z.string().min(1, "Destino é obrigatório"),
   prioridade: z.string().min(1, "Prioridade é obrigatória"),
   descricao: z.string().min(10, "Descrição deve ter no mínimo 10 caracteres").max(2000, "Descrição muito longa"),
+  respostaA: z.string().optional(),
+  entidadeExterna: z.string().optional(),
+  emailExterno: z.string().email("Email inválido").optional().or(z.literal("")),
+  telefoneExterno: z.string().optional(),
 });
 
 type ExpedienteForm = z.infer<typeof expedienteSchema>;
@@ -27,15 +34,22 @@ interface NovoExpedienteProps {
 
 export const NovoExpediente = ({ onBack }: NovoExpedienteProps) => {
   const { toast } = useToast();
-  const { register, handleSubmit, formState: { errors }, setValue } = useForm<ExpedienteForm>({
-    resolver: zodResolver(expedienteSchema)
+  const [natureza, setNatureza] = useState<"interno" | "externo">("interno");
+  const [isResposta, setIsResposta] = useState(false);
+  
+  const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm<ExpedienteForm>({
+    resolver: zodResolver(expedienteSchema),
+    defaultValues: {
+      natureza: "interno"
+    }
   });
 
   const onSubmit = (data: ExpedienteForm) => {
     console.log("Expediente criado:", data);
+    const tipoExp = data.natureza === "externo" ? "externo" : "interno";
     toast({
       title: "Expediente criado com sucesso!",
-      description: `${data.tipo} registado no sistema.`,
+      description: `${data.tipo} ${tipoExp} registado no sistema.`,
     });
     onBack();
   };
@@ -47,13 +61,70 @@ export const NovoExpediente = ({ onBack }: NovoExpedienteProps) => {
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Novo Expediente Interno/Externo</h1>
-          <p className="text-muted-foreground">Preencha os dados do expediente</p>
+          <h1 className="text-3xl font-bold text-foreground">Novo Expediente</h1>
+          <p className="text-muted-foreground">Registo de expediente interno ou externo</p>
         </div>
       </div>
 
       <Card className="p-6">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          {/* Natureza do Expediente */}
+          <div className="space-y-3 p-4 bg-muted/50 rounded-lg">
+            <Label className="text-base font-semibold">Natureza do Expediente *</Label>
+            <RadioGroup
+              value={natureza}
+              onValueChange={(value: "interno" | "externo") => {
+                setNatureza(value);
+                setValue("natureza", value);
+              }}
+              className="flex gap-6"
+            >
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="interno" id="interno" />
+                <Label htmlFor="interno" className="cursor-pointer font-normal">Expediente Interno</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="externo" id="externo" />
+                <Label htmlFor="externo" className="cursor-pointer font-normal">Expediente Externo</Label>
+              </div>
+            </RadioGroup>
+            <p className="text-sm text-muted-foreground">
+              {natureza === "interno" 
+                ? "Comunicação entre departamentos do Tribunal de Contas" 
+                : "Comunicação com entidades externas ao Tribunal de Contas"}
+            </p>
+          </div>
+
+          {/* É Resposta a Expediente? */}
+          <div className="space-y-3 p-4 border rounded-lg">
+            <div className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                id="isResposta"
+                checked={isResposta}
+                onChange={(e) => setIsResposta(e.target.checked)}
+                className="h-4 w-4 rounded border-border"
+              />
+              <Label htmlFor="isResposta" className="cursor-pointer font-medium">
+                Este expediente é resposta a outro expediente?
+              </Label>
+            </div>
+
+            {isResposta && (
+              <div className="space-y-2 mt-4">
+                <Label htmlFor="respostaA">Nº do Expediente Original *</Label>
+                <Input 
+                  id="respostaA" 
+                  {...register("respostaA")} 
+                  placeholder="Ex: EXP/2024/001"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Informe o número do expediente ao qual está respondendo
+                </p>
+              </div>
+            )}
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <Label htmlFor="tipo">Tipo de Expediente *</Label>
@@ -67,6 +138,8 @@ export const NovoExpediente = ({ onBack }: NovoExpedienteProps) => {
                   <SelectItem value="Despacho">Despacho</SelectItem>
                   <SelectItem value="Circular">Circular</SelectItem>
                   <SelectItem value="Informação">Informação</SelectItem>
+                  <SelectItem value="Nota Técnica">Nota Técnica</SelectItem>
+                  <SelectItem value="Resposta">Resposta</SelectItem>
                 </SelectContent>
               </Select>
               {errors.tipo && <p className="text-sm text-destructive">{errors.tipo.message}</p>}
@@ -98,42 +171,101 @@ export const NovoExpediente = ({ onBack }: NovoExpedienteProps) => {
             {errors.assunto && <p className="text-sm text-destructive">{errors.assunto.message}</p>}
           </div>
 
+          {/* Campos específicos para Expediente Externo */}
+          {natureza === "externo" && (
+            <div className="space-y-4 p-4 bg-accent/10 border border-accent rounded-lg">
+              <h3 className="font-semibold text-accent">Dados da Entidade Externa</h3>
+              
+              <div className="space-y-2">
+                <Label htmlFor="entidadeExterna">Nome da Entidade/Instituição *</Label>
+                <Input 
+                  id="entidadeExterna" 
+                  {...register("entidadeExterna")} 
+                  placeholder="Ex: Ministério das Finanças"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="emailExterno">Email de Contacto</Label>
+                  <Input 
+                    id="emailExterno" 
+                    type="email"
+                    {...register("emailExterno")} 
+                    placeholder="contacto@entidade.gov.ao"
+                  />
+                  {errors.emailExterno && <p className="text-sm text-destructive">{errors.emailExterno.message}</p>}
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="telefoneExterno">Telefone de Contacto</Label>
+                  <Input 
+                    id="telefoneExterno" 
+                    {...register("telefoneExterno")} 
+                    placeholder="+244 900 000 000"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Origem e Destino */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <Label htmlFor="origem">Departamento de Origem *</Label>
-              <Select onValueChange={(value) => setValue("origem", value)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione a origem" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Gabinete do Presidente">Gabinete do Presidente</SelectItem>
-                  <SelectItem value="Departamento Jurídico">Departamento Jurídico</SelectItem>
-                  <SelectItem value="Departamento de Fiscalização">Departamento de Fiscalização</SelectItem>
-                  <SelectItem value="Departamento de Auditoria">Departamento de Auditoria</SelectItem>
-                  <SelectItem value="Recursos Humanos">Recursos Humanos</SelectItem>
-                  <SelectItem value="Tecnologias de Informação">Tecnologias de Informação</SelectItem>
-                </SelectContent>
-              </Select>
+              <Label htmlFor="origem">
+                {natureza === "externo" ? "Remetente" : "Departamento de Origem"} *
+              </Label>
+              {natureza === "interno" ? (
+                <Select onValueChange={(value) => setValue("origem", value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione a origem" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Gabinete do Presidente">Gabinete do Presidente</SelectItem>
+                    <SelectItem value="Departamento Jurídico">Departamento Jurídico</SelectItem>
+                    <SelectItem value="Departamento de Fiscalização">Departamento de Fiscalização</SelectItem>
+                    <SelectItem value="Departamento de Auditoria">Departamento de Auditoria</SelectItem>
+                    <SelectItem value="Recursos Humanos">Recursos Humanos</SelectItem>
+                    <SelectItem value="Tecnologias de Informação">Tecnologias de Informação</SelectItem>
+                  </SelectContent>
+                </Select>
+              ) : (
+                <Input 
+                  id="origem" 
+                  {...register("origem")} 
+                  placeholder="Nome do remetente externo"
+                />
+              )}
               {errors.origem && <p className="text-sm text-destructive">{errors.origem.message}</p>}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="destino">Departamento de Destino *</Label>
-              <Select onValueChange={(value) => setValue("destino", value)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione o destino" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Gabinete do Presidente">Gabinete do Presidente</SelectItem>
-                  <SelectItem value="Departamento Jurídico">Departamento Jurídico</SelectItem>
-                  <SelectItem value="Departamento de Fiscalização">Departamento de Fiscalização</SelectItem>
-                  <SelectItem value="Departamento de Auditoria">Departamento de Auditoria</SelectItem>
-                  <SelectItem value="Recursos Humanos">Recursos Humanos</SelectItem>
-                  <SelectItem value="Tecnologias de Informação">Tecnologias de Informação</SelectItem>
-                  <SelectItem value="Todos os Departamentos">Todos os Departamentos</SelectItem>
-                  <SelectItem value="Arquivo Geral">Arquivo Geral</SelectItem>
-                </SelectContent>
-              </Select>
+              <Label htmlFor="destino">
+                {natureza === "externo" ? "Destinatário" : "Departamento de Destino"} *
+              </Label>
+              {natureza === "interno" ? (
+                <Select onValueChange={(value) => setValue("destino", value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione o destino" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Gabinete do Presidente">Gabinete do Presidente</SelectItem>
+                    <SelectItem value="Departamento Jurídico">Departamento Jurídico</SelectItem>
+                    <SelectItem value="Departamento de Fiscalização">Departamento de Fiscalização</SelectItem>
+                    <SelectItem value="Departamento de Auditoria">Departamento de Auditoria</SelectItem>
+                    <SelectItem value="Recursos Humanos">Recursos Humanos</SelectItem>
+                    <SelectItem value="Tecnologias de Informação">Tecnologias de Informação</SelectItem>
+                    <SelectItem value="Todos os Departamentos">Todos os Departamentos</SelectItem>
+                    <SelectItem value="Arquivo Geral">Arquivo Geral</SelectItem>
+                  </SelectContent>
+                </Select>
+              ) : (
+                <Input 
+                  id="destino" 
+                  {...register("destino")} 
+                  placeholder="Nome do destinatário externo"
+                />
+              )}
               {errors.destino && <p className="text-sm text-destructive">{errors.destino.message}</p>}
             </div>
           </div>
@@ -149,7 +281,20 @@ export const NovoExpediente = ({ onBack }: NovoExpedienteProps) => {
             {errors.descricao && <p className="text-sm text-destructive">{errors.descricao.message}</p>}
           </div>
 
-          <div className="flex gap-4 justify-end">
+          <div className="space-y-2">
+            <Label htmlFor="anexos">Anexar Documentos</Label>
+            <Input 
+              id="anexos" 
+              type="file"
+              multiple
+              className="cursor-pointer"
+            />
+            <p className="text-xs text-muted-foreground">
+              Anexe documentos relacionados ao expediente (PDF, DOCX, imagens)
+            </p>
+          </div>
+
+          <div className="flex gap-4 justify-end pt-4 border-t">
             <Button type="button" variant="outline" onClick={onBack}>
               Cancelar
             </Button>
