@@ -7,9 +7,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 
 interface ExpedientesProps {
   onBack: () => void;
+  onNavigate?: (view: string) => void;
 }
 
-export const Expedientes = ({ onBack }: ExpedientesProps) => {
+export const Expedientes = ({ onBack, onNavigate }: ExpedientesProps) => {
   const expedientes = [
     { 
       numero: "EXP/2024/001", 
@@ -101,7 +102,10 @@ export const Expedientes = ({ onBack }: ExpedientesProps) => {
             <p className="text-muted-foreground">Gestão de comunicações e documentos internos</p>
           </div>
         </div>
-        <Button className="bg-primary hover:bg-primary-hover text-primary-foreground gap-2">
+        <Button 
+          className="bg-primary hover:bg-primary-hover text-primary-foreground gap-2"
+          onClick={() => onNavigate?.("novo-expediente")}
+        >
           <Plus className="h-5 w-5" />
           Novo Expediente
         </Button>

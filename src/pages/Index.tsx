@@ -11,8 +11,13 @@ import { ProcessosMulta } from "@/pages/ProcessosMulta";
 import { Usuarios } from "@/pages/Usuarios";
 import { Relatorios } from "@/pages/Relatorios";
 import { Expedientes } from "@/pages/Expedientes";
+import { NovoExpediente } from "@/pages/NovoExpediente";
+import { NovoProcessoPrestacao } from "@/pages/NovoProcessoPrestacao";
+import { NovoProcessoVisto } from "@/pages/NovoProcessoVisto";
+import { Documentos } from "@/pages/Documentos";
+import { Configuracoes } from "@/pages/Configuracoes";
 
-type View = "dashboard" | "processes" | "process-detail" | "prestacao-contas" | "visto" | "fiscalizacao" | "multas" | "usuarios" | "relatorios" | "documentos" | "configuracoes" | "expedientes";
+type View = "dashboard" | "processes" | "process-detail" | "prestacao-contas" | "visto" | "fiscalizacao" | "multas" | "usuarios" | "relatorios" | "documentos" | "configuracoes" | "expedientes" | "novo-expediente" | "novo-prestacao" | "novo-visto";
 
 const Index = () => {
   const [currentView, setCurrentView] = useState<View>("dashboard");
@@ -56,13 +61,18 @@ const Index = () => {
             {currentView === "process-detail" && selectedProcessId && (
               <ProcessDetail processId={selectedProcessId} onBack={handleBackToList} />
             )}
-            {currentView === "expedientes" && <Expedientes onBack={() => handleNavigate("dashboard")} />}
-            {currentView === "prestacao-contas" && <PrestacaoContas onBack={() => handleNavigate("dashboard")} />}
-            {currentView === "visto" && <ProcessosVisto onBack={() => handleNavigate("dashboard")} />}
+            {currentView === "expedientes" && <Expedientes onBack={() => handleNavigate("dashboard")} onNavigate={handleNavigate} />}
+            {currentView === "novo-expediente" && <NovoExpediente onBack={() => handleNavigate("expedientes")} />}
+            {currentView === "prestacao-contas" && <PrestacaoContas onBack={() => handleNavigate("dashboard")} onNavigate={handleNavigate} />}
+            {currentView === "novo-prestacao" && <NovoProcessoPrestacao onBack={() => handleNavigate("prestacao-contas")} />}
+            {currentView === "visto" && <ProcessosVisto onBack={() => handleNavigate("dashboard")} onNavigate={handleNavigate} />}
+            {currentView === "novo-visto" && <NovoProcessoVisto onBack={() => handleNavigate("visto")} />}
             {currentView === "fiscalizacao" && <Fiscalizacao onBack={() => handleNavigate("dashboard")} />}
             {currentView === "multas" && <ProcessosMulta onBack={() => handleNavigate("dashboard")} />}
             {currentView === "usuarios" && <Usuarios onBack={() => handleNavigate("dashboard")} />}
             {currentView === "relatorios" && <Relatorios onBack={() => handleNavigate("dashboard")} />}
+            {currentView === "documentos" && <Documentos onBack={() => handleNavigate("dashboard")} />}
+            {currentView === "configuracoes" && <Configuracoes onBack={() => handleNavigate("dashboard")} />}
           </div>
         </main>
       </div>

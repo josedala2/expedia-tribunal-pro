@@ -7,9 +7,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 
 interface ProcessosVistoProps {
   onBack: () => void;
+  onNavigate?: (view: string) => void;
 }
 
-export const ProcessosVisto = ({ onBack }: ProcessosVistoProps) => {
+export const ProcessosVisto = ({ onBack, onNavigate }: ProcessosVistoProps) => {
   const processos = [
     { numero: "PV/2024/001", tipo: "Visto Prévio", entidade: "Ministério das Finanças", valor: "150.000.000 Kz", status: "Aguardando Análise" },
     { numero: "PV/2024/002", tipo: "Visto Sucessivo", entidade: "MINSA", valor: "85.000.000 Kz", status: "Em Análise" },
@@ -31,7 +32,10 @@ export const ProcessosVisto = ({ onBack }: ProcessosVistoProps) => {
             <p className="text-muted-foreground">Controlo prévio e sucessivo de despesas públicas</p>
           </div>
         </div>
-        <Button className="bg-primary hover:bg-primary-hover text-primary-foreground gap-2">
+        <Button 
+          className="bg-primary hover:bg-primary-hover text-primary-foreground gap-2"
+          onClick={() => onNavigate?.("novo-visto")}
+        >
           <Plus className="h-5 w-5" />
           Novo Pedido de Visto
         </Button>

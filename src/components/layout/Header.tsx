@@ -19,30 +19,30 @@ const horizontalMenuItems = [
 
 export const Header = ({ onToggleSidebar, isSidebarOpen, currentView, onNavigate }: HeaderProps) => {
   return (
-    <div className="sticky top-0 z-50 bg-card border-b border-border shadow-sm">
+    <div className="sticky top-0 z-50 bg-card border-b-2 border-border shadow-md">
       {/* Top Bar */}
-      <div className="h-16 bg-card">
-        <div className="h-full px-6 flex items-center justify-between">
-          <div className="flex items-center gap-4">
+      <div className="h-20 bg-card">
+        <div className="h-full px-8 flex items-center justify-between">
+          <div className="flex items-center gap-6">
             <Button
               variant="ghost"
               size="icon"
               onClick={onToggleSidebar}
               className="hover:bg-secondary"
             >
-              <Menu className="h-5 w-5 text-foreground" />
+              <Menu className="h-6 w-6 text-foreground" />
             </Button>
             
-            <div className="flex items-center gap-3">
-              <img src={logoTC} alt="Tribunal de Contas Angola" className="h-10 w-10 object-contain" />
+            <div className="flex items-center gap-4">
+              <img src={logoTC} alt="Tribunal de Contas Angola" className="h-16 w-16 object-contain" />
               <div>
-                <h1 className="text-lg font-bold text-foreground">Tribunal de Contas</h1>
-                <p className="text-xs text-muted-foreground">Sistema Nacional de Gestão de Processos</p>
+                <h1 className="text-xl font-bold text-foreground">Tribunal de Contas</h1>
+                <p className="text-sm text-muted-foreground font-medium">Sistema Nacional de Gestão de Processos</p>
               </div>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
             <Button variant="ghost" size="icon" className="relative hover:bg-secondary">
               <Bell className="h-5 w-5" />
               <span className="absolute top-1 right-1 h-2 w-2 bg-primary rounded-full"></span>
@@ -56,8 +56,8 @@ export const Header = ({ onToggleSidebar, isSidebarOpen, currentView, onNavigate
       </div>
 
       {/* Horizontal Menu */}
-      <nav className="bg-card border-t border-border">
-        <div className="px-6 flex items-center gap-2">
+      <nav className="bg-card border-t border-border h-14">
+        <div className="h-full px-8 flex items-center gap-3">
           {horizontalMenuItems.map((item) => {
             const isActive = currentView === item.id;
             const Icon = item.icon;
@@ -66,11 +66,11 @@ export const Header = ({ onToggleSidebar, isSidebarOpen, currentView, onNavigate
                 key={item.id}
                 onClick={() => onNavigate(item.id)}
                 className={`
-                  px-4 py-3 text-sm font-medium transition-all
-                  flex items-center gap-2 border-b-2
+                  px-5 py-3 text-sm font-bold transition-all
+                  flex items-center gap-2 border-b-3 h-full
                   ${isActive 
-                    ? 'border-primary text-primary' 
-                    : 'border-transparent text-muted-foreground hover:text-foreground'
+                    ? 'border-primary text-primary bg-primary/5' 
+                    : 'border-transparent text-muted-foreground hover:text-foreground hover:bg-secondary/50'
                   }
                 `}
               >

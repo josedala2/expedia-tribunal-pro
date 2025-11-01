@@ -21,7 +21,7 @@ export const Sidebar = ({ isOpen, currentView, onNavigate }: SidebarProps) => {
   return (
     <aside
       className={cn(
-        "fixed left-0 top-[7.5rem] h-[calc(100vh-7.5rem)] bg-card border-r border-border transition-all duration-300 z-40",
+        "fixed left-0 top-[8.5rem] h-[calc(100vh-8.5rem)] bg-card border-r border-border transition-all duration-300 z-40 shadow-sm",
         isOpen ? "w-64" : "w-0 -translate-x-full"
       )}
     >
@@ -36,9 +36,9 @@ export const Sidebar = ({ isOpen, currentView, onNavigate }: SidebarProps) => {
                 key={item.id}
                 onClick={() => onNavigate(item.id)}
                 className={cn(
-                  "w-full flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all text-left text-sm",
+                  "w-full flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all text-left text-sm font-bold",
                   isActive 
-                    ? "bg-primary/10 text-primary font-medium" 
+                    ? "bg-primary/10 text-primary" 
                     : "text-muted-foreground hover:bg-secondary hover:text-foreground"
                 )}
               >

@@ -7,9 +7,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 
 interface PrestacaoContasProps {
   onBack: () => void;
+  onNavigate?: (view: string) => void;
 }
 
-export const PrestacaoContas = ({ onBack }: PrestacaoContasProps) => {
+export const PrestacaoContas = ({ onBack, onNavigate }: PrestacaoContasProps) => {
   const processos = [
     { numero: "PC/2024/001", entidade: "Ministério da Educação", exercicio: "2023", status: "Em Análise", prazo: "30 dias" },
     { numero: "PC/2024/002", entidade: "Governação Provincial de Luanda", exercicio: "2023", status: "Pendente", prazo: "45 dias" },
@@ -28,7 +29,10 @@ export const PrestacaoContas = ({ onBack }: PrestacaoContasProps) => {
             <p className="text-muted-foreground">Gestão de processos de prestação de contas</p>
           </div>
         </div>
-        <Button className="bg-primary hover:bg-primary-hover text-primary-foreground gap-2">
+        <Button 
+          className="bg-primary hover:bg-primary-hover text-primary-foreground gap-2"
+          onClick={() => onNavigate?.("novo-prestacao")}
+        >
           <Plus className="h-5 w-5" />
           Novo Processo
         </Button>
