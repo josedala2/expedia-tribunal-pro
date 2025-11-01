@@ -22,8 +22,8 @@ export const Header = ({ onToggleSidebar, isSidebarOpen, currentView, onNavigate
     <div className="sticky top-0 z-50 bg-card border-b-2 border-border shadow-md">
       {/* Top Bar */}
       <div className="h-44 bg-card">
-        <div className="h-full px-10 flex items-center justify-between">
-          <div className="flex items-center gap-10">
+        <div className="h-full px-4 flex items-center justify-between">
+          <div className="flex items-center gap-4">
             <Button
               variant="ghost"
               size="icon"
@@ -33,7 +33,7 @@ export const Header = ({ onToggleSidebar, isSidebarOpen, currentView, onNavigate
               <Menu className="h-10 w-10 text-foreground" />
             </Button>
             
-            <div className="flex items-center gap-6">
+            <div className="flex items-center gap-3">
               <img src={logoTC} alt="Tribunal de Contas Angola" className="h-32 w-32 object-contain" />
               <div>
                 <h1 className="text-3xl font-bold text-foreground">Tribunal de Contas</h1>
@@ -42,7 +42,7 @@ export const Header = ({ onToggleSidebar, isSidebarOpen, currentView, onNavigate
             </div>
           </div>
 
-          <div className="flex items-center gap-5">
+          <div className="flex items-center gap-3">
             <Button variant="ghost" size="icon" className="relative hover:bg-secondary h-16 w-16">
               <Bell className="h-8 w-8" />
               <span className="absolute top-1.5 right-1.5 h-3 w-3 bg-primary rounded-full"></span>
