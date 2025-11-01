@@ -18,8 +18,11 @@ import { DetalheProcessoPrestacao } from "@/pages/DetalheProcessoPrestacao";
 import { NovoProcessoVisto } from "@/pages/NovoProcessoVisto";
 import { Documentos } from "@/pages/Documentos";
 import { Configuracoes } from "@/pages/Configuracoes";
+import { DetalheProcessoVisto } from "@/pages/DetalheProcessoVisto";
+import { DetalheFiscalizacao } from "@/pages/DetalheFiscalizacao";
+import { DetalheProcessoMulta } from "@/pages/DetalheProcessoMulta";
 
-type View = "dashboard" | "processes" | "process-detail" | "prestacao-contas" | "visto" | "fiscalizacao" | "multas" | "usuarios" | "relatorios" | "documentos" | "configuracoes" | "expedientes" | "novo-expediente" | "detalhe-expediente" | "novo-prestacao" | "detalhe-prestacao" | "novo-visto";
+type View = "dashboard" | "processes" | "process-detail" | "prestacao-contas" | "visto" | "fiscalizacao" | "multas" | "usuarios" | "relatorios" | "documentos" | "configuracoes" | "expedientes" | "novo-expediente" | "detalhe-expediente" | "novo-prestacao" | "detalhe-prestacao" | "novo-visto" | "detalhe-visto" | "detalhe-fiscalizacao" | "detalhe-multa";
 
 const Index = () => {
   const [currentView, setCurrentView] = useState<View>("dashboard");
@@ -71,8 +74,11 @@ const Index = () => {
             {currentView === "detalhe-prestacao" && <DetalheProcessoPrestacao onBack={() => handleNavigate("prestacao-contas")} />}
             {currentView === "visto" && <ProcessosVisto onBack={() => handleNavigate("dashboard")} onNavigate={handleNavigate} />}
             {currentView === "novo-visto" && <NovoProcessoVisto onBack={() => handleNavigate("visto")} />}
-            {currentView === "fiscalizacao" && <Fiscalizacao onBack={() => handleNavigate("dashboard")} />}
-            {currentView === "multas" && <ProcessosMulta onBack={() => handleNavigate("dashboard")} />}
+            {currentView === "detalhe-visto" && <DetalheProcessoVisto onBack={() => handleNavigate("visto")} />}
+            {currentView === "fiscalizacao" && <Fiscalizacao onBack={() => handleNavigate("dashboard")} onNavigate={handleNavigate} />}
+            {currentView === "detalhe-fiscalizacao" && <DetalheFiscalizacao onBack={() => handleNavigate("fiscalizacao")} />}
+            {currentView === "multas" && <ProcessosMulta onBack={() => handleNavigate("dashboard")} onNavigate={handleNavigate} />}
+            {currentView === "detalhe-multa" && <DetalheProcessoMulta onBack={() => handleNavigate("multas")} />}
             {currentView === "usuarios" && <Usuarios onBack={() => handleNavigate("dashboard")} />}
             {currentView === "relatorios" && <Relatorios onBack={() => handleNavigate("dashboard")} />}
             {currentView === "documentos" && <Documentos onBack={() => handleNavigate("dashboard")} />}

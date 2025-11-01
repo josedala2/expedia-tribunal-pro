@@ -103,7 +103,12 @@ export const ProcessosVisto = ({ onBack, onNavigate }: ProcessosVistoProps) => {
                   </Badge>
                 </TableCell>
                 <TableCell>
-                  <Button variant="outline" size="sm" className="text-accent border-accent hover:bg-accent/10">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="text-accent border-accent hover:bg-accent/10"
+                    onClick={() => onNavigate?.("detalhe-visto")}
+                  >
                     Ver Detalhes
                   </Button>
                 </TableCell>

@@ -7,9 +7,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 
 interface ProcessosMultaProps {
   onBack: () => void;
+  onNavigate?: (view: string) => void;
 }
 
-export const ProcessosMulta = ({ onBack }: ProcessosMultaProps) => {
+export const ProcessosMulta = ({ onBack, onNavigate }: ProcessosMultaProps) => {
   const processos = [
     { numero: "PM/2024/001", entidade: "Empresa Municipal X", infracoes: "Irregularidades Contabilísticas", valor: "5.000.000 Kz", status: "Notificado" },
     { numero: "PM/2024/002", entidade: "Instituto Y", infracoes: "Atraso na Prestação de Contas", valor: "2.500.000 Kz", status: "Em Análise" },
@@ -95,7 +96,12 @@ export const ProcessosMulta = ({ onBack }: ProcessosMultaProps) => {
                   </Badge>
                 </TableCell>
                 <TableCell>
-                  <Button variant="outline" size="sm" className="text-accent border-accent hover:bg-accent/10">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="text-accent border-accent hover:bg-accent/10"
+                    onClick={() => onNavigate?.("detalhe-multa")}
+                  >
                     Ver Detalhes
                   </Button>
                 </TableCell>

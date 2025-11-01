@@ -7,9 +7,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 
 interface FiscalizacaoProps {
   onBack: () => void;
+  onNavigate?: (view: string) => void;
 }
 
-export const Fiscalizacao = ({ onBack }: FiscalizacaoProps) => {
+export const Fiscalizacao = ({ onBack, onNavigate }: FiscalizacaoProps) => {
   const processos = [
     { numero: "FOGE/2024/001", orgao: "Ministério da Saúde", programa: "Programa Nacional de Saúde", status: "Em Fiscalização", auditor: "Dr. João Silva" },
     { numero: "FOGE/2024/002", orgao: "Ministério da Educação", programa: "Expansão Escolar", status: "Relatório Preliminar", auditor: "Dra. Maria Santos" },
@@ -95,7 +96,12 @@ export const Fiscalizacao = ({ onBack }: FiscalizacaoProps) => {
                   </Badge>
                 </TableCell>
                 <TableCell>
-                  <Button variant="outline" size="sm" className="text-accent border-accent hover:bg-accent/10">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="text-accent border-accent hover:bg-accent/10"
+                    onClick={() => onNavigate?.("detalhe-fiscalizacao")}
+                  >
                     Ver Detalhes
                   </Button>
                 </TableCell>
