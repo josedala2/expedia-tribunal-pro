@@ -1,7 +1,19 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { FileText, Download, Eye, Upload } from "lucide-react";
+import { FileText, Download, Eye, Upload, Trash2, Scan } from "lucide-react";
+import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 const documents = [
   {
@@ -49,6 +61,26 @@ const statusColors: Record<string, string> = {
 };
 
 export const ProcessDocuments = () => {
+  const handleUpload = () => {
+    toast.success("Documento anexado com sucesso!");
+  };
+
+  const handleView = (docName: string) => {
+    toast.info(`A visualizar: ${docName}`);
+  };
+
+  const handleDownload = (docName: string) => {
+    toast.success(`A fazer download: ${docName}`);
+  };
+
+  const handleDelete = (docName: string) => {
+    toast.success(`Documento "${docName}" eliminado com sucesso!`);
+  };
+
+  const handleScan = () => {
+    toast.info("A iniciar digitalização...");
+  };
+
   return (
     <Card className="border-border">
       <CardHeader className="flex flex-row items-center justify-between">
@@ -56,10 +88,16 @@ export const ProcessDocuments = () => {
           <CardTitle>Documentos do Processo</CardTitle>
           <p className="text-sm text-muted-foreground mt-1">Todos os documentos anexados</p>
         </div>
-        <Button>
-          <Upload className="mr-2 h-4 w-4" />
-          Anexar Documento
-        </Button>
+        <div className="flex gap-2">
+          <Button onClick={handleScan} variant="outline">
+            <Scan className="mr-2 h-4 w-4" />
+            Digitalizar
+          </Button>
+          <Button onClick={handleUpload}>
+            <Upload className="mr-2 h-4 w-4" />
+            Anexar Documento
+          </Button>
+        </div>
       </CardHeader>
       <CardContent>
         <div className="space-y-3">
@@ -92,12 +130,48 @@ export const ProcessDocuments = () => {
                 <Badge className={statusColors[doc.status]}>
                   {doc.status}
                 </Badge>
-                <Button variant="ghost" size="icon">
+                <Button 
+                  variant="ghost" 
+                  size="icon"
+                  onClick={() => handleView(doc.name)}
+                  title="Visualizar"
+                >
                   <Eye className="h-4 w-4" />
                 </Button>
-                <Button variant="ghost" size="icon">
+                <Button 
+                  variant="ghost" 
+                  size="icon"
+                  onClick={() => handleDownload(doc.name)}
+                  title="Baixar"
+                >
                   <Download className="h-4 w-4" />
                 </Button>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button 
+                      variant="ghost" 
+                      size="icon"
+                      title="Eliminar"
+                      className="text-destructive hover:text-destructive"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Confirmar eliminação</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Tem certeza que deseja eliminar o documento "{doc.name}"? Esta ação não pode ser desfeita.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                      <AlertDialogAction onClick={() => handleDelete(doc.name)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                        Eliminar
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </div>
             </div>
           ))}

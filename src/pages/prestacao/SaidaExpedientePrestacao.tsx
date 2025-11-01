@@ -1,4 +1,24 @@
-import { ArrowLeft, Search, Filter, Send, FileText, CheckCircle, Clock } from "lucide-react";
+import { ArrowLeft, Search, Filter, Send, FileText, CheckCircle, Clock, Eye, Trash2, Edit } from "lucide-react";
+import { toast } from "sonner";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,6 +31,18 @@ interface SaidaExpedientePrestacaoProps {
 }
 
 export const SaidaExpedientePrestacao = ({ onBack, onNavigate }: SaidaExpedientePrestacaoProps) => {
+  const handleView = (id: string) => {
+    toast.info(`A visualizar expediente ${id}`);
+  };
+
+  const handleChangeStatus = (id: string, newStatus: string) => {
+    toast.success(`Estado do expediente ${id} alterado para: ${newStatus}`);
+  };
+
+  const handleDelete = (id: string) => {
+    toast.success(`Expediente ${id} eliminado com sucesso!`);
+  };
+
   const saidas = [
     {
       id: "SE-PC-2024-001",
@@ -183,9 +215,59 @@ export const SaidaExpedientePrestacao = ({ onBack, onNavigate }: SaidaExpediente
                     </div>
                   </TableCell>
                   <TableCell className="text-right">
-                    <Button variant="ghost" size="sm">
-                      <FileText className="h-4 w-4" />
-                    </Button>
+                    <div className="flex items-center justify-end gap-2">
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={() => handleView(saida.id)}
+                        title="Ver detalhes"
+                      >
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="sm" title="Alterar estado">
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="bg-card">
+                          <DropdownMenuLabel>Alterar Estado</DropdownMenuLabel>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem onClick={() => handleChangeStatus(saida.id, "Pendente Assinatura")}>
+                            Pendente Assinatura
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleChangeStatus(saida.id, "Enviado")}>
+                            Enviado
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            title="Eliminar"
+                            className="text-destructive hover:text-destructive"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Confirmar eliminação</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Tem certeza que deseja eliminar o expediente {saida.id}? Esta ação não pode ser desfeita.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => handleDelete(saida.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                              Eliminar
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}
