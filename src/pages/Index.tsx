@@ -35,8 +35,10 @@ import { ExpedienteFiscalizacaoOGE } from "@/pages/fiscalizacao/ExpedienteFiscal
 import { TramitacaoFiscalizacaoOGE } from "@/pages/fiscalizacao/TramitacaoFiscalizacaoOGE";
 import { ParecerTrimestral } from "@/pages/fiscalizacao/ParecerTrimestral";
 import { SaidaExpedienteFiscalizacao } from "@/pages/fiscalizacao/SaidaExpedienteFiscalizacao";
+import CobrancaEmolumentos from "@/pages/CobrancaEmolumentos";
+import NovaGuiaCobranca from "@/pages/NovaGuiaCobranca";
 
-type View = "dashboard" | "processes" | "process-detail" | "prestacao-contas" | "visto" | "fiscalizacao" | "multas" | "usuarios" | "relatorios" | "documentos" | "configuracoes" | "expedientes" | "novo-expediente" | "detalhe-expediente" | "novo-prestacao" | "detalhe-prestacao" | "novo-visto" | "detalhe-visto" | "novo-fiscalizacao" | "detalhe-fiscalizacao" | "detalhe-multa" | "expediente-processual" | "tramitacao-visto" | "cumprimento-despachos" | "saida-expediente-visto" | "expediente-prestacao" | "tramitacao-prestacao" | "cumprimento-despachos-prestacao" | "saida-expediente-prestacao" | "prestacao-soberania" | "expediente-fiscalizacao" | "tramitacao-fiscalizacao" | "parecer-trimestral" | "saida-expediente-fiscalizacao";
+type View = "dashboard" | "processes" | "process-detail" | "prestacao-contas" | "visto" | "fiscalizacao" | "multas" | "usuarios" | "relatorios" | "documentos" | "configuracoes" | "expedientes" | "novo-expediente" | "detalhe-expediente" | "novo-prestacao" | "detalhe-prestacao" | "novo-visto" | "detalhe-visto" | "novo-fiscalizacao" | "detalhe-fiscalizacao" | "detalhe-multa" | "expediente-processual" | "tramitacao-visto" | "cumprimento-despachos" | "saida-expediente-visto" | "expediente-prestacao" | "tramitacao-prestacao" | "cumprimento-despachos-prestacao" | "saida-expediente-prestacao" | "prestacao-soberania" | "expediente-fiscalizacao" | "tramitacao-fiscalizacao" | "parecer-trimestral" | "saida-expediente-fiscalizacao" | "cobranca-emolumentos" | "nova-guia-cobranca";
 
 const Index = () => {
   const [currentView, setCurrentView] = useState<View>("dashboard");
@@ -116,6 +118,8 @@ const Index = () => {
             {currentView === "relatorios" && <Relatorios onBack={() => handleNavigate("dashboard")} />}
             {currentView === "documentos" && <Documentos onBack={() => handleNavigate("dashboard")} />}
             {currentView === "configuracoes" && <Configuracoes onBack={() => handleNavigate("dashboard")} />}
+            {currentView === "cobranca-emolumentos" && <CobrancaEmolumentos onNavigate={handleNavigate} />}
+            {currentView === "nova-guia-cobranca" && <NovaGuiaCobranca onBack={() => handleNavigate("cobranca-emolumentos")} />}
           </div>
         </main>
       </div>
