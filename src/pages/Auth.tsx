@@ -28,18 +28,25 @@ export const Auth = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [nomeCompleto, setNomeCompleto] = useState("");
-  const [setupComplete, setSetupComplete] = useState(false);
+  const [isCreatingUsers, setIsCreatingUsers] = useState(false);
 
   useEffect(() => {
-    // Criar usuários mock na primeira renderização
-    const setup = async () => {
-      if (!setupComplete) {
-        await createMockUsers();
-        setSetupComplete(true);
-      }
-    };
-    setup();
-  }, [setupComplete]);
+    // Criar usuários mock apenas uma vez
+    const setupKey = 'mock_users_created';
+    const alreadyCreated = localStorage.getItem(setupKey);
+    
+    if (!alreadyCreated) {
+      const setup = async () => {
+        try {
+          await createMockUsers();
+          localStorage.setItem(setupKey, 'true');
+        } catch (error) {
+          console.error('Erro ao criar usuários:', error);
+        }
+      };
+      setup();
+    }
+  }, []);
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
