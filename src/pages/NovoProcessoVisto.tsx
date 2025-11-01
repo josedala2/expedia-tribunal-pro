@@ -1,4 +1,4 @@
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Save, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -9,15 +9,19 @@ import { useToast } from "@/hooks/use-toast";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { useState } from "react";
 
 const vistoSchema = z.object({
   tipoVisto: z.string().min(1, "Tipo de visto é obrigatório"),
-  entidade: z.string().min(3, "Nome da entidade é obrigatório"),
-  programa: z.string().min(3, "Nome do programa é obrigatório"),
-  valor: z.string().min(1, "Valor é obrigatório"),
-  rubrica: z.string().min(1, "Rubrica orçamental é obrigatória"),
-  fundamentacao: z.string().min(20, "Fundamentação deve ter no mínimo 20 caracteres").max(2000),
-  documentos: z.string().optional(),
+  naturezaVisto: z.string().min(1, "Natureza do visto é obrigatória"),
+  entidadeContratante: z.string().min(1, "Entidade contratante é obrigatória"),
+  entidadeContratada: z.string().min(1, "Entidade contratada é obrigatória"),
+  objeto: z.string().min(1, "Objeto do contrato é obrigatório"),
+  valorContrato: z.string().min(1, "Valor do contrato é obrigatório"),
+  fonteFinanciamento: z.string().min(1, "Fonte de financiamento é obrigatória"),
+  numeroContrato: z.string().optional(),
+  dataContrato: z.string().min(1, "Data do contrato é obrigatória"),
+  observacoes: z.string().optional(),
 });
 
 type VistoForm = z.infer<typeof vistoSchema>;
@@ -28,17 +32,23 @@ interface NovoProcessoVistoProps {
 
 export const NovoProcessoVisto = ({ onBack }: NovoProcessoVistoProps) => {
   const { toast } = useToast();
-  const { register, handleSubmit, formState: { errors }, setValue } = useForm<VistoForm>({
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm<VistoForm>({
     resolver: zodResolver(vistoSchema)
   });
 
   const onSubmit = (data: VistoForm) => {
-    console.log("Processo de visto criado:", data);
-    toast({
-      title: "Pedido de Visto registado!",
-      description: `Processo da entidade ${data.entidade} em análise.`,
-    });
-    onBack();
+    setIsSubmitting(true);
+    console.log("Pedido de visto criado:", data);
+    
+    setTimeout(() => {
+      toast({
+        title: "Pedido de Visto Registado!",
+        description: "O pedido de visto foi registado e será autuado pela Contadoria Geral.",
+      });
+      setIsSubmitting(false);
+      onBack();
+    }, 1500);
   };
 
   return (
@@ -48,13 +58,18 @@ export const NovoProcessoVisto = ({ onBack }: NovoProcessoVistoProps) => {
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Novo Pedido de Visto</h1>
-          <p className="text-muted-foreground">Controlo prévio ou sucessivo de despesas</p>
+          <h1 className="text-3xl font-bold text-foreground flex items-center gap-3">
+            <FileText className="h-8 w-8 text-primary" />
+            Novo Pedido de Visto
+          </h1>
+          <p className="text-muted-foreground">Registo de expediente para pedido de visto prévio ou sucessivo</p>
         </div>
       </div>
 
-      <Card className="p-6">
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <Card className="p-6">
+          <h3 className="text-lg font-semibold mb-4 text-foreground">Tipo e Natureza do Visto</h3>
+          
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <Label htmlFor="tipoVisto">Tipo de Visto *</Label>
@@ -62,91 +77,189 @@ export const NovoProcessoVisto = ({ onBack }: NovoProcessoVistoProps) => {
                 <SelectTrigger>
                   <SelectValue placeholder="Selecione o tipo" />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Visto Prévio">Visto Prévio</SelectItem>
-                  <SelectItem value="Visto Sucessivo">Visto Sucessivo</SelectItem>
+                <SelectContent className="bg-card z-50">
+                  <SelectItem value="previo">Visto Prévio</SelectItem>
+                  <SelectItem value="sucessivo">Visto Sucessivo</SelectItem>
                 </SelectContent>
               </Select>
               {errors.tipoVisto && <p className="text-sm text-destructive">{errors.tipoVisto.message}</p>}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="entidade">Entidade Requisitante *</Label>
-              <Input 
-                id="entidade" 
-                {...register("entidade")} 
-                placeholder="Nome da entidade"
-              />
-              {errors.entidade && <p className="text-sm text-destructive">{errors.entidade.message}</p>}
+              <Label htmlFor="naturezaVisto">Natureza do Visto *</Label>
+              <Select onValueChange={(value) => setValue("naturezaVisto", value)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione a natureza" />
+                </SelectTrigger>
+                <SelectContent className="bg-card z-50">
+                  <SelectItem value="normal">Visto Normal (30 dias)</SelectItem>
+                  <SelectItem value="urgencia">Visto Simplificado de Urgência (10 dias)</SelectItem>
+                  <SelectItem value="urgente">Visto de Caráter Urgente (5 dias)</SelectItem>
+                </SelectContent>
+              </Select>
+              {errors.naturezaVisto && <p className="text-sm text-destructive">{errors.naturezaVisto.message}</p>}
             </div>
           </div>
+        </Card>
 
-          <div className="space-y-2">
-            <Label htmlFor="programa">Programa/Projeto *</Label>
-            <Input 
-              id="programa" 
-              {...register("programa")} 
-              placeholder="Nome do programa ou projeto"
-            />
-            {errors.programa && <p className="text-sm text-destructive">{errors.programa.message}</p>}
-          </div>
-
+        <Card className="p-6">
+          <h3 className="text-lg font-semibold mb-4 text-foreground">Partes Contratantes</h3>
+          
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <Label htmlFor="valor">Valor da Despesa (Kz) *</Label>
-              <Input 
-                id="valor" 
-                {...register("valor")} 
-                placeholder="0.00"
-                type="number"
-                step="0.01"
-              />
-              {errors.valor && <p className="text-sm text-destructive">{errors.valor.message}</p>}
+              <Label htmlFor="entidadeContratante">Entidade Contratante (Pública) *</Label>
+              <Select onValueChange={(value) => setValue("entidadeContratante", value)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione a entidade pública" />
+                </SelectTrigger>
+                <SelectContent className="bg-card z-50">
+                  <SelectItem value="min-financas">Ministério das Finanças</SelectItem>
+                  <SelectItem value="min-saude">Ministério da Saúde</SelectItem>
+                  <SelectItem value="min-educacao">Ministério da Educação</SelectItem>
+                  <SelectItem value="min-transportes">Ministério dos Transportes</SelectItem>
+                  <SelectItem value="min-energia">Ministério da Energia e Águas</SelectItem>
+                  <SelectItem value="gov-provincial">Governos Provinciais</SelectItem>
+                  <SelectItem value="admin-municipal">Administrações Municipais</SelectItem>
+                  <SelectItem value="institutos">Institutos Públicos</SelectItem>
+                </SelectContent>
+              </Select>
+              {errors.entidadeContratante && <p className="text-sm text-destructive">{errors.entidadeContratante.message}</p>}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="rubrica">Rubrica Orçamental *</Label>
-              <Input 
-                id="rubrica" 
-                {...register("rubrica")} 
-                placeholder="Ex: 02.01.03"
+              <Label htmlFor="entidadeContratada">Entidade Contratada *</Label>
+              <Input
+                id="entidadeContratada"
+                {...register("entidadeContratada")}
+                placeholder="Nome da empresa ou entidade contratada"
               />
-              {errors.rubrica && <p className="text-sm text-destructive">{errors.rubrica.message}</p>}
+              {errors.entidadeContratada && <p className="text-sm text-destructive">{errors.entidadeContratada.message}</p>}
             </div>
           </div>
+        </Card>
 
+        <Card className="p-6">
+          <h3 className="text-lg font-semibold mb-4 text-foreground">Dados do Contrato</h3>
+          
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <Label htmlFor="objeto">Objeto do Contrato *</Label>
+              <Textarea
+                id="objeto"
+                {...register("objeto")}
+                placeholder="Descreva o objeto do contrato..."
+                className="min-h-[100px]"
+              />
+              {errors.objeto && <p className="text-sm text-destructive">{errors.objeto.message}</p>}
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="space-y-2">
+                <Label htmlFor="valorContrato">Valor do Contrato (Kz) *</Label>
+                <Input
+                  id="valorContrato"
+                  {...register("valorContrato")}
+                  placeholder="Ex: 150.000.000"
+                  type="text"
+                />
+                {errors.valorContrato && <p className="text-sm text-destructive">{errors.valorContrato.message}</p>}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="numeroContrato">Nº do Contrato</Label>
+                <Input
+                  id="numeroContrato"
+                  {...register("numeroContrato")}
+                  placeholder="Ex: CT/2024/001"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="dataContrato">Data do Contrato *</Label>
+                <Input
+                  id="dataContrato"
+                  {...register("dataContrato")}
+                  type="date"
+                />
+                {errors.dataContrato && <p className="text-sm text-destructive">{errors.dataContrato.message}</p>}
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="fonteFinanciamento">Fonte de Financiamento *</Label>
+              <Select onValueChange={(value) => setValue("fonteFinanciamento", value)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione a fonte" />
+                </SelectTrigger>
+                <SelectContent className="bg-card z-50">
+                  <SelectItem value="oge">Orçamento Geral do Estado (OGE)</SelectItem>
+                  <SelectItem value="fundos-autonomos">Fundos Autónomos</SelectItem>
+                  <SelectItem value="cooperacao">Cooperação Internacional</SelectItem>
+                  <SelectItem value="credito-externo">Crédito Externo</SelectItem>
+                  <SelectItem value="receitas-proprias">Receitas Próprias</SelectItem>
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-muted-foreground">
+                A fonte de financiamento determina a divisão competente (1ª ou 2ª Divisão)
+              </p>
+              {errors.fonteFinanciamento && <p className="text-sm text-destructive">{errors.fonteFinanciamento.message}</p>}
+            </div>
+          </div>
+        </Card>
+
+        <Card className="p-6">
+          <h3 className="text-lg font-semibold mb-4 text-foreground">Documentação Anexa</h3>
+          
+          <div className="space-y-4">
+            <div className="border-2 border-dashed border-border rounded-lg p-6 text-center">
+              <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
+              <p className="text-sm text-muted-foreground mb-2">
+                Arraste e solte os documentos aqui ou clique para selecionar
+              </p>
+              <Button type="button" variant="outline" size="sm">
+                Selecionar Documentos
+              </Button>
+            </div>
+            
+            <div className="bg-muted/30 p-4 rounded-lg">
+              <p className="text-sm font-semibold text-foreground mb-2">Documentos Obrigatórios (Check List):</p>
+              <ul className="text-xs text-muted-foreground space-y-1 list-disc list-inside">
+                <li>Ofício de Solicitação de Visto</li>
+                <li>Minuta do Contrato</li>
+                <li>Cabimento Orçamental</li>
+                <li>Proposta Adjudicação / Despacho de Adjudicação</li>
+                <li>Programa de Concurso / Caderno de Encargos</li>
+                <li>Documentos de Habilitação da Empresa</li>
+                <li>Outros documentos específicos conforme o tipo de contrato</li>
+              </ul>
+            </div>
+          </div>
+        </Card>
+
+        <Card className="p-6">
+          <h3 className="text-lg font-semibold mb-4 text-foreground">Observações</h3>
+          
           <div className="space-y-2">
-            <Label htmlFor="fundamentacao">Fundamentação Legal *</Label>
-            <Textarea 
-              id="fundamentacao" 
-              {...register("fundamentacao")} 
-              placeholder="Descreva a fundamentação legal e técnica para a despesa"
-              rows={6}
+            <Label htmlFor="observacoes">Observações Adicionais</Label>
+            <Textarea
+              id="observacoes"
+              {...register("observacoes")}
+              placeholder="Adicione observações relevantes ao pedido..."
+              className="min-h-[80px]"
             />
-            {errors.fundamentacao && <p className="text-sm text-destructive">{errors.fundamentacao.message}</p>}
           </div>
+        </Card>
 
-          <div className="space-y-2">
-            <Label htmlFor="documentos">Documentos Anexos</Label>
-            <Input 
-              id="documentos" 
-              type="file"
-              multiple
-              className="cursor-pointer"
-            />
-            <p className="text-xs text-muted-foreground">Anexe os documentos comprovativos (PDF, DOCX)</p>
-          </div>
-
-          <div className="flex gap-4 justify-end">
-            <Button type="button" variant="outline" onClick={onBack}>
-              Cancelar
-            </Button>
-            <Button type="submit" className="bg-primary hover:bg-primary-hover">
-              Submeter Pedido
-            </Button>
-          </div>
-        </form>
-      </Card>
+        <div className="flex gap-4 justify-end">
+          <Button type="button" variant="outline" onClick={onBack}>
+            Cancelar
+          </Button>
+          <Button type="submit" disabled={isSubmitting} className="gap-2">
+            <Save className="h-4 w-4" />
+            {isSubmitting ? "A Submeter..." : "Submeter Pedido de Visto"}
+          </Button>
+        </div>
+      </form>
     </div>
   );
 };

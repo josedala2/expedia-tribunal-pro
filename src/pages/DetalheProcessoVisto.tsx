@@ -15,54 +15,148 @@ export const DetalheProcessoVisto = ({ onBack }: DetalheProcessoVistoProps) => {
   const processo = {
     numero: "PV/2024/001",
     tipo: "Visto Prévio",
+    natureza: "Visto Normal",
     entidade: "Ministério das Finanças",
+    entidadeContratada: "Empresa ABC, Lda",
     valor: "150.000.000 Kz",
-    responsavel: "Dr. Manuel Costa",
-    status: "Em Análise",
-    prioridade: "Alta",
-    dataAbertura: "20/01/2024",
-    prazo: "15 dias",
-    etapaAtual: "Análise Técnica",
+    objeto: "Aquisição de Equipamentos Informáticos",
+    fonteFinanciamento: "Orçamento Geral do Estado",
+    responsavel: "Escrivão João Silva",
+    juizRelator: "Dra. Maria Santos (Letra A)",
+    juizAdjunto: "Dr. Carlos Mendes (Letra B)",
+    status: "Em Análise Técnica",
+    prioridade: "Normal",
+    prazoVisto: "30 dias",
+    dataAbertura: "15/01/2024",
+    dataVistoTacito: "14/02/2024",
+    divisao: "1ª Divisão",
+    seccao: "Secção de Fiscalização Preventiva",
+    etapaAtual: "Verificação Preliminar",
     tramitacao: [
       {
         id: "1",
-        etapa: "Registo do Pedido",
-        responsavel: "Secretaria de Visto",
+        etapa: "Registo de Entrada",
+        responsavel: "Técnico da SG - Ana Costa",
+        dataInicio: "15/01/2024",
+        dataFim: "15/01/2024",
+        status: "Concluído" as const,
+        decisao: "Aprovado" as const,
+        observacoes: "Expediente registado no sistema. Acta de recebimento emitida ao remetente."
+      },
+      {
+        id: "2",
+        etapa: "Digitalização",
+        responsavel: "Equipe de Digitalização - SG",
+        dataInicio: "16/01/2024",
+        dataFim: "16/01/2024",
+        status: "Concluído" as const,
+        decisao: "Aprovado" as const,
+        observacoes: "Todos os documentos digitalizados e anexados ao sistema."
+      },
+      {
+        id: "3",
+        etapa: "Validação da Secretaria",
+        responsavel: "Chefe da SG - Pedro Alves",
+        dataInicio: "17/01/2024",
+        dataFim: "17/01/2024",
+        status: "Concluído" as const,
+        decisao: "Aprovado" as const,
+        observacoes: "Expediente validado e em conformidade. Remetido à Contadoria Geral."
+      },
+      {
+        id: "4",
+        etapa: "Verificação de Documento",
+        responsavel: "Técnico da CG - Rita Fernandes",
+        dataInicio: "18/01/2024",
+        dataFim: "18/01/2024",
+        status: "Concluído" as const,
+        decisao: "Aprovado" as const,
+        observacoes: "Check List verificada. Todos os documentos necessários presentes."
+      },
+      {
+        id: "5",
+        etapa: "Registo e Autuação do Processo",
+        responsavel: "Escrivão dos Autos - João Silva",
+        dataInicio: "19/01/2024",
+        dataFim: "19/01/2024",
+        status: "Concluído" as const,
+        decisao: "Aprovado" as const,
+        observacoes: "Processo registado com nº PV/2024/001. Juiz Relator (Letra A) e Adjunto (Letra B) atribuídos automaticamente. Divisão: 1ª Divisão. Capa do processo gerada."
+      },
+      {
+        id: "6",
+        etapa: "Divisão Competente",
+        responsavel: "Chefe de Divisão - Eng. Miguel Sousa",
         dataInicio: "20/01/2024",
         dataFim: "20/01/2024",
         status: "Concluído" as const,
         decisao: "Aprovado" as const,
-        observacoes: "Pedido registado com todos os documentos anexados."
+        observacoes: "Processo recebido e encaminhado à Secção de Fiscalização Preventiva."
       },
       {
-        id: "2",
-        etapa: "Verificação de Conformidade Legal",
-        responsavel: "Assessor Jurídico",
+        id: "7",
+        etapa: "Secção Competente",
+        responsavel: "Chefe de Secção - Dra. Paula Santos",
         dataInicio: "21/01/2024",
-        dataFim: "22/01/2024",
+        dataFim: "21/01/2024",
         status: "Concluído" as const,
         decisao: "Aprovado" as const,
-        observacoes: "Pedido em conformidade com a legislação aplicável."
+        observacoes: "Processo distribuído à equipe técnica. Coordenador: Técnico Jurista Carlos Neto."
       },
       {
-        id: "3",
-        etapa: "Análise Técnica",
-        responsavel: "Técnico Superior",
-        dataInicio: "23/01/2024",
+        id: "8",
+        etapa: "Verificação Preliminar",
+        responsavel: "Equipe Técnica (Coordenador: Carlos Neto)",
+        dataInicio: "22/01/2024",
         status: "Em Andamento" as const,
-        observacoes: "Verificação da documentação técnica e financeira."
+        observacoes: "Análise preliminar em curso. Verificação da conformidade legal e técnica do contrato."
       },
       {
-        id: "4",
-        etapa: "Parecer do Chefe de Secção",
-        responsavel: "Chefe de Secção",
+        id: "9",
+        etapa: "Validação do Chefe de Secção",
+        responsavel: "Chefe de Secção - Dra. Paula Santos",
         dataInicio: "",
         status: "Pendente" as const,
       },
       {
-        id: "5",
-        etapa: "Decisão Final",
-        responsavel: "Diretor de Serviços",
+        id: "10",
+        etapa: "Validação do Chefe de Divisão",
+        responsavel: "Chefe de Divisão - Eng. Miguel Sousa",
+        dataInicio: "",
+        status: "Pendente" as const,
+      },
+      {
+        id: "11",
+        etapa: "Controle de Qualidade",
+        responsavel: "DST - Dr. António Lima",
+        dataInicio: "",
+        status: "Pendente" as const,
+      },
+      {
+        id: "12",
+        etapa: "Decisão",
+        responsavel: "Juiz Relator - Dra. Maria Santos",
+        dataInicio: "",
+        status: "Pendente" as const,
+      },
+      {
+        id: "13",
+        etapa: "Cobrança de Emolumentos",
+        responsavel: "CG-SCE - Secção de Custas e Emolumentos",
+        dataInicio: "",
+        status: "Pendente" as const,
+      },
+      {
+        id: "14",
+        etapa: "Despacho Promoção",
+        responsavel: "Ministério Público",
+        dataInicio: "",
+        status: "Pendente" as const,
+      },
+      {
+        id: "15",
+        etapa: "Saída de Expediente",
+        responsavel: "DST - Dr. António Lima",
         dataInicio: "",
         status: "Pendente" as const,
       }
@@ -93,13 +187,13 @@ export const DetalheProcessoVisto = ({ onBack }: DetalheProcessoVistoProps) => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card className="p-4 border-l-4 border-l-primary">
           <div className="flex items-center gap-3">
             <Building className="h-8 w-8 text-primary" />
             <div>
-              <p className="text-sm text-muted-foreground">Entidade</p>
-              <p className="font-semibold text-foreground">{processo.entidade}</p>
+              <p className="text-sm text-muted-foreground">Entidade Contratante</p>
+              <p className="font-semibold text-foreground text-sm">{processo.entidade}</p>
             </div>
           </div>
         </Card>
@@ -108,7 +202,7 @@ export const DetalheProcessoVisto = ({ onBack }: DetalheProcessoVistoProps) => {
           <div className="flex items-center gap-3">
             <DollarSign className="h-8 w-8 text-success" />
             <div>
-              <p className="text-sm text-muted-foreground">Valor</p>
+              <p className="text-sm text-muted-foreground">Valor do Contrato</p>
               <p className="font-semibold text-foreground">{processo.valor}</p>
             </div>
           </div>
@@ -118,8 +212,8 @@ export const DetalheProcessoVisto = ({ onBack }: DetalheProcessoVistoProps) => {
           <div className="flex items-center gap-3">
             <User className="h-8 w-8 text-accent" />
             <div>
-              <p className="text-sm text-muted-foreground">Responsável</p>
-              <p className="font-semibold text-foreground">{processo.responsavel}</p>
+              <p className="text-sm text-muted-foreground">Juiz Relator</p>
+              <p className="font-semibold text-foreground text-sm">{processo.juizRelator}</p>
             </div>
           </div>
         </Card>
@@ -128,8 +222,49 @@ export const DetalheProcessoVisto = ({ onBack }: DetalheProcessoVistoProps) => {
           <div className="flex items-center gap-3">
             <Clock className="h-8 w-8 text-warning" />
             <div>
-              <p className="text-sm text-muted-foreground">Prazo</p>
-              <p className="font-semibold text-foreground">{processo.prazo}</p>
+              <p className="text-sm text-muted-foreground">Visto Tácito</p>
+              <p className="font-semibold text-foreground">{processo.dataVistoTacito}</p>
+            </div>
+          </div>
+        </Card>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card className="p-4">
+          <div className="space-y-2">
+            <div className="flex justify-between">
+              <span className="text-sm text-muted-foreground">Objeto:</span>
+              <span className="text-sm font-medium text-foreground">{processo.objeto}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-sm text-muted-foreground">Natureza:</span>
+              <Badge variant="outline" className="border-primary text-primary">{processo.natureza}</Badge>
+            </div>
+          </div>
+        </Card>
+
+        <Card className="p-4">
+          <div className="space-y-2">
+            <div className="flex justify-between">
+              <span className="text-sm text-muted-foreground">Divisão:</span>
+              <span className="text-sm font-medium text-foreground">{processo.divisao}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-sm text-muted-foreground">Secção:</span>
+              <span className="text-sm font-medium text-foreground text-right">{processo.seccao}</span>
+            </div>
+          </div>
+        </Card>
+
+        <Card className="p-4">
+          <div className="space-y-2">
+            <div className="flex justify-between">
+              <span className="text-sm text-muted-foreground">Juiz Adjunto:</span>
+              <span className="text-sm font-medium text-foreground">{processo.juizAdjunto}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-sm text-muted-foreground">Prazo:</span>
+              <span className="text-sm font-medium text-foreground">{processo.prazoVisto}</span>
             </div>
           </div>
         </Card>

@@ -83,10 +83,15 @@ export const AcaoProcesso = ({ processoId, etapaAtual }: AcaoProcessoProps) => {
               <SelectContent className="bg-card z-50">
                 <SelectItem value="analisar">Analisar Processo</SelectItem>
                 <SelectItem value="distribuir">Distribuir Processo</SelectItem>
+                <SelectItem value="validar">Validar Relatório</SelectItem>
+                <SelectItem value="solicitar-elementos">Solicitar Elementos em Falta</SelectItem>
                 <SelectItem value="aprovar">Aprovar e Avançar</SelectItem>
-                <SelectItem value="solicitar">Solicitar Correção</SelectItem>
-                <SelectItem value="despachar">Despachar</SelectItem>
-                <SelectItem value="rejeitar">Rejeitar Processo</SelectItem>
+                <SelectItem value="concessao-visto">Conceder Visto</SelectItem>
+                <SelectItem value="recusa-visto">Recusar Visto</SelectItem>
+                <SelectItem value="visto-tacito">Declarar Visto Tácito</SelectItem>
+                <SelectItem value="homologar">Homologar Declaração de Conformidade</SelectItem>
+                <SelectItem value="arquivar">Arquivar Processo</SelectItem>
+                <SelectItem value="devolver">Devolver para Aperfeiçoamento</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -99,13 +104,16 @@ export const AcaoProcesso = ({ processoId, etapaAtual }: AcaoProcessoProps) => {
                   <SelectValue placeholder="Selecione o responsável" />
                 </SelectTrigger>
                 <SelectContent className="bg-card z-50">
-                  <SelectItem value="chefe-secao-1">Chefe de Secção - Maria Santos</SelectItem>
-                  <SelectItem value="chefe-secao-2">Chefe de Secção - João Silva</SelectItem>
-                  <SelectItem value="tecnico-1">Técnico - Carlos Mendes</SelectItem>
-                  <SelectItem value="tecnico-2">Técnico - Ana Costa</SelectItem>
+                  <SelectItem value="divisao-1">1ª Divisão - Eng. Miguel Sousa</SelectItem>
+                  <SelectItem value="divisao-2">2ª Divisão - Dra. Paula Santos</SelectItem>
+                  <SelectItem value="seccao-sfp">Secção Fiscalização Preventiva - Dra. Paula Santos</SelectItem>
+                  <SelectItem value="equipe-tecnica-1">Equipe Técnica 1 (Coordenador: Carlos Neto)</SelectItem>
+                  <SelectItem value="equipe-tecnica-2">Equipe Técnica 2 (Coordenador: Rita Fernandes)</SelectItem>
+                  <SelectItem value="tecnico-1">Técnico Jurista - Carlos Neto</SelectItem>
+                  <SelectItem value="tecnico-2">Técnico Superior - Ana Costa</SelectItem>
                   <SelectItem value="tecnico-3">Técnico - Paulo Alves</SelectItem>
-                  <SelectItem value="auditor-1">Auditor - Rita Fernandes</SelectItem>
-                  <SelectItem value="auditor-2">Auditor - Miguel Sousa</SelectItem>
+                  <SelectItem value="dst">DST - Dr. António Lima</SelectItem>
+                  <SelectItem value="juiz-relator">Juiz Relator</SelectItem>
                 </SelectContent>
               </Select>
             </div>
