@@ -8,7 +8,7 @@ import { PrestacaoContas } from "@/pages/PrestacaoContas";
 import { ProcessosVisto } from "@/pages/ProcessosVisto";
 import { Fiscalizacao } from "@/pages/Fiscalizacao";
 import { ProcessosMulta } from "@/pages/ProcessosMulta";
-import { Usuarios } from "@/pages/Usuarios";
+import { UsuariosManagement } from "@/pages/UsuariosManagement";
 import { Relatorios } from "@/pages/Relatorios";
 import { Expedientes } from "@/pages/Expedientes";
 import { NovoExpediente } from "@/pages/NovoExpediente";
@@ -81,7 +81,7 @@ const Index = () => {
             {currentView === "detalhe-fiscalizacao" && <DetalheFiscalizacao onBack={() => handleNavigate("fiscalizacao")} />}
             {currentView === "multas" && <ProcessosMulta onBack={() => handleNavigate("dashboard")} onNavigate={handleNavigate} />}
             {currentView === "detalhe-multa" && <DetalheProcessoMulta onBack={() => handleNavigate("multas")} />}
-            {currentView === "usuarios" && <Usuarios onBack={() => handleNavigate("dashboard")} />}
+            {currentView === "usuarios" && <UsuariosManagement onBack={() => handleNavigate("dashboard")} />}
             {currentView === "relatorios" && <Relatorios onBack={() => handleNavigate("dashboard")} />}
             {currentView === "documentos" && <Documentos onBack={() => handleNavigate("dashboard")} />}
             {currentView === "configuracoes" && <Configuracoes onBack={() => handleNavigate("dashboard")} />}

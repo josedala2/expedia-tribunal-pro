@@ -1,6 +1,8 @@
-import { Menu, Bell, Search, User, Settings, FileText, BarChart3 } from "lucide-react";
+import { Menu, Bell, Search, User, Settings, FileText, BarChart3, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { useAuth } from "@/hooks/useAuth";
 import logoTC from "@/assets/logo-tc.png";
 
 interface HeaderProps {
@@ -18,6 +20,8 @@ const horizontalMenuItems = [
 ];
 
 export const Header = ({ onToggleSidebar, isSidebarOpen, currentView, onNavigate }: HeaderProps) => {
+  const { signOut, user } = useAuth();
+  
   return (
     <div className="sticky top-0 z-50 bg-card border-b-2 border-border shadow-md">
       {/* Top Bar */}
@@ -52,13 +56,29 @@ export const Header = ({ onToggleSidebar, isSidebarOpen, currentView, onNavigate
               <span className="absolute top-1.5 right-1.5 h-3 w-3 bg-primary rounded-full"></span>
             </Button>
             
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="hover:bg-secondary h-16 w-16 border-2 border-border rounded-lg"
-            >
-              <User className="h-8 w-8" />
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="hover:bg-secondary h-16 w-16 border-2 border-border rounded-lg"
+                >
+                  <User className="h-8 w-8" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuLabel>Minha Conta</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem className="text-muted-foreground">
+                  {user?.email}
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={signOut} className="text-destructive cursor-pointer">
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Sair
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </div>
