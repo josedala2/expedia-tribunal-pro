@@ -63,6 +63,8 @@ const menuGroups = [
           { id: "conclusao-autos-cgsfp", label: "Conclusão dos Autos pela CG-SFP" },
           { id: "analise-decisao-juiz", label: "Análise e Decisão do Juiz Relator" },
           { id: "promocao-mp", label: "Promoção do Ministério Público" },
+          { id: "analise-decisao-final-juiz", label: "Análise e Decisão Final do Juiz Relator" },
+          { id: "cumprimento-despacho-adfjr", label: "Cumprimento do Despacho da ADFJR" },
         ]
       },
       { id: "cobranca-emolumentos", label: "Cobrança de Emolumentos", icon: FileText },
