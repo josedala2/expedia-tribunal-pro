@@ -53,8 +53,10 @@ import { AnaliseDecisaoJuizRelator } from "@/pages/visto/AnaliseDecisaoJuizRelat
 import { PromocaoMinisterioPublico } from "@/pages/visto/PromocaoMinisterioPublico";
 import AnaliseDecisaoFinalJuizRelator from "@/pages/visto/AnaliseDecisaoFinalJuizRelator";
 import CumprimentoDespachoADFJR from "@/pages/visto/CumprimentoDespachoADFJR";
+import RecursoOrdinario from "@/pages/visto/RecursoOrdinario";
+import RecursoInconstitucionalidade from "@/pages/visto/RecursoInconstitucionalidade";
 
-type View = "dashboard" | "processes" | "process-detail" | "prestacao-contas" | "visto" | "fiscalizacao" | "multas" | "usuarios" | "relatorios" | "documentos" | "configuracoes" | "comunicacoes-internas" | "expedientes" | "novo-expediente" | "detalhe-expediente" | "novo-prestacao" | "detalhe-prestacao" | "novo-visto" | "detalhe-visto" | "novo-fiscalizacao" | "detalhe-fiscalizacao" | "detalhe-multa" | "expediente-processual" | "tramitacao-visto" | "cumprimento-despachos" | "saida-expediente-visto" | "interposicao-recurso" | "pedido-reducao-emolumentos" | "conclusao-autos-cgsfp" | "analise-decisao-juiz" | "promocao-mp" | "analise-decisao-final-juiz" | "cumprimento-despacho-adfjr" | "expediente-prestacao" | "tramitacao-prestacao" | "cumprimento-despachos-prestacao" | "saida-expediente-prestacao" | "prestacao-soberania" | "expediente-fiscalizacao" | "tramitacao-fiscalizacao" | "parecer-trimestral" | "saida-expediente-fiscalizacao" | "cobranca-emolumentos" | "nova-guia-cobranca" | "despacho-promocao" | "novo-despacho-promocao" | "cumprimento-despachos-geral" | "cumprimento-despacho-detail" | "oficios-remessa" | "novo-oficio-remessa" | "expedientes-saida" | "novo-expediente-saida";
+type View = "dashboard" | "processes" | "process-detail" | "prestacao-contas" | "visto" | "fiscalizacao" | "multas" | "usuarios" | "relatorios" | "documentos" | "configuracoes" | "comunicacoes-internas" | "expedientes" | "novo-expediente" | "detalhe-expediente" | "novo-prestacao" | "detalhe-prestacao" | "novo-visto" | "detalhe-visto" | "novo-fiscalizacao" | "detalhe-fiscalizacao" | "detalhe-multa" | "expediente-processual" | "tramitacao-visto" | "cumprimento-despachos" | "saida-expediente-visto" | "interposicao-recurso" | "pedido-reducao-emolumentos" | "conclusao-autos-cgsfp" | "analise-decisao-juiz" | "promocao-mp" | "analise-decisao-final-juiz" | "cumprimento-despacho-adfjr" | "expediente-prestacao" | "tramitacao-prestacao" | "cumprimento-despachos-prestacao" | "saida-expediente-prestacao" | "prestacao-soberania" | "expediente-fiscalizacao" | "tramitacao-fiscalizacao" | "parecer-trimestral" | "saida-expediente-fiscalizacao" | "cobranca-emolumentos" | "nova-guia-cobranca" | "despacho-promocao" | "novo-despacho-promocao" | "cumprimento-despachos-geral" | "cumprimento-despacho-detail" | "oficios-remessa" | "novo-oficio-remessa" | "expedientes-saida" | "novo-expediente-saida" | "recurso-ordinario" | "recurso-ordinario-registo" | "recurso-ordinario-plenario" | "recurso-ordinario-projeto" | "recurso-ordinario-vista" | "recurso-ordinario-resolucao" | "recurso-ordinario-notificacao" | "recurso-inconstitucionalidade" | "recurso-inconstitucionalidade-apresentacao" | "recurso-inconstitucionalidade-analise";
 
 const Index = () => {
   const [currentView, setCurrentView] = useState<View>("dashboard");
@@ -152,6 +154,16 @@ const Index = () => {
             {currentView === "novo-oficio-remessa" && <NovoOficioRemessa onNavigate={handleNavigate} />}
             {currentView === "expedientes-saida" && <ExpedientesSaida onNavigate={handleNavigate} />}
             {currentView === "novo-expediente-saida" && <NovoExpedienteSaida onNavigate={handleNavigate} />}
+            {currentView === "recurso-ordinario" && <RecursoOrdinario />}
+            {currentView === "recurso-ordinario-registo" && <RecursoOrdinario />}
+            {currentView === "recurso-ordinario-plenario" && <RecursoOrdinario />}
+            {currentView === "recurso-ordinario-projeto" && <RecursoOrdinario />}
+            {currentView === "recurso-ordinario-vista" && <RecursoOrdinario />}
+            {currentView === "recurso-ordinario-resolucao" && <RecursoOrdinario />}
+            {currentView === "recurso-ordinario-notificacao" && <RecursoOrdinario />}
+            {currentView === "recurso-inconstitucionalidade" && <RecursoInconstitucionalidade />}
+            {currentView === "recurso-inconstitucionalidade-apresentacao" && <RecursoInconstitucionalidade />}
+            {currentView === "recurso-inconstitucionalidade-analise" && <RecursoInconstitucionalidade />}
           </div>
         </main>
       </div>

@@ -67,6 +67,30 @@ const menuGroups = [
           { id: "cumprimento-despacho-adfjr", label: "Cumprimento do Despacho da ADFJR" },
         ]
       },
+      { 
+        id: "recurso-ordinario", 
+        label: "Fluxo de Processo Recurso Ordinário", 
+        icon: FileBarChart,
+        submenu: [
+          { id: "recurso-ordinario", label: "Fluxograma de Processo de Recurso Ordinário" },
+          { id: "recurso-ordinario-registo", label: "Registo e Autuação" },
+          { id: "recurso-ordinario-plenario", label: "Plenário da Câmara" },
+          { id: "recurso-ordinario-projeto", label: "Projeto de Acórdão" },
+          { id: "recurso-ordinario-vista", label: "Vista aos Membros do Plenário do Tribunal" },
+          { id: "recurso-ordinario-resolucao", label: "Resolução Plenária (Sub-processo)" },
+          { id: "recurso-ordinario-notificacao", label: "Notificação ao Ministério Público e à Entidade Pública Recorrente" },
+        ]
+      },
+      { 
+        id: "recurso-inconstitucionalidade", 
+        label: "Fluxo de Processo Recurso Inconstitucionalidade", 
+        icon: FileBarChart,
+        submenu: [
+          { id: "recurso-inconstitucionalidade", label: "Fluxograma de Recurso Extraordinário de Inconstitucionalidade" },
+          { id: "recurso-inconstitucionalidade-apresentacao", label: "Apresentação de Recurso de Inconstitucionalidade" },
+          { id: "recurso-inconstitucionalidade-analise", label: "Análise e Decisão do Presidente do Tribunal de Contas" },
+        ]
+      },
       { id: "cobranca-emolumentos", label: "Cobrança de Emolumentos", icon: FileText },
       { id: "despacho-promocao", label: "Despacho de Promoção", icon: FileBarChart },
       { id: "cumprimento-despachos-geral", label: "Cumprimento de Despachos", icon: CheckCircle },
@@ -103,7 +127,7 @@ const menuGroups = [
 
 export const Sidebar = ({ isOpen, currentView, onNavigate }: SidebarProps) => {
   const [expandedGroups, setExpandedGroups] = useState<string[]>(["dashboard-group", "expedientes-group", "prestacao-contas-group", "visto-group", "fiscalizacao-group", "multas-group"]);
-  const [expandedMenus, setExpandedMenus] = useState<string[]>(["prestacao-contas", "visto", "fiscalizacao"]);
+  const [expandedMenus, setExpandedMenus] = useState<string[]>(["prestacao-contas", "visto", "fiscalizacao", "recurso-ordinario", "recurso-inconstitucionalidade"]);
 
   const toggleGroup = (groupId: string) => {
     setExpandedGroups(prev => 
