@@ -47,7 +47,7 @@ export const NovoProcessoMulta = ({ onBack }: NovoProcessoMultaProps) => {
 
   const onSubmit = (data: ProcessoMultaForm) => {
     toast({
-      title: "Processo de Multa Criado",
+      title: "Processo Autónomo de Multa Criado",
       description: `Processo ${data.numeroProcesso} registado com sucesso.`,
     });
     onBack();
@@ -62,7 +62,7 @@ export const NovoProcessoMulta = ({ onBack }: NovoProcessoMultaProps) => {
         <div>
           <h1 className="text-3xl font-bold text-foreground flex items-center gap-3">
             <DollarSign className="h-8 w-8 text-primary" />
-            Novo Processo de Multa
+            Novo Processo Autónomo de Multa
           </h1>
           <p className="text-muted-foreground">Registo de novo processo sancionatório</p>
         </div>

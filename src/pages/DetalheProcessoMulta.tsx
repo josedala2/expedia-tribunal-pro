@@ -14,7 +14,7 @@ interface DetalheProcessoMultaProps {
 export const DetalheProcessoMulta = ({ onBack }: DetalheProcessoMultaProps) => {
   const processo = {
     numero: "PM/2024/001",
-    tipo: "Processo de Multa",
+    tipo: "Processo Autónomo de Multa",
     entidade: "Empresa Municipal X",
     infracoes: "Irregularidades Contabilísticas",
     valorMulta: "5.000.000 Kz",

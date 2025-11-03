@@ -13,7 +13,7 @@ export type TipoProcesso =
   | "Visto Prévio"
   | "Visto Sucessivo"
   | "Fiscalização OGE"
-  | "Multa"
+  | "Autónomo de Multa"
   | "Expediente";
 
 export interface EtapaTramitacao {

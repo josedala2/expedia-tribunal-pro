@@ -27,7 +27,7 @@ export const ProcessosMulta = ({ onBack, onNavigate }: ProcessosMultaProps) => {
           <div>
             <h1 className="text-3xl font-bold text-foreground flex items-center gap-3">
               <DollarSign className="h-8 w-8 text-primary" />
-              Processos de Multa
+              Processos Autónomos de Multa
             </h1>
             <p className="text-muted-foreground">Gestão de processos sancionatórios e aplicação de multas</p>
           </div>
@@ -37,7 +37,7 @@ export const ProcessosMulta = ({ onBack, onNavigate }: ProcessosMultaProps) => {
           onClick={() => onNavigate?.("novo-processo-multa")}
         >
           <Plus className="h-5 w-5" />
-          Novo Processo de Multa
+          Novo Processo Autónomo de Multa
         </Button>
       </div>
 

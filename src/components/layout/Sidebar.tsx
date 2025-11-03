@@ -119,9 +119,9 @@ const menuGroups = [
   },
   {
     id: "multas-group",
-    title: "Processo de Multa",
+    title: "Processo Autónomo de Multa",
     items: [
-      { id: "multas", label: "Processos de Multa", icon: DollarSign },
+      { id: "multas", label: "Processos Autónomos de Multa", icon: DollarSign },
     ]
   },
 ];
