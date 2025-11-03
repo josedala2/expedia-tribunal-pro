@@ -1,6 +1,6 @@
 import { Menu, Bell, User, Settings, FileText, BarChart3, MessagesSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import headerBanner from "@/assets/header-banner.jpeg";
+import headerBanner from "@/assets/header-banner.png";
 
 interface HeaderProps {
   onToggleSidebar: () => void;
