@@ -11,15 +11,15 @@ All colors MUST be HSL.
     --background: 0 0% 98%;
     --foreground: 0 0% 15%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 15%;
+    --card: 220 40% 15%;
+    --card-foreground: 0 0% 100%;
 
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 15%;
 
-    --primary: 210 100% 45%;
-    --primary-foreground: 0 0% 100%;
-    --primary-hover: 210 100% 40%;
+    --primary: 45 95% 55%;
+    --primary-foreground: 0 0% 10%;
+    --primary-hover: 45 95% 50%;
 
     --secondary: 0 0% 96%;
     --secondary-foreground: 0 0% 15%;
@@ -41,7 +41,7 @@ All colors MUST be HSL.
 
     --border: 0 0% 90%;
     --input: 0 0% 90%;
-    --ring: 210 100% 45%;
+    --ring: 45 95% 55%;
 
     --radius: 0.5rem;
     
@@ -65,15 +65,15 @@ All colors MUST be HSL.
     --background: 0 0% 8%;
     --foreground: 0 0% 95%;
 
-    --card: 0 0% 12%;
-    --card-foreground: 0 0% 95%;
+    --card: 220 40% 18%;
+    --card-foreground: 0 0% 100%;
 
     --popover: 0 0% 12%;
     --popover-foreground: 0 0% 95%;
 
-    --primary: 210 100% 50%;
-    --primary-foreground: 0 0% 100%;
-    --primary-hover: 210 100% 55%;
+    --primary: 45 95% 55%;
+    --primary-foreground: 0 0% 10%;
+    --primary-hover: 45 95% 50%;
 
     --secondary: 0 0% 18%;
     --secondary-foreground: 0 0% 95%;
@@ -95,7 +95,7 @@ All colors MUST be HSL.
 
     --border: 0 0% 22%;
     --input: 0 0% 22%;
-    --ring: 210 100% 50%;
+    --ring: 45 95% 55%;
     
     --chart-1: 210 100% 50%;
     --chart-2: 142 70% 50%;
