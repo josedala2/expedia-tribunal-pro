@@ -1,8 +1,10 @@
 import { useState } from "react";
-import { ArrowLeft, Search, Filter, FileText, Calendar, User, AlertCircle, CheckCircle, Clock, Eye, Edit, Trash2, Plus } from "lucide-react";
+import { ArrowLeft, Search, Filter, FileText, Calendar, User, AlertCircle, CheckCircle, Clock, Eye, Edit, Trash2, Plus, DollarSign, Gavel, Scale } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import {
@@ -29,8 +31,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { toast } from "sonner";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { useToast } from "@/hooks/use-toast";
+import { z } from "zod";
 
 interface PedidoReducaoEmolumentosProps {
   onBack: () => void;
@@ -38,26 +41,68 @@ interface PedidoReducaoEmolumentosProps {
 }
 
 export const PedidoReducaoEmolumentos = ({ onBack, onNavigate }: PedidoReducaoEmolumentosProps) => {
+  const { toast } = useToast();
   const [activeForm, setActiveForm] = useState<string | null>(null);
+  const [selectedPedido, setSelectedPedido] = useState<any>(null);
+  const [showViewDialog, setShowViewDialog] = useState(false);
+  
+  const [formData, setFormData] = useState<any>({
+    numeroProcesso: "",
+    entidadeContratada: "",
+    valorEmolumentos: "",
+    valorProposto: "",
+    fundamentacao: "",
+    documentosAnexos: "",
+    observacoes: "",
+    decisao: "",
+    promocao: "",
+  });
 
   const handleView = (id: string) => {
-    console.log("Ver pedido:", id);
+    const pedido = pedidos.find(p => p.id === id);
+    if (pedido) {
+      setSelectedPedido(pedido);
+      setShowViewDialog(true);
+    }
   };
 
   const handleChangeStatus = (id: string, status: string) => {
-    console.log("Mudar status do pedido:", id, "para", status);
-    toast.success("Status alterado com sucesso!");
+    toast({
+      title: "Status alterado",
+      description: `Status alterado para: ${status}`,
+    });
   };
 
   const handleDelete = (id: string) => {
-    console.log("Eliminar pedido:", id);
-    toast.success("Pedido eliminado com sucesso!");
+    toast({
+      title: "Pedido eliminado",
+      description: "O pedido foi eliminado com sucesso.",
+      variant: "destructive",
+    });
   };
 
-  const handleFormSubmit = (data: any) => {
-    console.log("Dados do formulário:", data);
-    toast.success("Formulário submetido com sucesso!");
+  const handleFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    toast({
+      title: "Formulário submetido",
+      description: "Os dados foram registados com sucesso.",
+    });
     setActiveForm(null);
+    setFormData({
+      numeroProcesso: "",
+      entidadeContratada: "",
+      valorEmolumentos: "",
+      valorProposto: "",
+      fundamentacao: "",
+      documentosAnexos: "",
+      observacoes: "",
+      decisao: "",
+      promocao: "",
+    });
+  };
+
+  const handleInputChange = (field: string, value: string) => {
+    setFormData((prev: any) => ({ ...prev, [field]: value }));
   };
 
   // Dados mockados de pedidos
@@ -394,24 +439,545 @@ export const PedidoReducaoEmolumentos = ({ onBack, onNavigate }: PedidoReducaoEm
         </CardContent>
       </Card>
 
-      {/* Placeholder para os diálogos dos formulários */}
+      {/* Formulários */}
       <Dialog open={activeForm !== null} onOpenChange={(open) => !open && setActiveForm(null)}>
-        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>
-              {activeForm === "pedido" && "Pedido de Redução de Emolumentos"}
-              {activeForm === "conclusao" && "Conclusão dos Autos pela CG-SFP"}
-              {activeForm === "analise" && "Análise e Decisão do Juiz Relator"}
-              {activeForm === "promocao" && "Promoção do Ministério Público"}
-              {activeForm === "decisao" && "Análise e Decisão Final do Juiz Relator"}
-              {activeForm === "cumprimento" && "Cumprimento do Despacho"}
+            <DialogTitle className="flex items-center gap-2">
+              {activeForm === "pedido" && (
+                <>
+                  <DollarSign className="h-5 w-5" />
+                  Pedido de Redução de Emolumentos
+                </>
+              )}
+              {activeForm === "conclusao" && (
+                <>
+                  <FileText className="h-5 w-5" />
+                  Conclusão dos Autos pela CG-SFP
+                </>
+              )}
+              {activeForm === "analise" && (
+                <>
+                  <Gavel className="h-5 w-5" />
+                  Análise e Decisão do Juiz Relator
+                </>
+              )}
+              {activeForm === "promocao" && (
+                <>
+                  <Scale className="h-5 w-5" />
+                  Promoção do Ministério Público
+                </>
+              )}
+              {activeForm === "decisao" && (
+                <>
+                  <Gavel className="h-5 w-5" />
+                  Análise e Decisão Final do Juiz Relator
+                </>
+              )}
+              {activeForm === "cumprimento" && (
+                <>
+                  <CheckCircle className="h-5 w-5" />
+                  Cumprimento do Despacho
+                </>
+              )}
             </DialogTitle>
+            <DialogDescription>
+              {activeForm === "pedido" && "Registe o pedido de redução dos emolumentos devidos"}
+              {activeForm === "conclusao" && "Conclusão dos autos para envio ao Juiz Relator"}
+              {activeForm === "analise" && "Análise do pedido e proferimento de decisão"}
+              {activeForm === "promocao" && "Promoção do Ministério Público sobre o pedido"}
+              {activeForm === "decisao" && "Decisão final após análise de toda a documentação"}
+              {activeForm === "cumprimento" && "Cumprimento do despacho proferido"}
+            </DialogDescription>
           </DialogHeader>
-          <div className="p-4">
-            <p className="text-muted-foreground">
-              Formulário para {activeForm} será implementado aqui.
-            </p>
-          </div>
+          
+          <form onSubmit={handleFormSubmit} className="space-y-6">
+            {/* Formulário: Pedido de Redução */}
+            {activeForm === "pedido" && (
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label>Número do Processo *</Label>
+                    <Input
+                      value={formData.numeroProcesso}
+                      onChange={(e) => handleInputChange("numeroProcesso", e.target.value)}
+                      placeholder="Ex: PVST-2024-001"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label>Entidade Contratada *</Label>
+                    <Input
+                      value={formData.entidadeContratada}
+                      onChange={(e) => handleInputChange("entidadeContratada", e.target.value)}
+                      placeholder="Nome da entidade"
+                      required
+                    />
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label>Valor dos Emolumentos (Db) *</Label>
+                    <Input
+                      type="number"
+                      value={formData.valorEmolumentos}
+                      onChange={(e) => handleInputChange("valorEmolumentos", e.target.value)}
+                      placeholder="15000.00"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label>Valor Proposto (Db) *</Label>
+                    <Input
+                      type="number"
+                      value={formData.valorProposto}
+                      onChange={(e) => handleInputChange("valorProposto", e.target.value)}
+                      placeholder="7500.00"
+                      required
+                    />
+                  </div>
+                </div>
+                
+                <div>
+                  <Label>Fundamentação do Pedido *</Label>
+                  <Textarea
+                    value={formData.fundamentacao}
+                    onChange={(e) => handleInputChange("fundamentacao", e.target.value)}
+                    placeholder="Descreva os fundamentos legais e factuais para a redução dos emolumentos..."
+                    rows={6}
+                    required
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {formData.fundamentacao.length}/2000 caracteres
+                  </p>
+                </div>
+                
+                <div>
+                  <Label>Documentos Anexos</Label>
+                  <Textarea
+                    value={formData.documentosAnexos}
+                    onChange={(e) => handleInputChange("documentosAnexos", e.target.value)}
+                    placeholder="Liste os documentos anexados ao pedido..."
+                    rows={3}
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Formulário: Conclusão dos Autos */}
+            {activeForm === "conclusao" && (
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label>Número do Processo *</Label>
+                    <Select onValueChange={(value) => handleInputChange("numeroProcesso", value)}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione o processo" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {pedidos.map((p) => (
+                          <SelectItem key={p.id} value={p.numeroProcesso}>
+                            {p.numeroProcesso} - {p.entidadeContratada}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label>Data de Conclusão *</Label>
+                    <Input type="date" required />
+                  </div>
+                </div>
+                
+                <div>
+                  <Label>Relatório de Conclusão *</Label>
+                  <Textarea
+                    value={formData.observacoes}
+                    onChange={(e) => handleInputChange("observacoes", e.target.value)}
+                    placeholder="Relatório sobre a verificação do pedido e documentação apresentada..."
+                    rows={6}
+                    required
+                  />
+                </div>
+                
+                <div>
+                  <Label>Documentação Verificada</Label>
+                  <div className="space-y-2 mt-2">
+                    <div className="flex items-center gap-2 p-2 bg-muted/50 rounded">
+                      <CheckCircle className="h-4 w-4 text-green-500" />
+                      <span className="text-sm">Pedido de redução devidamente fundamentado</span>
+                    </div>
+                    <div className="flex items-center gap-2 p-2 bg-muted/50 rounded">
+                      <CheckCircle className="h-4 w-4 text-green-500" />
+                      <span className="text-sm">Documentos comprovativos anexados</span>
+                    </div>
+                    <div className="flex items-center gap-2 p-2 bg-muted/50 rounded">
+                      <CheckCircle className="h-4 w-4 text-green-500" />
+                      <span className="text-sm">Guia de cobrança original</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Formulário: Análise do Juiz Relator */}
+            {activeForm === "analise" && (
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label>Número do Processo *</Label>
+                    <Select onValueChange={(value) => handleInputChange("numeroProcesso", value)}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione o processo" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {pedidos.map((p) => (
+                          <SelectItem key={p.id} value={p.numeroProcesso}>
+                            {p.numeroProcesso} - {p.entidadeContratada}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label>Decisão *</Label>
+                    <Select onValueChange={(value) => handleInputChange("decisao", value)} required>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione a decisão" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="deferido_total">Deferido Totalmente</SelectItem>
+                        <SelectItem value="deferido_parcial">Deferido Parcialmente</SelectItem>
+                        <SelectItem value="indeferido">Indeferido</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                
+                {formData.decisao === "deferido_parcial" && (
+                  <div>
+                    <Label>Novo Valor dos Emolumentos (Db) *</Label>
+                    <Input
+                      type="number"
+                      placeholder="10000.00"
+                      required
+                    />
+                  </div>
+                )}
+                
+                <div>
+                  <Label>Fundamentação da Decisão *</Label>
+                  <Textarea
+                    value={formData.fundamentacao}
+                    onChange={(e) => handleInputChange("fundamentacao", e.target.value)}
+                    placeholder="Fundamente a decisão proferida com base nos elementos apresentados..."
+                    rows={8}
+                    required
+                  />
+                </div>
+                
+                <div>
+                  <Label>Observações Adicionais</Label>
+                  <Textarea
+                    value={formData.observacoes}
+                    onChange={(e) => handleInputChange("observacoes", e.target.value)}
+                    placeholder="Observações ou recomendações adicionais..."
+                    rows={3}
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Formulário: Promoção do MP */}
+            {activeForm === "promocao" && (
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label>Número do Processo *</Label>
+                    <Select onValueChange={(value) => handleInputChange("numeroProcesso", value)}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione o processo" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {pedidos.map((p) => (
+                          <SelectItem key={p.id} value={p.numeroProcesso}>
+                            {p.numeroProcesso} - {p.entidadeContratada}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label>Data da Promoção *</Label>
+                    <Input type="date" required />
+                  </div>
+                </div>
+                
+                <div>
+                  <Label>Parecer do Ministério Público *</Label>
+                  <Select onValueChange={(value) => handleInputChange("promocao", value)} required>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione o parecer" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="favoravel">Favorável ao Deferimento</SelectItem>
+                      <SelectItem value="favoravel_parcial">Favorável ao Deferimento Parcial</SelectItem>
+                      <SelectItem value="desfavoravel">Desfavorável ao Deferimento</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div>
+                  <Label>Fundamentação da Promoção *</Label>
+                  <Textarea
+                    value={formData.fundamentacao}
+                    onChange={(e) => handleInputChange("fundamentacao", e.target.value)}
+                    placeholder="Fundamente o parecer do Ministério Público sobre o pedido de redução..."
+                    rows={8}
+                    required
+                  />
+                </div>
+                
+                <div>
+                  <Label>Referências Legais</Label>
+                  <Textarea
+                    value={formData.observacoes}
+                    onChange={(e) => handleInputChange("observacoes", e.target.value)}
+                    placeholder="Cite os diplomas legais e jurisprudência relevantes..."
+                    rows={3}
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Formulário: Decisão Final */}
+            {activeForm === "decisao" && (
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label>Número do Processo *</Label>
+                    <Select onValueChange={(value) => handleInputChange("numeroProcesso", value)}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione o processo" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {pedidos.map((p) => (
+                          <SelectItem key={p.id} value={p.numeroProcesso}>
+                            {p.numeroProcesso} - {p.entidadeContratada}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label>Decisão Final *</Label>
+                    <Select onValueChange={(value) => handleInputChange("decisao", value)} required>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione a decisão" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="deferido_total">Deferido Totalmente</SelectItem>
+                        <SelectItem value="deferido_parcial">Deferido Parcialmente</SelectItem>
+                        <SelectItem value="indeferido">Indeferido</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                
+                {(formData.decisao === "deferido_total" || formData.decisao === "deferido_parcial") && (
+                  <div>
+                    <Label>Valor Final dos Emolumentos (Db) *</Label>
+                    <Input
+                      type="number"
+                      placeholder="Ex: 7500.00"
+                      required
+                    />
+                  </div>
+                )}
+                
+                <div>
+                  <Label>Fundamentação da Decisão Final *</Label>
+                  <Textarea
+                    value={formData.fundamentacao}
+                    onChange={(e) => handleInputChange("fundamentacao", e.target.value)}
+                    placeholder="Fundamente a decisão final considerando todos os elementos do processo, incluindo a promoção do MP..."
+                    rows={8}
+                    required
+                  />
+                </div>
+                
+                <div className="p-4 bg-blue-50 dark:bg-blue-950/30 rounded-lg border border-blue-200 dark:border-blue-900">
+                  <h4 className="font-semibold text-sm mb-2 flex items-center gap-2">
+                    <AlertCircle className="h-4 w-4 text-blue-600" />
+                    Elementos Analisados
+                  </h4>
+                  <ul className="text-sm space-y-1 text-muted-foreground">
+                    <li>• Pedido de redução da entidade contratada</li>
+                    <li>• Relatório de conclusão da CG-SFP</li>
+                    <li>• Decisão inicial do Juiz Relator</li>
+                    <li>• Promoção do Ministério Público</li>
+                  </ul>
+                </div>
+              </div>
+            )}
+
+            {/* Formulário: Cumprimento do Despacho */}
+            {activeForm === "cumprimento" && (
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label>Número do Processo *</Label>
+                    <Select onValueChange={(value) => handleInputChange("numeroProcesso", value)}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione o processo" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {pedidos.map((p) => (
+                          <SelectItem key={p.id} value={p.numeroProcesso}>
+                            {p.numeroProcesso} - {p.entidadeContratada}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label>Data de Cumprimento *</Label>
+                    <Input type="date" required />
+                  </div>
+                </div>
+                
+                <div>
+                  <Label>Tipo de Ação *</Label>
+                  <Select required>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione a ação" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="notificacao">Notificação às Partes</SelectItem>
+                      <SelectItem value="guia_atualizada">Emissão de Guia Atualizada</SelectItem>
+                      <SelectItem value="arquivo">Arquivo do Processo</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div>
+                  <Label>Descrição do Cumprimento *</Label>
+                  <Textarea
+                    value={formData.observacoes}
+                    onChange={(e) => handleInputChange("observacoes", e.target.value)}
+                    placeholder="Descreva as ações executadas para cumprimento do despacho..."
+                    rows={5}
+                    required
+                  />
+                </div>
+                
+                <div>
+                  <Label>Documentos Gerados</Label>
+                  <div className="space-y-2 mt-2">
+                    <div className="flex items-center gap-2 p-2 bg-muted/50 rounded">
+                      <FileText className="h-4 w-4 text-blue-500" />
+                      <span className="text-sm">Ofício de notificação da decisão</span>
+                    </div>
+                    <div className="flex items-center gap-2 p-2 bg-muted/50 rounded">
+                      <FileText className="h-4 w-4 text-blue-500" />
+                      <span className="text-sm">Guia de cobrança atualizada (se aplicável)</span>
+                    </div>
+                    <div className="flex items-center gap-2 p-2 bg-muted/50 rounded">
+                      <FileText className="h-4 w-4 text-blue-500" />
+                      <span className="text-sm">Certidão da decisão</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+            
+            <div className="flex gap-3 pt-4">
+              <Button type="submit" className="flex-1">
+                Submeter Formulário
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setActiveForm(null)}
+                className="flex-1"
+              >
+                Cancelar
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog de Visualização */}
+      <Dialog open={showViewDialog} onOpenChange={setShowViewDialog}>
+        <DialogContent className="max-w-3xl">
+          <DialogHeader>
+            <DialogTitle>Detalhes do Pedido de Redução</DialogTitle>
+            <DialogDescription>
+              {selectedPedido?.numeroProcesso}
+            </DialogDescription>
+          </DialogHeader>
+          {selectedPedido && (
+            <div className="space-y-6">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-xs text-muted-foreground">Número do Processo</Label>
+                  <p className="font-medium">{selectedPedido.numeroProcesso}</p>
+                </div>
+                <div>
+                  <Label className="text-xs text-muted-foreground">Entidade Contratada</Label>
+                  <p className="font-medium">{selectedPedido.entidadeContratada}</p>
+                </div>
+                <div>
+                  <Label className="text-xs text-muted-foreground">Valor dos Emolumentos</Label>
+                  <Badge variant="outline" className="bg-red-500/10 text-red-700 dark:text-red-400 border-red-500/20">
+                    {selectedPedido.valorEmolumentos}
+                  </Badge>
+                </div>
+                <div>
+                  <Label className="text-xs text-muted-foreground">Valor Proposto</Label>
+                  <Badge variant="outline" className="bg-green-500/10 text-green-700 dark:text-green-400 border-green-500/20">
+                    {selectedPedido.valorProposto}
+                  </Badge>
+                </div>
+                <div>
+                  <Label className="text-xs text-muted-foreground">Data de Submissão</Label>
+                  <p className="font-medium">{selectedPedido.dataSubmissao}</p>
+                </div>
+                <div>
+                  <Label className="text-xs text-muted-foreground">Status</Label>
+                  <Badge variant="outline" className={getStatusColor(selectedPedido.status)}>
+                    {selectedPedido.status}
+                  </Badge>
+                </div>
+              </div>
+              
+              <div>
+                <Label className="text-xs text-muted-foreground">Etapa Atual do Processo</Label>
+                <div className="mt-2 p-3 bg-blue-50 dark:bg-blue-950/30 rounded-md">
+                  <p className="text-sm font-medium">{selectedPedido.etapaAtual}</p>
+                </div>
+              </div>
+              
+              <div>
+                <Label className="text-xs text-muted-foreground">Redução Solicitada</Label>
+                <div className="mt-2 p-4 bg-muted/50 rounded-md">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">Percentual de redução:</span>
+                    <span className="text-lg font-bold text-primary">50%</span>
+                  </div>
+                  <div className="flex items-center justify-between mt-2">
+                    <span className="text-sm text-muted-foreground">Economia esperada:</span>
+                    <span className="text-lg font-bold text-green-600">
+                      {(parseFloat(selectedPedido.valorEmolumentos.replace(/[^\d,]/g, '').replace(',', '.')) - 
+                        parseFloat(selectedPedido.valorProposto.replace(/[^\d,]/g, '').replace(',', '.'))).toFixed(2)} Db
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </DialogContent>
       </Dialog>
     </div>
