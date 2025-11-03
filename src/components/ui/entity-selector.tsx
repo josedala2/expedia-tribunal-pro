@@ -20,10 +20,10 @@ export const EntitySelector = ({
   required = false,
   error
 }: EntitySelectorProps) => {
-  const [categoria, setCategoria] = useState<CategoriaEntidade | "">("");
-  const [subcategoria, setSubcategoria] = useState<string>("");
-  const [tutela, setTutela] = useState<string>("");
-  const [entidade, setEntidade] = useState<string>("");
+  const [categoria, setCategoria] = useState<CategoriaEntidade | undefined>(undefined);
+  const [subcategoria, setSubcategoria] = useState<string | undefined>(undefined);
+  const [tutela, setTutela] = useState<string | undefined>(undefined);
+  const [entidade, setEntidade] = useState<string | undefined>(undefined);
 
   // Se já houver um valor, tenta determinar a categoria e entidade
   useEffect(() => {
@@ -71,22 +71,22 @@ export const EntitySelector = ({
 
   const handleCategoriaChange = (newCategoria: string) => {
     setCategoria(newCategoria as CategoriaEntidade);
-    setSubcategoria("");
-    setTutela("");
-    setEntidade("");
+    setSubcategoria(undefined);
+    setTutela(undefined);
+    setEntidade(undefined);
     onChange("");
   };
 
   const handleSubcategoriaChange = (newSubcategoria: string) => {
     setSubcategoria(newSubcategoria);
-    setTutela("");
-    setEntidade("");
+    setTutela(undefined);
+    setEntidade(undefined);
     onChange("");
   };
 
   const handleTutelaChange = (newTutela: string) => {
     setTutela(newTutela);
-    setEntidade("");
+    setEntidade(undefined);
     onChange("");
   };
 
