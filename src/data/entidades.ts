@@ -54,55 +54,180 @@ export const entidadesPorCategoria = {
       },
       "institutos": {
         nome: "Institutos Públicos",
-        entidades: [
-          "Instituto Nacional de Segurança Social (INSS)",
-          "Instituto Nacional de Estatística (INE)",
-          "Instituto Nacional de Saúde Pública",
-          "Instituto de Investigação Científica de Angola (IICA)",
-          "Instituto Nacional de Gestão de Bolsas de Estudo (INAGBE)",
-          "Instituto Nacional de Formação de Quadros (INFQ)",
-          "Instituto Nacional de Meteorologia e Geofísica (INAMET)",
-          "Instituto de Desenvolvimento Agrário de Angola (IDA)",
-          "Instituto Nacional de Investigação Veterinária (INIV)",
-          "Instituto Nacional de Investigação Agrária (INIA)",
-          "Instituto Marítimo e Portuário de Angola (IMPA)",
-          "Instituto Nacional de Aviação Civil (INÁCIA)",
-          "Instituto de Estradas de Angola (INEA)",
-          "Instituto Geográfico e Cadastral de Angola (IGCA)",
-          "Instituto Nacional do Petróleo (INP)",
-          "Instituto Geológico de Angola",
-          "Instituto Nacional de Minas (INAM)",
-          "Instituto de Desenvolvimento Florestal (IDF)",
-          "Instituto Nacional da Qualidade (IANORQ)",
-          "Instituto Nacional de Turismo (INATUR)"
-        ]
+        hasTutelas: true,
+        porTutela: {
+          "MINFIN": {
+            nome: "Ministério das Finanças",
+            entidades: [
+              "Instituto Nacional de Estatística (INE)",
+              "Unidade de Gestão do Sector Empresarial Público (IGAPE)",
+              "Autoridade Tributária / Administração Geral Tributária",
+              "Serviços de Administração Aduaneira"
+            ]
+          },
+          "MAPTSS": {
+            nome: "Ministério da Administração Pública, Trabalho e Segurança Social",
+            entidades: [
+              "Instituto Nacional de Segurança Social (INSS)",
+              "Instituto de Formação Profissional (ENAPP)"
+            ]
+          },
+          "MINSA": {
+            nome: "Ministério da Saúde",
+            entidades: [
+              "Instituto Nacional de Saúde Pública (INSP)",
+              "Instituto Nacional de Alimentação e Nutrição"
+            ]
+          },
+          "MESCTI": {
+            nome: "Ministério do Ensino Superior, Ciência, Tecnologia e Inovação",
+            entidades: [
+              "Instituto de Investigação Científica de Angola (IICA)",
+              "Instituto Nacional de Gestão de Bolsas de Estudo (INAGBE)",
+              "Instituto Nacional de Formação de Quadros (INFQ)",
+              "Instituto Nacional de Estudos e Pesquisa"
+            ]
+          },
+          "MIREMPET": {
+            nome: "Ministério dos Recursos Minerais, Petróleo e Gás",
+            entidades: [
+              "Instituto Nacional do Petróleo (INP)",
+              "Instituto Geológico de Angola",
+              "Instituto Nacional de Minas (INAM)",
+              "Agência Nacional de Petróleo"
+            ]
+          },
+          "MINAGRIF": {
+            nome: "Ministério da Agricultura e Florestas",
+            entidades: [
+              "Instituto de Desenvolvimento Agrário de Angola (IDA)",
+              "Instituto Nacional de Investigação Veterinária (INIV)",
+              "Instituto Nacional de Investigação Agrária (INIA)",
+              "Instituto de Desenvolvimento Florestal (IDF)",
+              "Instituto Nacional de Investigação Agronómica"
+            ]
+          },
+          "MINTRANS": {
+            nome: "Ministério dos Transportes",
+            entidades: [
+              "Instituto Marítimo e Portuário de Angola (IMPA)",
+              "Instituto Nacional de Aviação Civil (INÁCIA)",
+              "Agência Reguladora de Certificação de Carga e Logística de Angola (ARCCLA)"
+            ]
+          },
+          "MINOPUH": {
+            nome: "Ministério das Obras Públicas, Urbanismo e Habitação",
+            entidades: [
+              "Instituto de Estradas de Angola (INEA)",
+              "Instituto Geográfico e Cadastral de Angola (IGCA)",
+              "Instituto Nacional de Habitação",
+              "Empresa Nacional de Estradas"
+            ]
+          },
+          "MEP": {
+            nome: "Ministério da Economia e Planeamento",
+            entidades: [
+              "Instituto Nacional da Qualidade (IANORQ)",
+              "Instituto de Propriedade Industrial (INAPI)"
+            ]
+          },
+          "MINCULTUR": {
+            nome: "Ministério da Cultura e Turismo",
+            entidades: [
+              "Instituto Nacional de Turismo (INATUR)",
+              "Entidade Nacional de Turismo"
+            ]
+          },
+          "MINEA": {
+            nome: "Ministério da Energia e Águas",
+            entidades: [
+              "Instituto Nacional de Meteorologia e Geofísica (INAMET)"
+            ]
+          }
+        }
       },
       "empresas": {
         nome: "Empresas Públicas",
-        entidades: [
-          "Sonangol - Sociedade Nacional de Combustíveis de Angola",
-          "TAAG - Linhas Aéreas de Angola",
-          "ENDE - Empresa Nacional de Distribuição de Electricidade",
-          "Prodel - Empresa de Produção de Electricidade",
-          "EPAL - Empresa Pública de Águas de Luanda",
-          "Angola Telecom",
-          "Multitel",
-          "Correios de Angola",
-          "ENDIAMA - Empresa Nacional de Diamantes de Angola",
-          "FERRANGOL - Caminho de Ferro de Angola",
-          "Porto de Luanda",
-          "ENSA - Empresa Nacional de Seguros de Angola",
-          "BCI - Banco de Comércio e Indústria",
-          "BDA - Banco de Desenvolvimento de Angola",
-          "BPC - Banco de Poupança e Crédito",
-          "GRECIMA - Grémio de Criadores de Gado de Angola",
-          "IFP - Instituto de Fomento Pesqueiro",
-          "EMPA - Empresa de Meios de Pagamento de Angola",
-          "SODIAM - Empresa de Comercialização de Diamantes",
-          "Empresa Portuária de Lobito",
-          "Empresa Portuária do Namibe",
-          "Aeroportos de Angola"
-        ]
+        hasTutelas: true,
+        porTutela: {
+          "MIREMPET": {
+            nome: "Ministério dos Recursos Minerais, Petróleo e Gás",
+            entidades: [
+              "Sonangol - Sociedade Nacional de Combustíveis de Angola",
+              "ENDIAMA - Empresa Nacional de Diamantes de Angola",
+              "SODIAM - Empresa de Comercialização de Diamantes",
+              "Empresa Nacional de Hidrocarbonetos"
+            ]
+          },
+          "MINTRANS": {
+            nome: "Ministério dos Transportes",
+            entidades: [
+              "TAAG - Linhas Aéreas de Angola",
+              "FERRANGOL - Caminho de Ferro de Angola",
+              "ENANA - Empresa Nacional de Navegação Aérea",
+              "Sonair - Empresa de Aviação",
+              "Administração do Porto de Luanda",
+              "Porto de Luanda - Empresa Portuária",
+              "Empresa Portuária de Lobito",
+              "Empresa Portuária do Namibe",
+              "Aeroportos de Angola",
+              "Sociedade Gestora de Aeroportos"
+            ]
+          },
+          "MINEA": {
+            nome: "Ministério da Energia e Águas",
+            entidades: [
+              "ENDE - Empresa Nacional de Distribuição de Electricidade",
+              "Prodel - Empresa de Produção de Electricidade",
+              "EPAL - Empresa Pública de Águas de Luanda",
+              "Empresa Nacional de Águas"
+            ]
+          },
+          "MINFIN": {
+            nome: "Ministério das Finanças",
+            entidades: [
+              "BCI - Banco de Comércio e Indústria",
+              "BDA - Banco de Desenvolvimento de Angola",
+              "BPC - Banco de Poupança e Crédito",
+              "ENSA - Empresa Nacional de Seguros de Angola",
+              "EMPA - Empresa de Meios de Pagamento de Angola"
+            ]
+          },
+          "MINTTICS": {
+            nome: "Ministério das Telecomunicações, Tecnologias de Informação e Comunicação Social",
+            entidades: [
+              "Angola Telecom",
+              "Multitel",
+              "Correios de Angola",
+              "Televisão Pública de Angola (TPA)",
+              "Rádio Nacional de Angola (RNA)"
+            ]
+          },
+          "MINPRM": {
+            nome: "Ministério das Pescas e Recursos Marinhos",
+            entidades: [
+              "IFP - Instituto de Fomento Pesqueiro"
+            ]
+          },
+          "MINAGRIF": {
+            nome: "Ministério da Agricultura e Florestas",
+            entidades: [
+              "GRECIMA - Grémio de Criadores de Gado de Angola"
+            ]
+          },
+          "MAT": {
+            nome: "Ministério da Administração do Território",
+            entidades: [
+              "ELISAL - Empresa Nacional de Saneamento e Limpeza"
+            ]
+          },
+          "MINDCOM": {
+            nome: "Ministério da Indústria e Comércio",
+            entidades: [
+              "Empresa Nacional de Cervejas"
+            ]
+          }
+        }
       }
     }
   },

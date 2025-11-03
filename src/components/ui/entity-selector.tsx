@@ -22,6 +22,7 @@ export const EntitySelector = ({
 }: EntitySelectorProps) => {
   const [categoria, setCategoria] = useState<CategoriaEntidade | "">("");
   const [subcategoria, setSubcategoria] = useState<string>("");
+  const [tutela, setTutela] = useState<string>("");
   const [entidade, setEntidade] = useState<string>("");
 
   // Se já houver um valor, tenta determinar a categoria e entidade
@@ -34,11 +35,26 @@ export const EntitySelector = ({
           // @ts-ignore
           for (const [subKey, subCat] of Object.entries(cat.subcategorias)) {
             // @ts-ignore
-            if (subCat.entidades.includes(value)) {
-              setCategoria(key as CategoriaEntidade);
-              setSubcategoria(subKey);
-              setEntidade(value);
-              return;
+            if (subCat.hasTutelas && subCat.porTutela) {
+              // @ts-ignore
+              for (const [tutKey, tutData] of Object.entries(subCat.porTutela)) {
+                // @ts-ignore
+                if (tutData.entidades.includes(value)) {
+                  setCategoria(key as CategoriaEntidade);
+                  setSubcategoria(subKey);
+                  setTutela(tutKey);
+                  setEntidade(value);
+                  return;
+                }
+              }
+            } else {
+              // @ts-ignore
+              if (subCat.entidades && subCat.entidades.includes(value)) {
+                setCategoria(key as CategoriaEntidade);
+                setSubcategoria(subKey);
+                setEntidade(value);
+                return;
+              }
             }
           }
         } else {
@@ -56,12 +72,20 @@ export const EntitySelector = ({
   const handleCategoriaChange = (newCategoria: string) => {
     setCategoria(newCategoria as CategoriaEntidade);
     setSubcategoria("");
+    setTutela("");
     setEntidade("");
     onChange("");
   };
 
   const handleSubcategoriaChange = (newSubcategoria: string) => {
     setSubcategoria(newSubcategoria);
+    setTutela("");
+    setEntidade("");
+    onChange("");
+  };
+
+  const handleTutelaChange = (newTutela: string) => {
+    setTutela(newTutela);
     setEntidade("");
     onChange("");
   };
@@ -76,6 +100,12 @@ export const EntitySelector = ({
   const hasSubcategories = categoriaData?.hasSubcategories;
   // @ts-ignore
   const subcategorias = categoriaData?.subcategorias;
+  // @ts-ignore
+  const subcategoriaData = subcategoria && subcategorias ? subcategorias[subcategoria] : null;
+  // @ts-ignore
+  const hasTutelas = subcategoriaData?.hasTutelas;
+  // @ts-ignore
+  const porTutela = subcategoriaData?.porTutela;
 
   return (
     <div className="space-y-4">
@@ -117,7 +147,27 @@ export const EntitySelector = ({
         </div>
       )}
 
-      {categoria && ((hasSubcategories && subcategoria) || !hasSubcategories) && (
+      {categoria && hasSubcategories && subcategoria && hasTutelas && (
+        <div className="space-y-2">
+          <Label>
+            Ministério de Tutela {required && "*"}
+          </Label>
+          <Select value={tutela} onValueChange={handleTutelaChange}>
+            <SelectTrigger className="bg-background">
+              <SelectValue placeholder="Selecione o ministério" />
+            </SelectTrigger>
+            <SelectContent className="bg-popover z-50 max-h-[300px]">
+              {Object.entries(porTutela || {}).map(([key, tutData]: [string, any]) => (
+                <SelectItem key={key} value={key}>
+                  {tutData.nome}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
+
+      {categoria && ((hasSubcategories && subcategoria && ((hasTutelas && tutela) || !hasTutelas)) || !hasSubcategories) && (
         <div className="space-y-2">
           <Label>
             {label} {required && "*"}
@@ -128,11 +178,18 @@ export const EntitySelector = ({
             </SelectTrigger>
             <SelectContent className="bg-popover z-50 max-h-[300px]">
               {hasSubcategories && subcategoria 
-                ? subcategorias[subcategoria]?.entidades.map((ent: string) => (
-                    <SelectItem key={ent} value={ent}>
-                      {ent}
-                    </SelectItem>
-                  ))
+                ? (hasTutelas && tutela && porTutela[tutela]
+                    ? porTutela[tutela].entidades.map((ent: string) => (
+                        <SelectItem key={ent} value={ent}>
+                          {ent}
+                        </SelectItem>
+                      ))
+                    : subcategoriaData?.entidades?.map((ent: string) => (
+                        <SelectItem key={ent} value={ent}>
+                          {ent}
+                        </SelectItem>
+                      ))
+                  )
                 : // @ts-ignore
                   categoriaData?.entidades?.map((ent: string) => (
                     <SelectItem key={ent} value={ent}>
