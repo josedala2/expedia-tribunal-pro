@@ -65,6 +65,7 @@ const menuGroups = [
           { id: "promocao-mp", label: "Promoção do Ministério Público" },
           { id: "analise-decisao-final-juiz", label: "Análise e Decisão Final do Juiz Relator" },
           { id: "cumprimento-despacho-adfjr", label: "Cumprimento do Despacho da ADFJR" },
+          { id: "recursos-ativos", label: "Recursos Ativos sobre Decisões" },
         ]
       },
       { 
