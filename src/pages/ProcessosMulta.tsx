@@ -1,4 +1,4 @@
-import { ArrowLeft, Plus, Search, Filter, DollarSign, FileText, Gavel, FileCheck, Eye, HelpCircle } from "lucide-react";
+import { ArrowLeft, Plus, Search, Filter, DollarSign } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -39,49 +39,22 @@ export const ProcessosMulta = ({ onBack, onNavigate }: ProcessosMultaProps) => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="p-6 border-l-4 border-l-accent hover:shadow-lg transition-shadow cursor-pointer" onClick={() => onNavigate?.("multa-notificacao")}>
+        <Card className="p-6 border-l-4 border-l-accent">
           <div className="text-2xl font-bold text-accent">10</div>
           <div className="text-sm text-muted-foreground uppercase">Notificados</div>
         </Card>
-        <Card className="p-6 border-l-4 border-l-primary hover:shadow-lg transition-shadow cursor-pointer" onClick={() => onNavigate?.("multa-contestacao")}>
+        <Card className="p-6 border-l-4 border-l-primary">
           <div className="text-2xl font-bold text-primary">7</div>
           <div className="text-sm text-muted-foreground uppercase">Em Análise</div>
         </Card>
-        <Card className="p-6 border-l-4 border-l-success hover:shadow-lg transition-shadow cursor-pointer" onClick={() => onNavigate?.("multa-pagamento-voluntario")}>
+        <Card className="p-6 border-l-4 border-l-success">
           <div className="text-2xl font-bold text-success">28</div>
           <div className="text-sm text-muted-foreground uppercase">Pagos</div>
         </Card>
-        <Card className="p-6 border-l-4 border-l-destructive hover:shadow-lg transition-shadow cursor-pointer" onClick={() => onNavigate?.("multa-prestacoes")}>
+        <Card className="p-6 border-l-4 border-l-destructive">
           <div className="text-2xl font-bold text-destructive">5</div>
           <div className="text-sm text-muted-foreground uppercase">Em Cobrança</div>
         </Card>
-      </div>
-
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Button variant="outline" className="h-20 flex-col gap-2" onClick={() => onNavigate?.("multa-registo")}>
-          <FileText className="h-6 w-6 text-primary" />
-          <span className="text-sm">Registo e Autuação</span>
-        </Button>
-        <Button variant="outline" className="h-20 flex-col gap-2" onClick={() => onNavigate?.("multa-requerimento")}>
-          <FileText className="h-6 w-6 text-primary" />
-          <span className="text-sm">Requerimento Inicial</span>
-        </Button>
-        <Button variant="outline" className="h-20 flex-col gap-2" onClick={() => onNavigate?.("multa-audiencia")}>
-          <Gavel className="h-6 w-6 text-primary" />
-          <span className="text-sm">Audiência Julgamento</span>
-        </Button>
-        <Button variant="outline" className="h-20 flex-col gap-2" onClick={() => onNavigate?.("multa-acordao")}>
-          <FileCheck className="h-6 w-6 text-primary" />
-          <span className="text-sm">Elaboração Acórdão</span>
-        </Button>
-        <Button variant="outline" className="h-20 flex-col gap-2" onClick={() => onNavigate?.("multa-confianca")}>
-          <Eye className="h-6 w-6 text-primary" />
-          <span className="text-sm">Confiança ao Processo</span>
-        </Button>
-        <Button variant="outline" className="h-20 flex-col gap-2" onClick={() => onNavigate?.("multa-aclaracao")}>
-          <HelpCircle className="h-6 w-6 text-primary" />
-          <span className="text-sm">Pedido de Aclaração</span>
-        </Button>
       </div>
 
       <Card className="p-6">
