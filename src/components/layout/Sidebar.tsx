@@ -60,6 +60,7 @@ const menuGroups = [
           { id: "saida-expediente-visto", label: "Saída de Expediente" },
           { id: "interposicao-recurso", label: "Interposição de Recurso" },
           { id: "pedido-reducao-emolumentos", label: "Pedido de Redução de Emolumentos" },
+          { id: "conclusao-autos-cgsfp", label: "Conclusão dos Autos pela CG-SFP" },
         ]
       },
       { id: "cobranca-emolumentos", label: "Cobrança de Emolumentos", icon: FileText },

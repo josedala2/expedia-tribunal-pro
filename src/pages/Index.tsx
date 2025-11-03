@@ -48,8 +48,9 @@ import ExpedientesSaida from "@/pages/ExpedientesSaida";
 import NovoExpedienteSaida from "@/pages/NovoExpedienteSaida";
 import { InterposicaoRecurso } from "@/pages/visto/InterposicaoRecurso";
 import { PedidoReducaoEmolumentos } from "@/pages/visto/PedidoReducaoEmolumentos";
+import { ConclusaoAutosCGSFP } from "@/pages/visto/ConclusaoAutosCGSFP";
 
-type View = "dashboard" | "processes" | "process-detail" | "prestacao-contas" | "visto" | "fiscalizacao" | "multas" | "usuarios" | "relatorios" | "documentos" | "configuracoes" | "comunicacoes-internas" | "expedientes" | "novo-expediente" | "detalhe-expediente" | "novo-prestacao" | "detalhe-prestacao" | "novo-visto" | "detalhe-visto" | "novo-fiscalizacao" | "detalhe-fiscalizacao" | "detalhe-multa" | "expediente-processual" | "tramitacao-visto" | "cumprimento-despachos" | "saida-expediente-visto" | "interposicao-recurso" | "pedido-reducao-emolumentos" | "expediente-prestacao" | "tramitacao-prestacao" | "cumprimento-despachos-prestacao" | "saida-expediente-prestacao" | "prestacao-soberania" | "expediente-fiscalizacao" | "tramitacao-fiscalizacao" | "parecer-trimestral" | "saida-expediente-fiscalizacao" | "cobranca-emolumentos" | "nova-guia-cobranca" | "despacho-promocao" | "novo-despacho-promocao" | "cumprimento-despachos-geral" | "cumprimento-despacho-detail" | "oficios-remessa" | "novo-oficio-remessa" | "expedientes-saida" | "novo-expediente-saida";
+type View = "dashboard" | "processes" | "process-detail" | "prestacao-contas" | "visto" | "fiscalizacao" | "multas" | "usuarios" | "relatorios" | "documentos" | "configuracoes" | "comunicacoes-internas" | "expedientes" | "novo-expediente" | "detalhe-expediente" | "novo-prestacao" | "detalhe-prestacao" | "novo-visto" | "detalhe-visto" | "novo-fiscalizacao" | "detalhe-fiscalizacao" | "detalhe-multa" | "expediente-processual" | "tramitacao-visto" | "cumprimento-despachos" | "saida-expediente-visto" | "interposicao-recurso" | "pedido-reducao-emolumentos" | "conclusao-autos-cgsfp" | "expediente-prestacao" | "tramitacao-prestacao" | "cumprimento-despachos-prestacao" | "saida-expediente-prestacao" | "prestacao-soberania" | "expediente-fiscalizacao" | "tramitacao-fiscalizacao" | "parecer-trimestral" | "saida-expediente-fiscalizacao" | "cobranca-emolumentos" | "nova-guia-cobranca" | "despacho-promocao" | "novo-despacho-promocao" | "cumprimento-despachos-geral" | "cumprimento-despacho-detail" | "oficios-remessa" | "novo-oficio-remessa" | "expedientes-saida" | "novo-expediente-saida";
 
 const Index = () => {
   const [currentView, setCurrentView] = useState<View>("dashboard");
@@ -113,6 +114,7 @@ const Index = () => {
             {currentView === "saida-expediente-visto" && <SaidaExpedienteProcessoVisto onBack={() => handleNavigate("visto")} onNavigate={handleNavigate} />}
             {currentView === "interposicao-recurso" && <InterposicaoRecurso onBack={() => handleNavigate("visto")} onNavigate={handleNavigate} />}
             {currentView === "pedido-reducao-emolumentos" && <PedidoReducaoEmolumentos onBack={() => handleNavigate("visto")} onNavigate={handleNavigate} />}
+            {currentView === "conclusao-autos-cgsfp" && <ConclusaoAutosCGSFP onBack={() => handleNavigate("visto")} onNavigate={handleNavigate} />}
             {currentView === "expediente-prestacao" && <ExpedientePrestacaoContas onBack={() => handleNavigate("prestacao-contas")} onNavigate={handleNavigate} />}
             {currentView === "tramitacao-prestacao" && <TramitacaoPrestacaoContas onBack={() => handleNavigate("prestacao-contas")} onNavigate={handleNavigate} />}
             {currentView === "cumprimento-despachos-prestacao" && <CumprimentoDespachosPrestacao onBack={() => handleNavigate("prestacao-contas")} onNavigate={handleNavigate} />}
