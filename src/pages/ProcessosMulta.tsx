@@ -32,7 +32,10 @@ export const ProcessosMulta = ({ onBack, onNavigate }: ProcessosMultaProps) => {
             <p className="text-muted-foreground">Gestão de processos sancionatórios e aplicação de multas</p>
           </div>
         </div>
-        <Button className="bg-primary hover:bg-primary-hover text-primary-foreground gap-2">
+        <Button 
+          className="bg-primary hover:bg-primary-hover text-primary-foreground gap-2"
+          onClick={() => onNavigate?.("novo-processo-multa")}
+        >
           <Plus className="h-5 w-5" />
           Novo Processo de Multa
         </Button>
