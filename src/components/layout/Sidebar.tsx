@@ -132,7 +132,7 @@ export const Sidebar = ({ isOpen, currentView, onNavigate }: SidebarProps) => {
       )}
     >
       <div className="h-full overflow-y-auto">
-        <nav className="p-4 pt-6 space-y-3">
+        <nav className="p-4 pt-8 space-y-3">
           {menuGroups.map((group) => {
             const isActive = isGroupActive(group.items);
             const isExpanded = expandedGroups.includes(group.id);
