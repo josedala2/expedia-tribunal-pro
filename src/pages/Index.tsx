@@ -57,8 +57,21 @@ import CumprimentoDespachoADFJR from "@/pages/visto/CumprimentoDespachoADFJR";
 import RecursoOrdinario from "@/pages/visto/RecursoOrdinario";
 import RecursoInconstitucionalidade from "@/pages/visto/RecursoInconstitucionalidade";
 import RecursosAtivos from "@/pages/visto/RecursosAtivos";
+import { DesencadearMulta } from "@/pages/multa/DesencadearMulta";
+import { RequerimentoInicialMulta } from "@/pages/multa/RequerimentoInicialMulta";
+import { NotificacaoDemandado } from "@/pages/multa/NotificacaoDemandado";
+import { PagamentoVoluntarioMulta } from "@/pages/multa/PagamentoVoluntarioMulta";
+import { PagamentoPrestacoes } from "@/pages/multa/PagamentoPrestacoes";
+import { ContestacaoMulta } from "@/pages/multa/ContestacaoMulta";
+import { ConstituicaoAdvogado } from "@/pages/multa/ConstituicaoAdvogado";
+import { ConfiancaProcesso } from "@/pages/multa/ConfiancaProcesso";
+import { AudienciaJulgamentoMulta } from "@/pages/multa/AudienciaJulgamentoMulta";
+import { AcordaoMulta } from "@/pages/multa/AcordaoMulta";
+import { NotificacaoAcordao } from "@/pages/multa/NotificacaoAcordao";
+import { PedidoAclaracao } from "@/pages/multa/PedidoAclaracao";
+import { CobrancaCoerciva } from "@/pages/multa/CobrancaCoerciva";
 
-type View = "dashboard" | "processes" | "process-detail" | "prestacao-contas" | "visto" | "fiscalizacao" | "multas" | "novo-processo-multa" | "usuarios" | "relatorios" | "documentos" | "configuracoes" | "comunicacoes-internas" | "expedientes" | "novo-expediente" | "detalhe-expediente" | "novo-prestacao" | "detalhe-prestacao" | "novo-visto" | "detalhe-visto" | "novo-fiscalizacao" | "detalhe-fiscalizacao" | "detalhe-multa" | "expediente-processual" | "tramitacao-visto" | "cumprimento-despachos" | "saida-expediente-visto" | "interposicao-recurso" | "pedido-reducao-emolumentos" | "conclusao-autos-cgsfp" | "analise-decisao-juiz" | "promocao-mp" | "analise-decisao-final-juiz" | "cumprimento-despacho-adfjr" | "expediente-prestacao" | "tramitacao-prestacao" | "cumprimento-despachos-prestacao" | "saida-expediente-prestacao" | "prestacao-soberania" | "expediente-fiscalizacao" | "tramitacao-fiscalizacao" | "parecer-trimestral" | "saida-expediente-fiscalizacao" | "cobranca-emolumentos" | "nova-guia-cobranca" | "despacho-promocao" | "novo-despacho-promocao" | "cumprimento-despachos-geral" | "cumprimento-despacho-detail" | "oficios-remessa" | "novo-oficio-remessa" | "expedientes-saida" | "novo-expediente-saida" | "recurso-ordinario" | "recurso-ordinario-registo" | "recurso-ordinario-plenario" | "recurso-ordinario-projeto" | "recurso-ordinario-vista" | "recurso-ordinario-resolucao" | "recurso-ordinario-notificacao" | "recurso-inconstitucionalidade" | "recurso-inconstitucionalidade-apresentacao" | "recurso-inconstitucionalidade-analise" | "recursos-ativos";
+type View = "dashboard" | "processes" | "process-detail" | "prestacao-contas" | "visto" | "fiscalizacao" | "multas" | "novo-processo-multa" | "usuarios" | "relatorios" | "documentos" | "configuracoes" | "comunicacoes-internas" | "expedientes" | "novo-expediente" | "detalhe-expediente" | "novo-prestacao" | "detalhe-prestacao" | "novo-visto" | "detalhe-visto" | "novo-fiscalizacao" | "detalhe-fiscalizacao" | "detalhe-multa" | "expediente-processual" | "tramitacao-visto" | "cumprimento-despachos" | "saida-expediente-visto" | "interposicao-recurso" | "pedido-reducao-emolumentos" | "conclusao-autos-cgsfp" | "analise-decisao-juiz" | "promocao-mp" | "analise-decisao-final-juiz" | "cumprimento-despacho-adfjr" | "expediente-prestacao" | "tramitacao-prestacao" | "cumprimento-despachos-prestacao" | "saida-expediente-prestacao" | "prestacao-soberania" | "expediente-fiscalizacao" | "tramitacao-fiscalizacao" | "parecer-trimestral" | "saida-expediente-fiscalizacao" | "cobranca-emolumentos" | "nova-guia-cobranca" | "despacho-promocao" | "novo-despacho-promocao" | "cumprimento-despachos-geral" | "cumprimento-despacho-detail" | "oficios-remessa" | "novo-oficio-remessa" | "expedientes-saida" | "novo-expediente-saida" | "recurso-ordinario" | "recurso-ordinario-registo" | "recurso-ordinario-plenario" | "recurso-ordinario-projeto" | "recurso-ordinario-vista" | "recurso-ordinario-resolucao" | "recurso-ordinario-notificacao" | "recurso-inconstitucionalidade" | "recurso-inconstitucionalidade-apresentacao" | "recurso-inconstitucionalidade-analise" | "recursos-ativos" | "desencadear-multa" | "requerimento-inicial-multa" | "notificacao-demandado" | "pagamento-voluntario-multa" | "pagamento-prestacoes" | "contestacao-multa" | "constituicao-advogado" | "confianca-processo" | "audiencia-julgamento-multa" | "acordao-multa" | "notificacao-acordao" | "pedido-aclaracao" | "cobranca-coerciva";
 
 const Index = () => {
   const [currentView, setCurrentView] = useState<View>("dashboard");
@@ -163,6 +176,19 @@ const Index = () => {
             {currentView === "recurso-inconstitucionalidade-apresentacao" && <RecursoInconstitucionalidade />}
             {currentView === "recurso-inconstitucionalidade-analise" && <RecursoInconstitucionalidade />}
             {currentView === "recursos-ativos" && <RecursosAtivos />}
+            {currentView === "desencadear-multa" && <DesencadearMulta onBack={() => handleNavigate("multas")} onNavigate={handleNavigate} />}
+            {currentView === "requerimento-inicial-multa" && <RequerimentoInicialMulta onBack={() => handleNavigate("multas")} onNavigate={handleNavigate} />}
+            {currentView === "notificacao-demandado" && <NotificacaoDemandado onBack={() => handleNavigate("multas")} onNavigate={handleNavigate} />}
+            {currentView === "pagamento-voluntario-multa" && <PagamentoVoluntarioMulta onBack={() => handleNavigate("multas")} onNavigate={handleNavigate} />}
+            {currentView === "pagamento-prestacoes" && <PagamentoPrestacoes onBack={() => handleNavigate("multas")} onNavigate={handleNavigate} />}
+            {currentView === "contestacao-multa" && <ContestacaoMulta onBack={() => handleNavigate("multas")} onNavigate={handleNavigate} />}
+            {currentView === "constituicao-advogado" && <ConstituicaoAdvogado onBack={() => handleNavigate("multas")} onNavigate={handleNavigate} />}
+            {currentView === "confianca-processo" && <ConfiancaProcesso onBack={() => handleNavigate("multas")} onNavigate={handleNavigate} />}
+            {currentView === "audiencia-julgamento-multa" && <AudienciaJulgamentoMulta onBack={() => handleNavigate("multas")} onNavigate={handleNavigate} />}
+            {currentView === "acordao-multa" && <AcordaoMulta onBack={() => handleNavigate("multas")} onNavigate={handleNavigate} />}
+            {currentView === "notificacao-acordao" && <NotificacaoAcordao onBack={() => handleNavigate("multas")} onNavigate={handleNavigate} />}
+            {currentView === "pedido-aclaracao" && <PedidoAclaracao onBack={() => handleNavigate("multas")} onNavigate={handleNavigate} />}
+            {currentView === "cobranca-coerciva" && <CobrancaCoerciva onBack={() => handleNavigate("multas")} onNavigate={handleNavigate} />}
           </div>
         </main>
       </div>

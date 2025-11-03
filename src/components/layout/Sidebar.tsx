@@ -121,7 +121,27 @@ const menuGroups = [
     id: "multas-group",
     title: "Processo Autónomo de Multa",
     items: [
-      { id: "multas", label: "Processos Autónomos de Multa", icon: DollarSign },
+      { 
+        id: "multas", 
+        label: "Processos Autónomos de Multa", 
+        icon: DollarSign,
+        submenu: [
+          { id: "multas", label: "Processos Autónomos de Multa" },
+          { id: "desencadear-multa", label: "Desencadear Processo" },
+          { id: "requerimento-inicial-multa", label: "Elaboração do Requerimento Inicial" },
+          { id: "notificacao-demandado", label: "Notificação ao Demandado" },
+          { id: "pagamento-voluntario-multa", label: "Pagamento Voluntário" },
+          { id: "pagamento-prestacoes", label: "Pagamento em Prestações" },
+          { id: "contestacao-multa", label: "Pedido de Contestação" },
+          { id: "constituicao-advogado", label: "Constituição de Advogado" },
+          { id: "confianca-processo", label: "Pedido de Confiança ao Processo" },
+          { id: "audiencia-julgamento-multa", label: "Audiência de Julgamento" },
+          { id: "acordao-multa", label: "Resolução/Acórdão" },
+          { id: "notificacao-acordao", label: "Notificação do Acórdão" },
+          { id: "pedido-aclaracao", label: "Pedido de Aclaração" },
+          { id: "cobranca-coerciva", label: "Execução/Cobrança Coerciva" },
+        ]
+      },
     ]
   },
 ];
