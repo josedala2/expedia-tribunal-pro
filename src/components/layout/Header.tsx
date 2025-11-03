@@ -71,7 +71,7 @@ export const Header = ({ onToggleSidebar, isSidebarOpen, currentView, onNavigate
       </div>
 
       {/* Horizontal Menu */}
-      <nav className="bg-card border-t border-border h-16">
+      <nav className="bg-slate-900 border-t border-border h-16">
         <div className="h-full px-10 flex items-center justify-between">
           <div className="flex items-center gap-3">
             {horizontalMenuItemsLeft.map((item) => {
