@@ -31,10 +31,10 @@ export const ProcessChart = () => {
               }}
             />
             <Legend />
-            <Bar dataKey="prestacao" name="Prestação de Contas" fill="hsl(var(--primary))" />
-            <Bar dataKey="visto" name="Visto" fill="hsl(var(--accent))" />
-            <Bar dataKey="fiscalizacao" name="Fiscalização" fill="hsl(var(--success))" />
-            <Bar dataKey="multa" name="Multa" fill="hsl(var(--warning))" />
+            <Bar dataKey="prestacao" name="Prestação de Contas" fill="hsl(217, 91%, 60%)" />
+            <Bar dataKey="visto" name="Visto" fill="hsl(142, 71%, 45%)" />
+            <Bar dataKey="fiscalizacao" name="Fiscalização" fill="hsl(262, 83%, 58%)" />
+            <Bar dataKey="multa" name="Multa" fill="hsl(0, 84%, 60%)" />
           </BarChart>
         </ResponsiveContainer>
       </CardContent>

@@ -2,10 +2,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recharts";
 
 const data = [
-  { name: "Análise Técnica", value: 145, color: "hsl(var(--primary))" },
-  { name: "Validação", value: 98, color: "hsl(var(--accent))" },
-  { name: "Decisão", value: 67, color: "hsl(var(--success))" },
-  { name: "Pendente", value: 32, color: "hsl(var(--destructive))" },
+  { name: "Análise Técnica", value: 145, color: "hsl(217, 91%, 60%)" },
+  { name: "Validação", value: 98, color: "hsl(142, 71%, 45%)" },
+  { name: "Decisão", value: 67, color: "hsl(262, 83%, 58%)" },
+  { name: "Pendente", value: 32, color: "hsl(0, 84%, 60%)" },
 ];
 
 export const ProcessByStatus = () => {
