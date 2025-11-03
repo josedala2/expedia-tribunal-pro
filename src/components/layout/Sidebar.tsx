@@ -58,6 +58,7 @@ const menuGroups = [
           { id: "tramitacao-visto", label: "Tramitação do Processo" },
           { id: "cumprimento-despachos", label: "Cumprimento de Despachos" },
           { id: "saida-expediente-visto", label: "Saída de Expediente" },
+          { id: "interposicao-recurso", label: "Interposição de Recurso" },
         ]
       },
       { id: "cobranca-emolumentos", label: "Cobrança de Emolumentos", icon: FileText },
