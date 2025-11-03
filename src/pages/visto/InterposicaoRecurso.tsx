@@ -1,4 +1,5 @@
-import { ArrowLeft, Search, Filter, FileText, Calendar, User, AlertCircle, CheckCircle, Clock, Eye, Edit, Trash2 } from "lucide-react";
+import { useState } from "react";
+import { ArrowLeft, Search, Filter, FileText, Calendar, User, AlertCircle, CheckCircle, Clock, Eye, Edit, Trash2, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -28,6 +29,14 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { NotificacaoPartesForm } from "./forms/NotificacaoPartesForm";
+import { RececaoRequerimentoForm } from "./forms/RececaoRequerimentoForm";
+import { DecisaoRecursoForm } from "./forms/DecisaoRecursoForm";
+import { PromocaoMPForm } from "./forms/PromocaoMPForm";
+import { ConclusaoAutosForm } from "./forms/ConclusaoAutosForm";
+import { DespachoFinalForm } from "./forms/DespachoFinalForm";
+import { toast } from "sonner";
 
 interface InterposicaoRecursoProps {
   onBack: () => void;
@@ -35,16 +44,26 @@ interface InterposicaoRecursoProps {
 }
 
 export const InterposicaoRecurso = ({ onBack, onNavigate }: InterposicaoRecursoProps) => {
+  const [activeForm, setActiveForm] = useState<string | null>(null);
+
   const handleView = (id: string) => {
     console.log("Ver recurso:", id);
   };
 
   const handleChangeStatus = (id: string, status: string) => {
     console.log("Mudar status do recurso:", id, "para", status);
+    toast.success("Status alterado com sucesso!");
   };
 
   const handleDelete = (id: string) => {
     console.log("Eliminar recurso:", id);
+    toast.success("Recurso eliminado com sucesso!");
+  };
+
+  const handleFormSubmit = (data: any) => {
+    console.log("Dados do formulário:", data);
+    toast.success("Formulário submetido com sucesso!");
+    setActiveForm(null);
   };
 
   // Dados mockados de recursos
@@ -115,7 +134,7 @@ export const InterposicaoRecurso = ({ onBack, onNavigate }: InterposicaoRecursoP
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <div className="flex-1">
-          <h1 className="text-3xl font-bold text-foreground">Interposição de Recurso</h1>
+          <h1 className="text-3xl font-extrabold text-foreground">Interposição de Recurso</h1>
           <p className="text-muted-foreground mt-1">
             Gestão de recursos interpostos sobre decisões de processos de visto
           </p>
@@ -223,14 +242,42 @@ export const InterposicaoRecurso = ({ onBack, onNavigate }: InterposicaoRecursoP
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-wrap gap-2">
-            <Badge variant="outline" className="bg-background">1. Notificação às Partes</Badge>
-            <Badge variant="outline" className="bg-background">2. Receção de Requerimento</Badge>
-            <Badge variant="outline" className="bg-background">3. Decisão</Badge>
-            <Badge variant="outline" className="bg-background">4. Notificação ao MP</Badge>
-            <Badge variant="outline" className="bg-background">5. Despacho de Promoção</Badge>
-            <Badge variant="outline" className="bg-background">6. Conclusão dos Autos</Badge>
-            <Badge variant="outline" className="bg-background">7. Despacho Final</Badge>
+          <div className="space-y-4">
+            <div className="flex flex-wrap gap-2">
+              <Badge variant="outline" className="bg-background">1. Notificação às Partes</Badge>
+              <Badge variant="outline" className="bg-background">2. Receção de Requerimento</Badge>
+              <Badge variant="outline" className="bg-background">3. Decisão</Badge>
+              <Badge variant="outline" className="bg-background">4. Notificação ao MP</Badge>
+              <Badge variant="outline" className="bg-background">5. Despacho de Promoção</Badge>
+              <Badge variant="outline" className="bg-background">6. Conclusão dos Autos</Badge>
+              <Badge variant="outline" className="bg-background">7. Despacho Final</Badge>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+              <Button variant="outline" onClick={() => setActiveForm("notificacao")} className="justify-start">
+                <Plus className="h-4 w-4 mr-2" />
+                Notificação às Partes
+              </Button>
+              <Button variant="outline" onClick={() => setActiveForm("rececao")} className="justify-start">
+                <Plus className="h-4 w-4 mr-2" />
+                Receção de Requerimento
+              </Button>
+              <Button variant="outline" onClick={() => setActiveForm("decisao")} className="justify-start">
+                <Plus className="h-4 w-4 mr-2" />
+                Decisão sobre Recurso
+              </Button>
+              <Button variant="outline" onClick={() => setActiveForm("promocao")} className="justify-start">
+                <Plus className="h-4 w-4 mr-2" />
+                Promoção do MP
+              </Button>
+              <Button variant="outline" onClick={() => setActiveForm("conclusao")} className="justify-start">
+                <Plus className="h-4 w-4 mr-2" />
+                Conclusão dos Autos
+              </Button>
+              <Button variant="outline" onClick={() => setActiveForm("despacho")} className="justify-start">
+                <Plus className="h-4 w-4 mr-2" />
+                Despacho Final
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -357,6 +404,61 @@ export const InterposicaoRecurso = ({ onBack, onNavigate }: InterposicaoRecursoP
           </Table>
         </CardContent>
       </Card>
+
+      {/* Diálogos para os Formulários */}
+      <Dialog open={activeForm === "notificacao"} onOpenChange={(open) => !open && setActiveForm(null)}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Notificação às Partes</DialogTitle>
+          </DialogHeader>
+          <NotificacaoPartesForm onSubmit={handleFormSubmit} onCancel={() => setActiveForm(null)} />
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={activeForm === "rececao"} onOpenChange={(open) => !open && setActiveForm(null)}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Receção de Requerimento</DialogTitle>
+          </DialogHeader>
+          <RececaoRequerimentoForm onSubmit={handleFormSubmit} onCancel={() => setActiveForm(null)} />
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={activeForm === "decisao"} onOpenChange={(open) => !open && setActiveForm(null)}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Decisão sobre Recurso</DialogTitle>
+          </DialogHeader>
+          <DecisaoRecursoForm onSubmit={handleFormSubmit} onCancel={() => setActiveForm(null)} />
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={activeForm === "promocao"} onOpenChange={(open) => !open && setActiveForm(null)}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Promoção do MP</DialogTitle>
+          </DialogHeader>
+          <PromocaoMPForm onSubmit={handleFormSubmit} onCancel={() => setActiveForm(null)} />
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={activeForm === "conclusao"} onOpenChange={(open) => !open && setActiveForm(null)}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Conclusão dos Autos</DialogTitle>
+          </DialogHeader>
+          <ConclusaoAutosForm onSubmit={handleFormSubmit} onCancel={() => setActiveForm(null)} />
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={activeForm === "despacho"} onOpenChange={(open) => !open && setActiveForm(null)}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Despacho Final</DialogTitle>
+          </DialogHeader>
+          <DespachoFinalForm onSubmit={handleFormSubmit} onCancel={() => setActiveForm(null)} />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
