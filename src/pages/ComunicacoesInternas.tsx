@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { AceitarExpedienteDialog } from "@/components/expedientes/AceitarExpedienteDialog";
 
 interface ComunicacoesInternasProps {
   onBack: () => void;
@@ -16,6 +17,8 @@ export const ComunicacoesInternas = ({ onBack }: ComunicacoesInternasProps) => {
   const [expedientes, setExpedientes] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [userProfile, setUserProfile] = useState<any>(null);
+  const [expedienteSelecionado, setExpedienteSelecionado] = useState<any>(null);
+  const [showAceitarDialog, setShowAceitarDialog] = useState(false);
 
   useEffect(() => {
     carregarExpedientes();
@@ -81,6 +84,15 @@ export const ComunicacoesInternas = ({ onBack }: ComunicacoesInternasProps) => {
 
   const formatarData = (dataISO: string) => {
     return new Date(dataISO).toLocaleDateString('pt-BR');
+  };
+
+  const handleAceitarExpediente = (expediente: any) => {
+    setExpedienteSelecionado(expediente);
+    setShowAceitarDialog(true);
+  };
+
+  const handleExpedienteAceito = () => {
+    carregarExpedientes();
   };
 
   return (
@@ -170,6 +182,9 @@ export const ComunicacoesInternas = ({ onBack }: ComunicacoesInternasProps) => {
                         {exp.assinado && (
                           <Badge variant="default" className="bg-green-600">Assinado</Badge>
                         )}
+                        {exp.aceito_destinatario && (
+                          <Badge variant="default" className="bg-blue-600">Aceito</Badge>
+                        )}
                       </div>
                       <div className="space-y-1 text-sm text-muted-foreground">
                         <p><strong>De:</strong> {exp.origem}</p>
@@ -178,9 +193,21 @@ export const ComunicacoesInternas = ({ onBack }: ComunicacoesInternasProps) => {
                         <p><strong>Tipo:</strong> {exp.tipo}</p>
                       </div>
                     </div>
-                    <Button variant="outline" size="sm">
-                      Ver Detalhes
-                    </Button>
+                    <div className="flex gap-2">
+                      {!exp.aceito_destinatario && exp.status !== "Recebido" && (
+                        <Button 
+                          variant="default" 
+                          size="sm"
+                          onClick={() => handleAceitarExpediente(exp)}
+                          className="bg-primary hover:bg-primary-hover"
+                        >
+                          Aceitar Recepção
+                        </Button>
+                      )}
+                      <Button variant="outline" size="sm">
+                        Ver Detalhes
+                      </Button>
+                    </div>
                   </div>
                 </Card>
               ))
@@ -257,6 +284,16 @@ export const ComunicacoesInternas = ({ onBack }: ComunicacoesInternasProps) => {
           </TabsContent>
         </Tabs>
       </Card>
+
+      {/* Dialog para aceitar expediente */}
+      {expedienteSelecionado && (
+        <AceitarExpedienteDialog
+          open={showAceitarDialog}
+          onOpenChange={setShowAceitarDialog}
+          expediente={expedienteSelecionado}
+          onAceito={handleExpedienteAceito}
+        />
+      )}
     </div>
   );
 };

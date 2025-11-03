@@ -16,12 +16,15 @@ export type Database = {
     Tables: {
       expedientes: {
         Row: {
+          aceito_destinatario: boolean | null
           assinado: boolean | null
+          assinatura_destinatario: string | null
           assinatura_digital: string | null
           assunto: string
           atualizado_em: string | null
           criado_em: string | null
           criado_por: string | null
+          data_aceite_destinatario: string | null
           data_assinatura: string | null
           data_recepcao: string | null
           descricao: string
@@ -31,6 +34,7 @@ export type Database = {
           id: string
           local_recepcao: string | null
           natureza: string
+          nome_destinatario_assinatura: string | null
           numero: string
           numero_acta: string | null
           observacoes_acta: string | null
@@ -48,12 +52,15 @@ export type Database = {
           tipo: string
         }
         Insert: {
+          aceito_destinatario?: boolean | null
           assinado?: boolean | null
+          assinatura_destinatario?: string | null
           assinatura_digital?: string | null
           assunto: string
           atualizado_em?: string | null
           criado_em?: string | null
           criado_por?: string | null
+          data_aceite_destinatario?: string | null
           data_assinatura?: string | null
           data_recepcao?: string | null
           descricao: string
@@ -63,6 +70,7 @@ export type Database = {
           id?: string
           local_recepcao?: string | null
           natureza: string
+          nome_destinatario_assinatura?: string | null
           numero: string
           numero_acta?: string | null
           observacoes_acta?: string | null
@@ -80,12 +88,15 @@ export type Database = {
           tipo: string
         }
         Update: {
+          aceito_destinatario?: boolean | null
           assinado?: boolean | null
+          assinatura_destinatario?: string | null
           assinatura_digital?: string | null
           assunto?: string
           atualizado_em?: string | null
           criado_em?: string | null
           criado_por?: string | null
+          data_aceite_destinatario?: string | null
           data_assinatura?: string | null
           data_recepcao?: string | null
           descricao?: string
@@ -95,6 +106,7 @@ export type Database = {
           id?: string
           local_recepcao?: string | null
           natureza?: string
+          nome_destinatario_assinatura?: string | null
           numero?: string
           numero_acta?: string | null
           observacoes_acta?: string | null

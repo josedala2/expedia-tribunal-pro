@@ -23,6 +23,8 @@ export interface ActaRecepcaoInternaData {
   observacoes?: string;
   assinaturaDigital?: string;
   dataAssinatura?: string;
+  assinaturaDestinatario?: string;
+  dataAceiteDestinatario?: string;
 }
 
 interface ActaRecepcaoInternaTemplateProps {
@@ -104,7 +106,17 @@ export const ActaRecepcaoInternaTemplate = ({
             {data.responsavelRecepcaoDepartamento && (
               <p><span className="font-semibold">Departamento:</span> {data.responsavelRecepcaoDepartamento}</p>
             )}
-            <p><span className="font-semibold">Assinatura:</span> _________________________________</p>
+            {data.assinaturaDestinatario ? (
+              <div className="space-y-2">
+                <p className="font-semibold text-green-600">✓ Assinado Digitalmente pelo Destinatário</p>
+                <p className="text-xs text-gray-600">
+                  Data: {data.dataAceiteDestinatario && format(new Date(data.dataAceiteDestinatario), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
+                </p>
+                <p className="text-xs text-gray-500 break-all">Hash: {data.assinaturaDestinatario}</p>
+              </div>
+            ) : (
+              <p><span className="font-semibold">Assinatura:</span> _________________________________</p>
+            )}
           </div>
         </div>
 
