@@ -352,29 +352,46 @@ export const NovoExpediente = ({ onBack }: NovoExpedienteProps) => {
       <Dialog open={showActa} onOpenChange={setShowActa}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Acta de Recepção Gerada</DialogTitle>
+            <DialogTitle>Revisão da Acta de Recepção</DialogTitle>
+            <p className="text-sm text-muted-foreground">
+              Por favor, revise a acta gerada antes de finalizar a criação do expediente
+            </p>
           </DialogHeader>
           
           {actaData && <ActaRecepcaoTemplate data={actaData} />}
           
-          <div className="flex gap-4 justify-end pt-4 border-t print:hidden">
+          <div className="flex gap-4 justify-between pt-4 border-t print:hidden">
             <Button 
               variant="outline" 
               onClick={() => {
                 setShowActa(false);
-                toast({
-                  title: "Expediente criado com sucesso!",
-                  description: "Acta de recepção gerada.",
-                });
-                onBack();
               }}
             >
-              Fechar
+              Voltar e Editar
             </Button>
-            <Button onClick={imprimirActa} className="gap-2">
-              <Printer className="h-4 w-4" />
-              Imprimir Acta
-            </Button>
+            <div className="flex gap-4">
+              <Button 
+                variant="outline"
+                onClick={imprimirActa} 
+                className="gap-2"
+              >
+                <Printer className="h-4 w-4" />
+                Imprimir
+              </Button>
+              <Button 
+                onClick={() => {
+                  setShowActa(false);
+                  toast({
+                    title: "Expediente criado com sucesso!",
+                    description: "Acta de recepção gerada e expediente registado no sistema.",
+                  });
+                  onBack();
+                }}
+                className="bg-primary hover:bg-primary-hover"
+              >
+                Confirmar e Finalizar
+              </Button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
