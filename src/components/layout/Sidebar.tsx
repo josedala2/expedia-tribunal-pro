@@ -61,6 +61,8 @@ const menuGroups = [
           { id: "interposicao-recurso", label: "Interposição de Recurso" },
           { id: "pedido-reducao-emolumentos", label: "Pedido de Redução de Emolumentos" },
           { id: "conclusao-autos-cgsfp", label: "Conclusão dos Autos pela CG-SFP" },
+          { id: "analise-decisao-juiz", label: "Análise e Decisão do Juiz Relator" },
+          { id: "promocao-mp", label: "Promoção do Ministério Público" },
         ]
       },
       { id: "cobranca-emolumentos", label: "Cobrança de Emolumentos", icon: FileText },
