@@ -21,6 +21,7 @@ export const EntitySelector = ({
   error
 }: EntitySelectorProps) => {
   const [categoria, setCategoria] = useState<CategoriaEntidade | "">("");
+  const [subcategoria, setSubcategoria] = useState<string>("");
   const [entidade, setEntidade] = useState<string>("");
 
   // Se já houver um valor, tenta determinar a categoria e entidade
@@ -28,10 +29,25 @@ export const EntitySelector = ({
     if (value && !entidade) {
       // Procura em qual categoria está a entidade
       for (const [key, cat] of Object.entries(entidadesPorCategoria)) {
-        if (cat.entidades.includes(value)) {
-          setCategoria(key as CategoriaEntidade);
-          setEntidade(value);
-          break;
+        // @ts-ignore
+        if (cat.hasSubcategories && cat.subcategorias) {
+          // @ts-ignore
+          for (const [subKey, subCat] of Object.entries(cat.subcategorias)) {
+            // @ts-ignore
+            if (subCat.entidades.includes(value)) {
+              setCategoria(key as CategoriaEntidade);
+              setSubcategoria(subKey);
+              setEntidade(value);
+              return;
+            }
+          }
+        } else {
+          // @ts-ignore
+          if (cat.entidades && cat.entidades.includes(value)) {
+            setCategoria(key as CategoriaEntidade);
+            setEntidade(value);
+            return;
+          }
         }
       }
     }
@@ -39,14 +55,27 @@ export const EntitySelector = ({
 
   const handleCategoriaChange = (newCategoria: string) => {
     setCategoria(newCategoria as CategoriaEntidade);
-    setEntidade(""); // Limpa a entidade quando muda a categoria
-    onChange(""); // Notifica que o valor foi limpo
+    setSubcategoria("");
+    setEntidade("");
+    onChange("");
+  };
+
+  const handleSubcategoriaChange = (newSubcategoria: string) => {
+    setSubcategoria(newSubcategoria);
+    setEntidade("");
+    onChange("");
   };
 
   const handleEntidadeChange = (newEntidade: string) => {
     setEntidade(newEntidade);
     onChange(newEntidade);
   };
+
+  const categoriaData = categoria ? entidadesPorCategoria[categoria] : null;
+  // @ts-ignore
+  const hasSubcategories = categoriaData?.hasSubcategories;
+  // @ts-ignore
+  const subcategorias = categoriaData?.subcategorias;
 
   return (
     <div className="space-y-4">
@@ -68,7 +97,27 @@ export const EntitySelector = ({
         </Select>
       </div>
 
-      {categoria && (
+      {categoria && hasSubcategories && (
+        <div className="space-y-2">
+          <Label>
+            Tipo de Entidade {required && "*"}
+          </Label>
+          <Select value={subcategoria} onValueChange={handleSubcategoriaChange}>
+            <SelectTrigger className="bg-background">
+              <SelectValue placeholder="Selecione o tipo" />
+            </SelectTrigger>
+            <SelectContent className="bg-popover z-50">
+              {Object.entries(subcategorias || {}).map(([key, subCat]: [string, any]) => (
+                <SelectItem key={key} value={key}>
+                  {subCat.nome}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
+
+      {categoria && ((hasSubcategories && subcategoria) || !hasSubcategories) && (
         <div className="space-y-2">
           <Label>
             {label} {required && "*"}
@@ -78,11 +127,19 @@ export const EntitySelector = ({
               <SelectValue placeholder={placeholder} />
             </SelectTrigger>
             <SelectContent className="bg-popover z-50 max-h-[300px]">
-              {entidadesPorCategoria[categoria].entidades.map((ent) => (
-                <SelectItem key={ent} value={ent}>
-                  {ent}
-                </SelectItem>
-              ))}
+              {hasSubcategories && subcategoria 
+                ? subcategorias[subcategoria]?.entidades.map((ent: string) => (
+                    <SelectItem key={ent} value={ent}>
+                      {ent}
+                    </SelectItem>
+                  ))
+                : // @ts-ignore
+                  categoriaData?.entidades?.map((ent: string) => (
+                    <SelectItem key={ent} value={ent}>
+                      {ent}
+                    </SelectItem>
+                  ))
+              }
             </SelectContent>
           </Select>
           {error && <p className="text-sm text-destructive">{error}</p>}
