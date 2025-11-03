@@ -59,6 +59,7 @@ const menuGroups = [
           { id: "cumprimento-despachos", label: "Cumprimento de Despachos" },
           { id: "saida-expediente-visto", label: "Saída de Expediente" },
           { id: "interposicao-recurso", label: "Interposição de Recurso" },
+          { id: "pedido-reducao-emolumentos", label: "Pedido de Redução de Emolumentos" },
         ]
       },
       { id: "cobranca-emolumentos", label: "Cobrança de Emolumentos", icon: FileText },
