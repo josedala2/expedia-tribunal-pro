@@ -85,8 +85,8 @@ export const Header = ({ onToggleSidebar, isSidebarOpen, currentView, onNavigate
                     px-6 py-4 text-sm font-bold transition-all
                     flex items-center gap-2.5 border-b-3 h-full
                     ${isActive 
-                      ? 'border-primary text-primary bg-primary/5' 
-                      : 'border-transparent text-muted-foreground hover:text-foreground hover:bg-secondary/50'
+                      ? 'border-primary text-white bg-primary/5' 
+                      : 'border-transparent text-white hover:text-white/80 hover:bg-secondary/50'
                     }
                   `}
                 >
@@ -109,8 +109,8 @@ export const Header = ({ onToggleSidebar, isSidebarOpen, currentView, onNavigate
                     px-6 py-4 text-sm font-bold transition-all
                     flex items-center gap-2.5 border-b-3 h-full
                     ${isActive 
-                      ? 'border-primary text-primary bg-primary/5' 
-                      : 'border-transparent text-muted-foreground hover:text-foreground hover:bg-secondary/50'
+                      ? 'border-primary text-white bg-primary/5' 
+                      : 'border-transparent text-white hover:text-white/80 hover:bg-secondary/50'
                     }
                   `}
                 >
