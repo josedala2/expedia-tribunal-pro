@@ -4,11 +4,12 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { QRCodeSVG } from "qrcode.react";
 
-export interface ActaRecepcaoData {
+export interface ActaRecepcaoInternaData {
   numeroExpediente: string;
   tipo: string;
   assunto: string;
-  entidade: string;
+  origem: string;
+  destino: string;
   dataEmissao: string;
   numeroPaginas?: string;
   responsavelEntregaNome: string;
@@ -20,20 +21,30 @@ export interface ActaRecepcaoData {
   dataRecepcao: string;
   local: string;
   observacoes?: string;
+  assinaturaDigital?: string;
+  dataAssinatura?: string;
 }
 
-interface ActaRecepcaoTemplateProps {
-  data: ActaRecepcaoData;
+interface ActaRecepcaoInternaTemplateProps {
+  data: ActaRecepcaoInternaData;
   logoUrl?: string;
+  onAssinaturaDigital?: () => void;
 }
 
-export const ActaRecepcaoTemplate = ({ data, logoUrl }: ActaRecepcaoTemplateProps) => {
+export const ActaRecepcaoInternaTemplate = ({ 
+  data, 
+  logoUrl,
+  onAssinaturaDigital 
+}: ActaRecepcaoInternaTemplateProps) => {
+  const urlVerificacao = `${window.location.origin}/verificar-expediente?exp=${data.numeroExpediente}`;
+  
   return (
     <div className="w-full max-w-4xl mx-auto bg-white p-8 print:p-12 space-y-6 text-black">
       <DocumentHeader logoUrl={logoUrl} />
 
       <div className="text-center space-y-2 my-6">
         <h2 className="text-2xl font-bold uppercase">Acta de Recepção de Documento</h2>
+        <p className="text-sm text-gray-600">Comunicação Interna</p>
       </div>
 
       <div className="space-y-6 text-sm leading-relaxed">
@@ -50,7 +61,7 @@ export const ActaRecepcaoTemplate = ({ data, logoUrl }: ActaRecepcaoTemplateProp
           <p><span className="font-semibold">Tipo de documento:</span> {data.tipo}</p>
           <p><span className="font-semibold">Número / Referência:</span> {data.numeroExpediente}</p>
           <p><span className="font-semibold">Assunto / Título:</span> {data.assunto}</p>
-          <p><span className="font-semibold">Origem / Entidade remetente:</span> {data.entidade}</p>
+          <p><span className="font-semibold">Origem / Entidade remetente:</span> {data.origem}</p>
           <p><span className="font-semibold">Data de emissão:</span> {format(new Date(data.dataEmissao), "dd/MM/yyyy", { locale: ptBR })}</p>
           {data.numeroPaginas && (
             <p><span className="font-semibold">Número de páginas / volumes:</span> {data.numeroPaginas}</p>
@@ -68,13 +79,23 @@ export const ActaRecepcaoTemplate = ({ data, logoUrl }: ActaRecepcaoTemplateProp
             {data.responsavelEntregaInstituicao && (
               <p><span className="font-semibold">Instituição:</span> {data.responsavelEntregaInstituicao}</p>
             )}
-            <p><span className="font-semibold">Assinatura:</span> _________________________________</p>
+            {data.assinaturaDigital ? (
+              <div className="space-y-2">
+                <p className="font-semibold text-green-600">✓ Assinado Digitalmente</p>
+                <p className="text-xs text-gray-600">
+                  Data: {data.dataAssinatura && format(new Date(data.dataAssinatura), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
+                </p>
+                <p className="text-xs text-gray-500 break-all">Hash: {data.assinaturaDigital}</p>
+              </div>
+            ) : (
+              <p><span className="font-semibold">Assinatura:</span> _________________________________</p>
+            )}
           </div>
         </div>
 
-        {/* Recepcionou Pelo Tribunal */}
+        {/* Responsável pela Recepção */}
         <div className="space-y-3">
-          <h3 className="font-bold text-base">Recepcionou Pelo Tribunal</h3>
+          <h3 className="font-bold text-base">Responsável pela Recepção</h3>
           <div className="pl-4 space-y-2">
             <p><span className="font-semibold">Nome:</span> {data.responsavelRecepcaoNome}</p>
             {data.responsavelRecepcaoCargo && (
@@ -128,7 +149,7 @@ export const ActaRecepcaoTemplate = ({ data, logoUrl }: ActaRecepcaoTemplateProp
         <div className="flex justify-center pt-8 print:pt-4">
           <div className="text-center space-y-2">
             <QRCodeSVG 
-              value={`${window.location.origin}/verificar-expediente?exp=${data.numeroExpediente}`}
+              value={urlVerificacao} 
               size={120}
               level="H"
               includeMargin={true}
@@ -146,7 +167,7 @@ export const ActaRecepcaoTemplate = ({ data, logoUrl }: ActaRecepcaoTemplateProp
       <DocumentFooter />
 
       <div className="text-center text-xs text-gray-500 mt-4 pt-4 border-t border-gray-200">
-        <p>Documento de Recepção Externa | Tribunal de Contas da República de Angola</p>
+        <p>Documento de Recepção Interna | Tribunal de Contas da República de Angola</p>
         <p>Gerado em {format(new Date(), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}</p>
       </div>
     </div>

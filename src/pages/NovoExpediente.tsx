@@ -13,8 +13,10 @@ import { useState } from "react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ActaRecepcaoTemplate, ActaRecepcaoData } from "@/components/documents/ActaRecepcaoTemplate";
+import { ActaRecepcaoInternaTemplate, ActaRecepcaoInternaData } from "@/components/documents/ActaRecepcaoInternaTemplate";
 import { EntitySelector } from "@/components/ui/entity-selector";
 import { DocumentChecklist } from "@/components/ui/document-checklist";
+import { supabase } from "@/integrations/supabase/client";
 
 const expedienteSchema = z.object({
   natureza: z.enum(["interno", "externo"]),
@@ -41,7 +43,8 @@ export const NovoExpediente = ({ onBack }: NovoExpedienteProps) => {
   const [natureza, setNatureza] = useState<"interno" | "externo">("interno");
   const [isResposta, setIsResposta] = useState(false);
   const [showActa, setShowActa] = useState(false);
-  const [actaData, setActaData] = useState<ActaRecepcaoData | null>(null);
+  const [actaData, setActaData] = useState<ActaRecepcaoData | ActaRecepcaoInternaData | null>(null);
+  const [assinadoDigitalmente, setAssinadoDigitalmente] = useState(false);
   
   const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm<ExpedienteForm>({
     resolver: zodResolver(expedienteSchema),
@@ -66,36 +69,163 @@ export const NovoExpediente = ({ onBack }: NovoExpedienteProps) => {
     window.print();
   };
 
-  const onSubmit = (data: ExpedienteForm) => {
+  const gerarAssinaturaDigital = () => {
+    // Gera um hash simulado para assinatura digital
+    const timestamp = new Date().getTime();
+    const randomData = Math.random().toString(36).substring(2, 15);
+    return `${timestamp}-${randomData}`.substring(0, 32);
+  };
+
+  const assinarDigitalmente = () => {
+    const assinatura = gerarAssinaturaDigital();
+    const dataAssinatura = new Date().toISOString();
+    
+    setActaData(prev => {
+      if (!prev) return null;
+      return {
+        ...prev,
+        assinaturaDigital: assinatura,
+        dataAssinatura: dataAssinatura
+      } as ActaRecepcaoInternaData;
+    });
+    
+    setAssinadoDigitalmente(true);
+    
+    toast({
+      title: "Documento assinado digitalmente",
+      description: "A assinatura digital foi aplicada ao documento.",
+    });
+  };
+
+  const onSubmit = async (data: ExpedienteForm) => {
     console.log("Expediente criado:", data);
     
     // Sempre gera a acta de recepção para todos os expedientes
     const numeroExpediente = gerarNumeroExpediente();
     const numeroActa = gerarNumeroActa();
-    const urlVerificacao = `${window.location.origin}/verificar-expediente?exp=${numeroExpediente}`;
     
-    const novaActa: ActaRecepcaoData = {
-      numeroExpediente,
-      tipo: data.tipo,
-      assunto: data.assunto,
-      entidade: data.natureza === "externo" 
-        ? (data.entidadeExterna || "Entidade Externa") 
-        : data.origem,
-      dataEmissao: new Date().toISOString(),
-      numeroPaginas: "1",
-      responsavelEntregaNome: data.origem,
-      responsavelEntregaCargo: data.natureza === "externo" ? "Representante" : undefined,
-      responsavelEntregaInstituicao: data.natureza === "externo" ? data.entidadeExterna : undefined,
-      responsavelRecepcaoNome: "Funcionário do Tribunal de Contas",
-      responsavelRecepcaoCargo: "Técnico de Protocolo",
-      responsavelRecepcaoDepartamento: data.destino,
-      dataRecepcao: new Date().toISOString(),
-      local: "Luanda, Tribunal de Contas da República de Angola",
-      observacoes: "Documento recebido e registado no sistema de gestão documental.",
-    };
+    if (data.natureza === "interno") {
+      // Acta para expediente interno
+      const novaActa: ActaRecepcaoInternaData = {
+        numeroExpediente,
+        tipo: data.tipo,
+        assunto: data.assunto,
+        origem: data.origem,
+        destino: data.destino,
+        dataEmissao: new Date().toISOString(),
+        numeroPaginas: "1",
+        responsavelEntregaNome: data.origem,
+        responsavelEntregaCargo: "Funcionário",
+        responsavelEntregaInstituicao: "Tribunal de Contas",
+        responsavelRecepcaoNome: data.destino,
+        responsavelRecepcaoCargo: "Chefe de Secção",
+        responsavelRecepcaoDepartamento: data.destino,
+        dataRecepcao: new Date().toISOString(),
+        local: "Luanda, Tribunal de Contas da República de Angola",
+        observacoes: "Comunicação interna registada no sistema.",
+      };
+      
+      setActaData(novaActa);
+    } else {
+      // Acta para expediente externo
+      const novaActa: ActaRecepcaoData = {
+        numeroExpediente,
+        tipo: data.tipo,
+        assunto: data.assunto,
+        entidade: data.entidadeExterna || "Entidade Externa",
+        dataEmissao: new Date().toISOString(),
+        numeroPaginas: "1",
+        responsavelEntregaNome: data.origem,
+        responsavelEntregaCargo: "Representante",
+        responsavelEntregaInstituicao: data.entidadeExterna,
+        responsavelRecepcaoNome: "Funcionário do Tribunal de Contas",
+        responsavelRecepcaoCargo: "Técnico de Protocolo",
+        responsavelRecepcaoDepartamento: data.destino,
+        dataRecepcao: new Date().toISOString(),
+        local: "Luanda, Tribunal de Contas da República de Angola",
+        observacoes: "Documento recebido e registado no sistema de gestão documental.",
+      };
+      
+      setActaData(novaActa);
+    }
     
-    setActaData(novaActa);
     setShowActa(true);
+  };
+
+  const finalizarExpediente = async () => {
+    if (!actaData) return;
+
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        toast({
+          title: "Erro de autenticação",
+          description: "Você precisa estar autenticado para criar expedientes.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const formData = watch();
+      const actaDataTyped = actaData as ActaRecepcaoInternaData;
+
+      // Salva o expediente no banco de dados
+      const { error } = await supabase.from('expedientes').insert({
+        numero: actaData.numeroExpediente,
+        natureza: formData.natureza,
+        tipo: actaData.tipo,
+        assunto: actaData.assunto,
+        descricao: formData.descricao,
+        origem: formData.origem,
+        destino: formData.destino,
+        prioridade: formData.prioridade,
+        status: formData.natureza === "interno" ? "Enviado" : "Recebido",
+        resposta_a: formData.respostaA,
+        entidade_externa: formData.entidadeExterna,
+        email_externo: formData.emailExterno,
+        telefone_externo: formData.telefoneExterno,
+        numero_acta: gerarNumeroActa(),
+        responsavel_entrega_nome: actaData.responsavelEntregaNome,
+        responsavel_entrega_cargo: actaData.responsavelEntregaCargo,
+        responsavel_entrega_instituicao: actaData.responsavelEntregaInstituicao,
+        responsavel_recepcao_nome: actaData.responsavelRecepcaoNome,
+        responsavel_recepcao_cargo: actaData.responsavelRecepcaoCargo,
+        responsavel_recepcao_departamento: actaData.responsavelRecepcaoDepartamento,
+        observacoes_acta: actaData.observacoes,
+        local_recepcao: actaData.local,
+        assinado: assinadoDigitalmente,
+        assinatura_digital: actaDataTyped.assinaturaDigital,
+        data_assinatura: actaDataTyped.dataAssinatura,
+        criado_por: user.id,
+      });
+
+      if (error) {
+        console.error("Erro ao salvar expediente:", error);
+        toast({
+          title: "Erro ao criar expediente",
+          description: "Ocorreu um erro ao salvar o expediente no sistema.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      setShowActa(false);
+      toast({
+        title: "Expediente criado com sucesso!",
+        description: formData.natureza === "interno" 
+          ? "O expediente foi enviado para as Comunicações Internas do destinatário."
+          : "Acta de recepção gerada e expediente registado no sistema.",
+      });
+      onBack();
+    } catch (error) {
+      console.error("Erro ao finalizar expediente:", error);
+      toast({
+        title: "Erro",
+        description: "Ocorreu um erro inesperado.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -358,18 +488,35 @@ export const NovoExpediente = ({ onBack }: NovoExpedienteProps) => {
             </p>
           </DialogHeader>
           
-          {actaData && <ActaRecepcaoTemplate data={actaData} />}
+          {actaData && natureza === "interno" ? (
+            <ActaRecepcaoInternaTemplate 
+              data={actaData as ActaRecepcaoInternaData}
+              onAssinaturaDigital={assinarDigitalmente}
+            />
+          ) : actaData && (
+            <ActaRecepcaoTemplate data={actaData as ActaRecepcaoData} />
+          )}
           
           <div className="flex gap-4 justify-between pt-4 border-t print:hidden">
             <Button 
               variant="outline" 
               onClick={() => {
                 setShowActa(false);
+                setAssinadoDigitalmente(false);
               }}
             >
               Voltar e Editar
             </Button>
             <div className="flex gap-4">
+              {natureza === "interno" && !assinadoDigitalmente && (
+                <Button 
+                  variant="default"
+                  onClick={assinarDigitalmente}
+                  className="gap-2"
+                >
+                  Assinar Digitalmente
+                </Button>
+              )}
               <Button 
                 variant="outline"
                 onClick={imprimirActa} 
@@ -379,14 +526,7 @@ export const NovoExpediente = ({ onBack }: NovoExpedienteProps) => {
                 Imprimir
               </Button>
               <Button 
-                onClick={() => {
-                  setShowActa(false);
-                  toast({
-                    title: "Expediente criado com sucesso!",
-                    description: "Acta de recepção gerada e expediente registado no sistema.",
-                  });
-                  onBack();
-                }}
+                onClick={finalizarExpediente}
                 className="bg-primary hover:bg-primary-hover"
               >
                 Confirmar e Finalizar
