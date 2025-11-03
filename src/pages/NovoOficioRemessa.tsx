@@ -8,6 +8,7 @@ import { ArrowLeft, FileText, Send, Eye } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { OficioTemplate } from "@/components/documents/OficioTemplate";
+import { EntitySelector } from "@/components/ui/entity-selector";
 
 interface NovoOficioRemessaProps {
   onNavigate?: (view: string) => void;
@@ -125,16 +126,12 @@ export default function NovoOficioRemessa({ onNavigate }: NovoOficioRemessaProps
                   />
                 </div>
                 
-                <div className="space-y-2">
-                  <Label htmlFor="entidade">Entidade *</Label>
-                  <Input
-                    id="entidade"
-                    placeholder="Ex: Ministério das Finanças"
-                    value={formData.entidade}
-                    onChange={(e) => handleChange("entidade", e.target.value)}
-                    required
-                  />
-                </div>
+                <EntitySelector
+                  value={formData.entidade}
+                  onChange={(value) => handleChange("entidade", value)}
+                  label="Entidade"
+                  required
+                />
               </div>
             </div>
 

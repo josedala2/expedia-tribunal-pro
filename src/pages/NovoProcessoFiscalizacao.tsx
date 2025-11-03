@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { EntitySelector } from "@/components/ui/entity-selector";
 
 const fiscalizacaoSchema = z.object({
   remetente: z.string().min(1, "Remetente é obrigatório"),
@@ -32,10 +33,10 @@ interface NovoProcessoFiscalizacaoProps {
 export const NovoProcessoFiscalizacao = ({ onBack }: NovoProcessoFiscalizacaoProps) => {
   const { toast } = useToast();
   
-  const { register, handleSubmit, formState: { errors }, setValue } = useForm<FiscalizacaoForm>({
+  const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm<FiscalizacaoForm>({
     resolver: zodResolver(fiscalizacaoSchema),
     defaultValues: {
-      remetente: "Ministério das Finanças",
+      remetente: "",
       trimestre: "",
       anoReferencia: "",
       dataRecebimento: "",
@@ -94,19 +95,13 @@ export const NovoProcessoFiscalizacao = ({ onBack }: NovoProcessoFiscalizacaoPro
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <Label htmlFor="remetente">Entidade Remetente *</Label>
-                <Select onValueChange={(value) => setValue("remetente", value)} defaultValue="Ministério das Finanças">
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="bg-card">
-                    <SelectItem value="Ministério das Finanças">Ministério das Finanças</SelectItem>
-                    <SelectItem value="Assembleia Nacional">Assembleia Nacional</SelectItem>
-                  </SelectContent>
-                </Select>
-                {errors.remetente && <p className="text-sm text-destructive">{errors.remetente.message}</p>}
-              </div>
+              <EntitySelector
+                value={watch("remetente")}
+                onChange={(value) => setValue("remetente", value)}
+                label="Entidade Remetente"
+                required
+                error={errors.remetente?.message}
+              />
 
               <div className="space-y-2">
                 <Label htmlFor="numeroOficio">Número do Ofício</Label>

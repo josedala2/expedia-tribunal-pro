@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Plus, Search, Eye, FileText } from "lucide-react";
 import { toast } from "sonner";
+import { EntitySelector } from "@/components/ui/entity-selector";
 
 interface AnaliseDecisao {
   id: string;
@@ -159,11 +160,10 @@ export default function AnaliseDecisaoFinalJuizRelator() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="entidade">Entidade</Label>
-                      <Input
-                        id="entidade"
+                      <EntitySelector
                         value={novaAnalise.entidade}
-                        onChange={(e) => setNovaAnalise({...novaAnalise, entidade: e.target.value})}
+                        onChange={(value) => setNovaAnalise({...novaAnalise, entidade: value})}
+                        label="Entidade"
                         required
                       />
                     </div>

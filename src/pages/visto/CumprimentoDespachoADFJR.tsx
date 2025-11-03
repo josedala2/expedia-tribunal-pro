@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Plus, Search, Eye, FileText, CheckCircle } from "lucide-react";
 import { toast } from "sonner";
+import { EntitySelector } from "@/components/ui/entity-selector";
 
 interface CumprimentoDespacho {
   id: string;
@@ -171,11 +172,10 @@ export default function CumprimentoDespachoADFJR() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="entidade">Entidade</Label>
-                      <Input
-                        id="entidade"
+                      <EntitySelector
                         value={novoCumprimento.entidade}
-                        onChange={(e) => setNovoCumprimento({...novoCumprimento, entidade: e.target.value})}
+                        onChange={(value) => setNovoCumprimento({...novoCumprimento, entidade: value})}
+                        label="Entidade"
                         required
                       />
                     </div>

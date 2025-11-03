@@ -10,6 +10,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useState } from "react";
+import { EntitySelector } from "@/components/ui/entity-selector";
 
 const vistoSchema = z.object({
   tipoVisto: z.string().min(1, "Tipo de visto é obrigatório"),
@@ -106,25 +107,13 @@ export const NovoProcessoVisto = ({ onBack }: NovoProcessoVistoProps) => {
           <h3 className="text-lg font-semibold mb-4 text-foreground">Partes Contratantes</h3>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <Label htmlFor="entidadeContratante">Entidade Contratante (Pública) *</Label>
-              <Select onValueChange={(value) => setValue("entidadeContratante", value)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione a entidade pública" />
-                </SelectTrigger>
-                <SelectContent className="bg-card z-50">
-                  <SelectItem value="min-financas">Ministério das Finanças</SelectItem>
-                  <SelectItem value="min-saude">Ministério da Saúde</SelectItem>
-                  <SelectItem value="min-educacao">Ministério da Educação</SelectItem>
-                  <SelectItem value="min-transportes">Ministério dos Transportes</SelectItem>
-                  <SelectItem value="min-energia">Ministério da Energia e Águas</SelectItem>
-                  <SelectItem value="gov-provincial">Governos Provinciais</SelectItem>
-                  <SelectItem value="admin-municipal">Administrações Municipais</SelectItem>
-                  <SelectItem value="institutos">Institutos Públicos</SelectItem>
-                </SelectContent>
-              </Select>
-              {errors.entidadeContratante && <p className="text-sm text-destructive">{errors.entidadeContratante.message}</p>}
-            </div>
+            <EntitySelector
+              value={watch("entidadeContratante")}
+              onChange={(value) => setValue("entidadeContratante", value)}
+              label="Entidade Contratante (Pública)"
+              required
+              error={errors.entidadeContratante?.message}
+            />
 
             <div className="space-y-2">
               <Label htmlFor="entidadeContratada">Entidade Contratada *</Label>
