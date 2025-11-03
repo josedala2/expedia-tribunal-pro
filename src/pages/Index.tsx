@@ -10,6 +10,7 @@ import { Fiscalizacao } from "@/pages/Fiscalizacao";
 import { ProcessosMulta } from "@/pages/ProcessosMulta";
 import { Usuarios } from "@/pages/Usuarios";
 import { Relatorios } from "@/pages/Relatorios";
+import { RelatoriosDetalhados } from "@/pages/RelatoriosDetalhados";
 import { Expedientes } from "@/pages/Expedientes";
 import { NovoExpediente } from "@/pages/NovoExpediente";
 import { DetalheExpediente } from "@/pages/DetalheExpediente";
@@ -56,6 +57,12 @@ import CumprimentoDespachoADFJR from "@/pages/visto/CumprimentoDespachoADFJR";
 import RecursoOrdinario from "@/pages/visto/RecursoOrdinario";
 import RecursoInconstitucionalidade from "@/pages/visto/RecursoInconstitucionalidade";
 import RecursosAtivos from "@/pages/visto/RecursosAtivos";
+import RegistoAutuacao from "@/pages/visto/recurso-ordinario/RegistoAutuacao";
+import PlenarioCamara from "@/pages/visto/recurso-ordinario/PlenarioCamara";
+import ProjetoAcordao from "@/pages/visto/recurso-ordinario/ProjetoAcordao";
+import VistaMembrosPlenario from "@/pages/visto/recurso-ordinario/VistaMembrosPlenario";
+import ResolucaoPlenaria from "@/pages/visto/recurso-ordinario/ResolucaoPlenaria";
+import NotificacaoMP from "@/pages/visto/recurso-ordinario/NotificacaoMP";
 
 type View = "dashboard" | "processes" | "process-detail" | "prestacao-contas" | "visto" | "fiscalizacao" | "multas" | "usuarios" | "relatorios" | "documentos" | "configuracoes" | "comunicacoes-internas" | "expedientes" | "novo-expediente" | "detalhe-expediente" | "novo-prestacao" | "detalhe-prestacao" | "novo-visto" | "detalhe-visto" | "novo-fiscalizacao" | "detalhe-fiscalizacao" | "detalhe-multa" | "expediente-processual" | "tramitacao-visto" | "cumprimento-despachos" | "saida-expediente-visto" | "interposicao-recurso" | "pedido-reducao-emolumentos" | "conclusao-autos-cgsfp" | "analise-decisao-juiz" | "promocao-mp" | "analise-decisao-final-juiz" | "cumprimento-despacho-adfjr" | "expediente-prestacao" | "tramitacao-prestacao" | "cumprimento-despachos-prestacao" | "saida-expediente-prestacao" | "prestacao-soberania" | "expediente-fiscalizacao" | "tramitacao-fiscalizacao" | "parecer-trimestral" | "saida-expediente-fiscalizacao" | "cobranca-emolumentos" | "nova-guia-cobranca" | "despacho-promocao" | "novo-despacho-promocao" | "cumprimento-despachos-geral" | "cumprimento-despacho-detail" | "oficios-remessa" | "novo-oficio-remessa" | "expedientes-saida" | "novo-expediente-saida" | "recurso-ordinario" | "recurso-ordinario-registo" | "recurso-ordinario-plenario" | "recurso-ordinario-projeto" | "recurso-ordinario-vista" | "recurso-ordinario-resolucao" | "recurso-ordinario-notificacao" | "recurso-inconstitucionalidade" | "recurso-inconstitucionalidade-apresentacao" | "recurso-inconstitucionalidade-analise" | "recursos-ativos";
 
@@ -141,7 +148,7 @@ const Index = () => {
             {currentView === "multas" && <ProcessosMulta onBack={() => handleNavigate("dashboard")} onNavigate={handleNavigate} />}
             {currentView === "detalhe-multa" && <DetalheProcessoMulta onBack={() => handleNavigate("multas")} />}
             {currentView === "usuarios" && <Usuarios onBack={() => handleNavigate("dashboard")} />}
-            {currentView === "relatorios" && <Relatorios onBack={() => handleNavigate("dashboard")} />}
+            {currentView === "relatorios" && <RelatoriosDetalhados onBack={() => handleNavigate("dashboard")} />}
             {currentView === "documentos" && <Documentos onBack={() => handleNavigate("dashboard")} />}
             {currentView === "configuracoes" && <Configuracoes onBack={() => handleNavigate("dashboard")} />}
             {currentView === "comunicacoes-internas" && <ComunicacoesInternas onBack={() => handleNavigate("dashboard")} />}
@@ -156,12 +163,12 @@ const Index = () => {
             {currentView === "expedientes-saida" && <ExpedientesSaida onNavigate={handleNavigate} />}
             {currentView === "novo-expediente-saida" && <NovoExpedienteSaida onNavigate={handleNavigate} />}
             {currentView === "recurso-ordinario" && <RecursoOrdinario />}
-            {currentView === "recurso-ordinario-registo" && <RecursoOrdinario />}
-            {currentView === "recurso-ordinario-plenario" && <RecursoOrdinario />}
-            {currentView === "recurso-ordinario-projeto" && <RecursoOrdinario />}
-            {currentView === "recurso-ordinario-vista" && <RecursoOrdinario />}
-            {currentView === "recurso-ordinario-resolucao" && <RecursoOrdinario />}
-            {currentView === "recurso-ordinario-notificacao" && <RecursoOrdinario />}
+            {currentView === "recurso-ordinario-registo" && <RegistoAutuacao />}
+            {currentView === "recurso-ordinario-plenario" && <PlenarioCamara />}
+            {currentView === "recurso-ordinario-projeto" && <ProjetoAcordao />}
+            {currentView === "recurso-ordinario-vista" && <VistaMembrosPlenario />}
+            {currentView === "recurso-ordinario-resolucao" && <ResolucaoPlenaria />}
+            {currentView === "recurso-ordinario-notificacao" && <NotificacaoMP />}
             {currentView === "recurso-inconstitucionalidade" && <RecursoInconstitucionalidade />}
             {currentView === "recurso-inconstitucionalidade-apresentacao" && <RecursoInconstitucionalidade />}
             {currentView === "recurso-inconstitucionalidade-analise" && <RecursoInconstitucionalidade />}
