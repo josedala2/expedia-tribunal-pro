@@ -68,37 +68,30 @@ export const NovoExpediente = ({ onBack }: NovoExpedienteProps) => {
 
   const onSubmit = (data: ExpedienteForm) => {
     console.log("Expediente criado:", data);
-    const tipoExp = data.natureza === "externo" ? "externo" : "interno";
     
-    // Se for expediente externo e NÃO for resposta, gera a acta
-    if (data.natureza === "externo" && !isResposta) {
-      const numeroExpediente = gerarNumeroExpediente();
-      const numeroActa = gerarNumeroActa();
-      const urlVerificacao = `${window.location.origin}/verificar-expediente?exp=${numeroExpediente}`;
-      
-      const novaActa: ActaRecepcaoData = {
-        numeroExpediente,
-        numeroActa,
-        tipo: data.tipo,
-        assunto: data.assunto,
-        entidade: data.entidadeExterna || "N/A",
-        remetente: data.origem,
-        email: data.emailExterno,
-        telefone: data.telefoneExterno,
-        dataRecepcao: new Date().toISOString(),
-        recebidoPor: "Sistema de Gestão de Processos",
-        urlVerificacao,
-      };
-      
-      setActaData(novaActa);
-      setShowActa(true);
-    } else {
-      toast({
-        title: "Expediente criado com sucesso!",
-        description: `${data.tipo} ${tipoExp} registado no sistema.`,
-      });
-      onBack();
-    }
+    // Sempre gera a acta de recepção para todos os expedientes
+    const numeroExpediente = gerarNumeroExpediente();
+    const numeroActa = gerarNumeroActa();
+    const urlVerificacao = `${window.location.origin}/verificar-expediente?exp=${numeroExpediente}`;
+    
+    const novaActa: ActaRecepcaoData = {
+      numeroExpediente,
+      numeroActa,
+      tipo: data.tipo,
+      assunto: data.assunto,
+      entidade: data.natureza === "externo" 
+        ? (data.entidadeExterna || "Entidade Externa") 
+        : data.origem,
+      remetente: data.origem,
+      email: data.emailExterno,
+      telefone: data.telefoneExterno,
+      dataRecepcao: new Date().toISOString(),
+      recebidoPor: "Sistema de Gestão de Processos",
+      urlVerificacao,
+    };
+    
+    setActaData(novaActa);
+    setShowActa(true);
   };
 
   return (
