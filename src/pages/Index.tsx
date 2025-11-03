@@ -131,15 +131,10 @@ const Index = () => {
             {currentView === "cumprimento-despachos-prestacao" && <CumprimentoDespachosPrestacao onBack={() => handleNavigate("prestacao-contas")} onNavigate={handleNavigate} />}
             {currentView === "saida-expediente-prestacao" && <SaidaExpedientePrestacao onBack={() => handleNavigate("prestacao-contas")} onNavigate={handleNavigate} />}
             {currentView === "prestacao-soberania" && <PrestacaoOrgaosSoberania onBack={() => handleNavigate("prestacao-contas")} onNavigate={handleNavigate} />}
-            {currentView === "fiscalizacao" && <Fiscalizacao onBack={() => handleNavigate("dashboard")} onNavigate={handleNavigate} />}
             {currentView === "expediente-fiscalizacao" && <ExpedienteFiscalizacaoOGE onBack={() => handleNavigate("fiscalizacao")} onNavigate={handleNavigate} />}
             {currentView === "tramitacao-fiscalizacao" && <TramitacaoFiscalizacaoOGE onBack={() => handleNavigate("fiscalizacao")} onNavigate={handleNavigate} />}
             {currentView === "parecer-trimestral" && <ParecerTrimestral onBack={() => handleNavigate("fiscalizacao")} onNavigate={handleNavigate} />}
             {currentView === "saida-expediente-fiscalizacao" && <SaidaExpedienteFiscalizacao onBack={() => handleNavigate("fiscalizacao")} onNavigate={handleNavigate} />}
-            {currentView === "novo-fiscalizacao" && <NovoProcessoFiscalizacao onBack={() => handleNavigate("fiscalizacao")} />}
-            {currentView === "detalhe-fiscalizacao" && <DetalheFiscalizacao onBack={() => handleNavigate("fiscalizacao")} />}
-            {currentView === "multas" && <ProcessosMulta onBack={() => handleNavigate("dashboard")} onNavigate={handleNavigate} />}
-            {currentView === "detalhe-multa" && <DetalheProcessoMulta onBack={() => handleNavigate("multas")} />}
             {currentView === "usuarios" && <Usuarios onBack={() => handleNavigate("dashboard")} />}
             {currentView === "relatorios" && <Relatorios onBack={() => handleNavigate("dashboard")} />}
             {currentView === "documentos" && <Documentos onBack={() => handleNavigate("dashboard")} />}
