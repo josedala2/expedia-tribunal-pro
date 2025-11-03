@@ -1,7 +1,6 @@
-import { Menu, Bell, Search, User, Settings, FileText, BarChart3, MessagesSquare } from "lucide-react";
+import { Menu, Bell, User, Settings, FileText, BarChart3, MessagesSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import logoTC from "@/assets/logo-tc.png";
+import headerBanner from "@/assets/header-banner.jpeg";
 
 interface HeaderProps {
   onToggleSidebar: () => void;
@@ -24,46 +23,50 @@ const horizontalMenuItemsRight = [
 export const Header = ({ onToggleSidebar, isSidebarOpen, currentView, onNavigate }: HeaderProps) => {
   return (
     <div className="sticky top-0 z-50 bg-card border-b-2 border-border shadow-md">
-      {/* Top Bar */}
-      <div className="h-auto pt-[2mm] pb-[2mm] bg-muted">
-        <div className="h-full px-4 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={onToggleSidebar}
-              className="hover:bg-secondary h-16 w-16"
-            >
-              <Menu className="h-10 w-10 text-foreground" />
-            </Button>
-            
-            <div className="flex items-center gap-3">
-              <img src={logoTC} alt="Tribunal de Contas Angola" className="h-32 w-32 object-contain" />
-              <div>
-                <h1 className="text-3xl font-bold text-foreground">Tribunal de Contas</h1>
-                <p className="text-lg text-muted-foreground font-semibold">Sistema Nacional de Gestão de Processos</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3">
+      {/* Top Bar - Banner Image */}
+      <div className="relative h-[160px] overflow-hidden">
+        <img 
+          src={headerBanner} 
+          alt="Tribunal de Contas Angola" 
+          className="w-full h-full object-cover"
+        />
+        
+        {/* Menu Toggle and Action Buttons Overlay */}
+        <div className="absolute top-4 left-4 right-4 flex items-start justify-between">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onToggleSidebar}
+            className="bg-white/10 hover:bg-white/20 backdrop-blur-sm h-12 w-12"
+          >
+            <Menu className="h-6 w-6 text-white" />
+          </Button>
+          
+          <div className="flex items-center gap-2">
             <Button 
               variant="ghost" 
               size="icon" 
-              className="relative hover:bg-secondary h-16 w-16 border-2 border-border rounded-lg"
+              className="relative bg-white/10 hover:bg-white/20 backdrop-blur-sm h-12 w-12"
             >
-              <Bell className="h-8 w-8" />
-              <span className="absolute top-1.5 right-1.5 h-3 w-3 bg-primary rounded-full"></span>
+              <Bell className="h-6 w-6 text-white" />
+              <span className="absolute top-1 right-1 h-2.5 w-2.5 bg-red-500 rounded-full"></span>
             </Button>
             
             <Button 
               variant="ghost" 
               size="icon" 
-              className="hover:bg-secondary h-16 w-16 border-2 border-border rounded-lg"
+              className="bg-white/10 hover:bg-white/20 backdrop-blur-sm h-12 w-12"
             >
-              <User className="h-8 w-8" />
+              <User className="h-6 w-6 text-white" />
             </Button>
           </div>
+        </div>
+        
+        {/* Subtitle Overlay */}
+        <div className="absolute bottom-4 left-4">
+          <p className="text-white text-sm font-semibold drop-shadow-lg">
+            Sistema Nacional de Gestão de Processos
+          </p>
         </div>
       </div>
 
