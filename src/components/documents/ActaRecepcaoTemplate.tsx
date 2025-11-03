@@ -45,24 +45,21 @@ export const ActaRecepcaoTemplate = ({ data, logoUrl }: ActaRecepcaoTemplateProp
           <strong>{data.local}</strong>, procedeu-se à recepção formal do documento abaixo identificado.
         </p>
 
-        {/* 1. Identificação do Documento */}
-        <div className="space-y-3">
-          <h3 className="font-bold text-base">1. Identificação do Documento</h3>
-          <div className="pl-4 space-y-2">
-            <p><span className="font-semibold">Tipo de documento:</span> {data.tipo}</p>
-            <p><span className="font-semibold">Número / Referência:</span> {data.numeroExpediente}</p>
-            <p><span className="font-semibold">Assunto / Título:</span> {data.assunto}</p>
-            <p><span className="font-semibold">Origem / Entidade remetente:</span> {data.entidade}</p>
-            <p><span className="font-semibold">Data de emissão:</span> {format(new Date(data.dataEmissao), "dd/MM/yyyy", { locale: ptBR })}</p>
-            {data.numeroPaginas && (
-              <p><span className="font-semibold">Número de páginas / volumes:</span> {data.numeroPaginas}</p>
-            )}
-          </div>
+        {/* Identificação do Documento */}
+        <div className="space-y-2 pl-4">
+          <p><span className="font-semibold">Tipo de documento:</span> {data.tipo}</p>
+          <p><span className="font-semibold">Número / Referência:</span> {data.numeroExpediente}</p>
+          <p><span className="font-semibold">Assunto / Título:</span> {data.assunto}</p>
+          <p><span className="font-semibold">Origem / Entidade remetente:</span> {data.entidade}</p>
+          <p><span className="font-semibold">Data de emissão:</span> {format(new Date(data.dataEmissao), "dd/MM/yyyy", { locale: ptBR })}</p>
+          {data.numeroPaginas && (
+            <p><span className="font-semibold">Número de páginas / volumes:</span> {data.numeroPaginas}</p>
+          )}
         </div>
 
-        {/* 2. Responsável pela Entrega */}
+        {/* Responsável pela Entrega */}
         <div className="space-y-3">
-          <h3 className="font-bold text-base">2. Responsável pela Entrega</h3>
+          <h3 className="font-bold text-base">Responsável pela Entrega</h3>
           <div className="pl-4 space-y-2">
             <p><span className="font-semibold">Nome:</span> {data.responsavelEntregaNome}</p>
             {data.responsavelEntregaCargo && (
@@ -75,9 +72,9 @@ export const ActaRecepcaoTemplate = ({ data, logoUrl }: ActaRecepcaoTemplateProp
           </div>
         </div>
 
-        {/* 3. Responsável pela Recepção */}
+        {/* Recepcionou Pelo Tribunal */}
         <div className="space-y-3">
-          <h3 className="font-bold text-base">3. Responsável pela Recepção</h3>
+          <h3 className="font-bold text-base">Recepcionou Pelo Tribunal</h3>
           <div className="pl-4 space-y-2">
             <p><span className="font-semibold">Nome:</span> {data.responsavelRecepcaoNome}</p>
             {data.responsavelRecepcaoCargo && (
@@ -90,27 +87,24 @@ export const ActaRecepcaoTemplate = ({ data, logoUrl }: ActaRecepcaoTemplateProp
           </div>
         </div>
 
-        {/* 4. Observações */}
+        {/* Observações */}
         <div className="space-y-3">
-          <h3 className="font-bold text-base">4. Observações</h3>
+          <h3 className="font-bold text-base">Observações</h3>
           <div className="pl-4">
-            <p className="text-justify">{data.observacoes || "Sem observações."}</p>
+            <p className="text-justify">{data.observacoes || "(Sem observações)"}</p>
           </div>
         </div>
 
-        {/* 5. Conclusão */}
-        <div className="space-y-4">
-          <h3 className="font-bold text-base">5. Conclusão</h3>
-          <div className="pl-4">
-            <p className="text-justify">
-              Nada mais havendo a tratar, foi lavrada a presente acta, que depois de lida e achada conforme, 
-              vai ser assinada pelos intervenientes acima identificados, para efeitos legais.
-            </p>
-          </div>
+        {/* Conclusão */}
+        <div className="space-y-4 pt-4">
+          <p className="text-justify">
+            Nada mais havendo a tratar, foi lavrada a presente acta, que depois de lida e achada conforme, 
+            vai ser assinada pelos intervenientes acima identificados, para efeitos legais.
+          </p>
         </div>
 
-        {/* Assinaturas Finais */}
-        <div className="pt-8 space-y-2">
+        {/* Local e Data */}
+        <div className="pt-6 space-y-2">
           <p><span className="font-semibold">Local:</span> {data.local}</p>
           <p><span className="font-semibold">Data:</span> {format(new Date(data.dataRecepcao), "dd/MM/yyyy", { locale: ptBR })}</p>
         </div>
