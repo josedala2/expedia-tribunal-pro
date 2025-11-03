@@ -9,6 +9,7 @@ import { ArrowLeft, Send, Upload, FileText, Eye } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { OficioTemplate } from "@/components/documents/OficioTemplate";
+import { DocumentChecklist } from "@/components/ui/document-checklist";
 
 interface NovoExpedienteSaidaProps {
   onNavigate?: (view: string) => void;
@@ -216,25 +217,19 @@ export default function NovoExpedienteSaida({ onNavigate }: NovoExpedienteSaidaP
             </div>
 
             <div className="border-t pt-6">
-              <h3 className="font-semibold mb-4">Anexos</h3>
-              <div className="space-y-2">
-                <Label htmlFor="anexos">Documentos Anexos</Label>
-                <div className="flex items-center gap-2">
-                  <Input
-                    id="anexos"
-                    type="file"
-                    multiple
-                    className="flex-1"
-                  />
-                  <Button type="button" variant="outline">
-                    <Upload className="mr-2 h-4 w-4" />
-                    Upload
-                  </Button>
-                </div>
-                <p className="text-sm text-muted-foreground">
-                  Anexe os documentos que serão enviados junto com este expediente
-                </p>
-              </div>
+              <DocumentChecklist
+                documents={[
+                  "Ofício de remessa",
+                  "Notificação",
+                  "Despacho",
+                  "Guia de cobrança",
+                  "Parecer técnico",
+                  "Relatório",
+                  "Termo de conclusão",
+                  "Documentos de suporte"
+                ]}
+                label="Documentos Anexos"
+              />
             </div>
 
             <div className="flex gap-3 pt-4">

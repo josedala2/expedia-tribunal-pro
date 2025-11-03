@@ -10,6 +10,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { EntitySelector } from "@/components/ui/entity-selector";
+import { DocumentChecklist } from "@/components/ui/document-checklist";
 
 const fiscalizacaoSchema = z.object({
   remetente: z.string().min(1, "Remetente é obrigatório"),
@@ -209,43 +210,20 @@ export const NovoProcessoFiscalizacao = ({ onBack }: NovoProcessoFiscalizacaoPro
 
           {/* Documentos Obrigatórios */}
           <div className="space-y-4 pt-4 border-t">
-            <h3 className="text-lg font-semibold text-foreground">Documentos e Anexos</h3>
-            <Card className="p-4 bg-muted/50">
-              <p className="text-sm font-semibold mb-3">Checklist de Documentos Obrigatórios:</p>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li className="flex items-center gap-2">
-                  <div className="h-2 w-2 rounded-full bg-primary"></div>
-                  Relatório de Execução Orçamental do Trimestre
-                </li>
-                <li className="flex items-center gap-2">
-                  <div className="h-2 w-2 rounded-full bg-primary"></div>
-                  Demonstrações financeiras consolidadas
-                </li>
-                <li className="flex items-center gap-2">
-                  <div className="h-2 w-2 rounded-full bg-primary"></div>
-                  Relatório de receitas e despesas públicas
-                </li>
-                <li className="flex items-center gap-2">
-                  <div className="h-2 w-2 rounded-full bg-primary"></div>
-                  Balanço de execução por órgão/entidade
-                </li>
-                <li className="flex items-center gap-2">
-                  <div className="h-2 w-2 rounded-full bg-primary"></div>
-                  Relatório de dívida pública
-                </li>
-                <li className="flex items-center gap-2">
-                  <div className="h-2 w-2 rounded-full bg-primary"></div>
-                  Análise de desvios orçamentais
-                </li>
-                <li className="flex items-center gap-2">
-                  <div className="h-2 w-2 rounded-full bg-primary"></div>
-                  Relatório de execução da Segurança Social (se aplicável)
-                </li>
-              </ul>
-              <p className="text-xs text-muted-foreground mt-3">
-                Os documentos serão anexados após o registo do processo.
-              </p>
-            </Card>
+            <DocumentChecklist
+              documents={[
+                "Relatório de Execução Orçamental do Trimestre",
+                "Demonstrações financeiras consolidadas",
+                "Relatório de receitas e despesas públicas",
+                "Balanço de execução por órgão/entidade",
+                "Relatório de dívida pública",
+                "Análise de desvios orçamentais",
+                "Relatório de execução da Segurança Social (se aplicável)",
+                "Mapas orçamentais comparativos",
+                "Documentos de suporte e justificativas"
+              ]}
+              label="Documentos e Anexos do Relatório Trimestral"
+            />
           </div>
 
           {/* Observações */}

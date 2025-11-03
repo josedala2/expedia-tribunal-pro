@@ -14,6 +14,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ActaRecepcaoTemplate, ActaRecepcaoData } from "@/components/documents/ActaRecepcaoTemplate";
 import { EntitySelector } from "@/components/ui/entity-selector";
+import { DocumentChecklist } from "@/components/ui/document-checklist";
 
 const expedienteSchema = z.object({
   natureza: z.enum(["interno", "externo"]),
@@ -325,18 +326,19 @@ export const NovoExpediente = ({ onBack }: NovoExpedienteProps) => {
             {errors.descricao && <p className="text-sm text-destructive">{errors.descricao.message}</p>}
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="anexos">Anexar Documentos</Label>
-            <Input 
-              id="anexos" 
-              type="file"
-              multiple
-              className="cursor-pointer"
-            />
-            <p className="text-xs text-muted-foreground">
-              Anexe documentos relacionados ao expediente (PDF, DOCX, imagens)
-            </p>
-          </div>
+          <DocumentChecklist
+            documents={[
+              "Ofício original",
+              "Memorando",
+              "Despacho",
+              "Circular",
+              "Informação técnica",
+              "Nota de expediente",
+              "Resposta a expediente anterior",
+              "Documentos de suporte/comprovação"
+            ]}
+            label="Documentos e Anexos"
+          />
 
           <div className="flex gap-4 justify-end pt-4 border-t">
             <Button type="button" variant="outline" onClick={onBack}>

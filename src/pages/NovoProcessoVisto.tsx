@@ -11,6 +11,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useState } from "react";
 import { EntitySelector } from "@/components/ui/entity-selector";
+import { DocumentChecklist } from "@/components/ui/document-checklist";
 
 const vistoSchema = z.object({
   tipoVisto: z.string().min(1, "Tipo de visto é obrigatório"),
@@ -197,32 +198,20 @@ export const NovoProcessoVisto = ({ onBack }: NovoProcessoVistoProps) => {
         </Card>
 
         <Card className="p-6">
-          <h3 className="text-lg font-semibold mb-4 text-foreground">Documentação Anexa</h3>
-          
-          <div className="space-y-4">
-            <div className="border-2 border-dashed border-border rounded-lg p-6 text-center">
-              <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
-              <p className="text-sm text-muted-foreground mb-2">
-                Arraste e solte os documentos aqui ou clique para selecionar
-              </p>
-              <Button type="button" variant="outline" size="sm">
-                Selecionar Documentos
-              </Button>
-            </div>
-            
-            <div className="bg-muted/30 p-4 rounded-lg">
-              <p className="text-sm font-semibold text-foreground mb-2">Documentos Obrigatórios (Check List):</p>
-              <ul className="text-xs text-muted-foreground space-y-1 list-disc list-inside">
-                <li>Ofício de Solicitação de Visto</li>
-                <li>Minuta do Contrato</li>
-                <li>Cabimento Orçamental</li>
-                <li>Proposta Adjudicação / Despacho de Adjudicação</li>
-                <li>Programa de Concurso / Caderno de Encargos</li>
-                <li>Documentos de Habilitação da Empresa</li>
-                <li>Outros documentos específicos conforme o tipo de contrato</li>
-              </ul>
-            </div>
-          </div>
+          <DocumentChecklist
+            documents={[
+              "Ofício de Solicitação de Visto",
+              "Minuta do Contrato",
+              "Cabimento Orçamental",
+              "Proposta de Adjudicação / Despacho de Adjudicação",
+              "Programa de Concurso / Caderno de Encargos",
+              "Documentos de Habilitação da Empresa",
+              "Certidão negativa de dívidas fiscais",
+              "Declaração de regularidade com Segurança Social",
+              "Outros documentos específicos do contrato"
+            ]}
+            label="Documentação Anexa ao Pedido de Visto"
+          />
         </Card>
 
         <Card className="p-6">

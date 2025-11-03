@@ -10,6 +10,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useToast } from "@/hooks/use-toast";
 import { EntitySelector } from "@/components/ui/entity-selector";
+import { DocumentChecklist } from "@/components/ui/document-checklist";
 
 const processoMultaSchema = z.object({
   numeroProcesso: z.string().trim().min(1, "Número do processo é obrigatório").max(50),
@@ -220,6 +221,22 @@ export const NovoProcessoMulta = ({ onBack }: NovoProcessoMultaProps) => {
                   )}
                 </div>
               </div>
+            </div>
+
+            {/* Documentos */}
+            <div>
+              <DocumentChecklist
+                documents={[
+                  "Auto de infração",
+                  "Notificação de autuação",
+                  "Comprovantes da infração",
+                  "Documentação legal de suporte",
+                  "Relatório de fiscalização",
+                  "Despacho de aplicação da multa",
+                  "Ofício de notificação à entidade"
+                ]}
+                label="Documentos do Processo de Multa"
+              />
             </div>
 
             {/* Observações */}

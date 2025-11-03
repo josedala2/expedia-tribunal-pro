@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { FileText, Upload } from "lucide-react";
 import { EntitySelector } from "@/components/ui/entity-selector";
+import { DocumentChecklist } from "@/components/ui/document-checklist";
 import { useState } from "react";
 
 interface RececaoRequerimentoFormProps {
@@ -89,18 +90,18 @@ export const RececaoRequerimentoForm = ({ onSubmit, onCancel }: RececaoRequerime
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="documentos">Documentos Anexos</Label>
-            <Input
-              id="documentos"
-              name="documentos"
-              type="file"
-              multiple
-            />
-            <p className="text-sm text-muted-foreground">
-              Anexe os documentos que suportam o requerimento de recurso
-            </p>
-          </div>
+          <DocumentChecklist
+            documents={[
+              "Requerimento de recurso",
+              "Fundamentação do recurso",
+              "Documentos de prova",
+              "Cópia da decisão recorrida",
+              "Procuração do advogado (se aplicável)",
+              "Comprovante de pagamento de custas",
+              "Outros documentos de suporte"
+            ]}
+            label="Documentos Anexos ao Recurso"
+          />
 
           <div className="flex gap-2 justify-end">
             <Button type="button" variant="outline" onClick={onCancel}>

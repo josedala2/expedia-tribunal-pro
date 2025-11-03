@@ -12,6 +12,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useState } from "react";
 import { EntitySelector } from "@/components/ui/entity-selector";
+import { DocumentChecklist } from "@/components/ui/document-checklist";
 
 const prestacaoSchema = z.object({
   entidade: z.string().min(3, "Nome da entidade é obrigatório"),
@@ -308,39 +309,20 @@ export const NovoProcessoPrestacao = ({ onBack }: NovoProcessoPrestacaoProps) =>
 
           {/* Documentos Obrigatórios */}
           <div className="space-y-4 pt-4 border-t">
-            <h3 className="text-lg font-semibold text-foreground">Documentos e Demonstrações</h3>
-            <Card className="p-4 bg-muted/50">
-              <p className="text-sm font-semibold mb-3">Checklist de Documentos Obrigatórios:</p>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li className="flex items-center gap-2">
-                  <div className="h-2 w-2 rounded-full bg-primary"></div>
-                  Demonstrações numéricas das operações contabilísticas
-                </li>
-                <li className="flex items-center gap-2">
-                  <div className="h-2 w-2 rounded-full bg-primary"></div>
-                  Balanço patrimonial
-                </li>
-                <li className="flex items-center gap-2">
-                  <div className="h-2 w-2 rounded-full bg-primary"></div>
-                  Demonstração de resultados
-                </li>
-                <li className="flex items-center gap-2">
-                  <div className="h-2 w-2 rounded-full bg-primary"></div>
-                  Fluxo de caixa
-                </li>
-                <li className="flex items-center gap-2">
-                  <div className="h-2 w-2 rounded-full bg-primary"></div>
-                  Notas explicativas às demonstrações financeiras
-                </li>
-                <li className="flex items-center gap-2">
-                  <div className="h-2 w-2 rounded-full bg-primary"></div>
-                  Relatório de execução orçamental
-                </li>
-              </ul>
-              <p className="text-xs text-muted-foreground mt-3">
-                Os documentos serão anexados após a criação do processo.
-              </p>
-            </Card>
+            <DocumentChecklist
+              documents={[
+                "Demonstrações numéricas das operações contabilísticas",
+                "Balanço patrimonial",
+                "Demonstração de resultados",
+                "Fluxo de caixa",
+                "Notas explicativas às demonstrações financeiras",
+                "Relatório de execução orçamental",
+                "Balancetes mensais",
+                "Comprovantes de despesas",
+                "Documentos de receitas"
+              ]}
+              label="Documentos e Demonstrações"
+            />
           </div>
 
           {/* Observações */}
