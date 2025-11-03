@@ -32,7 +32,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { toast } from "sonner";
+import { PromocaoMPViewDialog } from "@/components/visto/ViewDialogs";
+import { useToast } from "@/hooks/use-toast";
 
 interface PromocaoMinisterioPublicoProps {
   onBack: () => void;
@@ -40,7 +41,10 @@ interface PromocaoMinisterioPublicoProps {
 }
 
 export const PromocaoMinisterioPublico = ({ onBack, onNavigate }: PromocaoMinisterioPublicoProps) => {
+  const { toast } = useToast();
   const [activeForm, setActiveForm] = useState<string | null>(null);
+  const [selectedPromocao, setSelectedPromocao] = useState<any>(null);
+  const [showViewDialog, setShowViewDialog] = useState(false);
   const [formData, setFormData] = useState({
     numeroProcesso: "",
     procurador: "",
@@ -51,23 +55,39 @@ export const PromocaoMinisterioPublico = ({ onBack, onNavigate }: PromocaoMinist
   });
 
   const handleView = (id: string) => {
-    console.log("Ver promoção:", id);
+    const promocao = promocoes.find(p => p.id === id);
+    if (promocao) {
+      setSelectedPromocao(promocao);
+      setShowViewDialog(true);
+    }
+  };
+
+  const handleEdit = () => {
+    setShowViewDialog(false);
+    setActiveForm("novo");
   };
 
   const handleChangeStatus = (id: string, status: string) => {
-    console.log("Mudar status da promoção:", id, "para", status);
-    toast.success("Status alterado com sucesso!");
+    toast({
+      title: "Status alterado",
+      description: `Status alterado para: ${status}`,
+    });
   };
 
   const handleDelete = (id: string) => {
-    console.log("Eliminar promoção:", id);
-    toast.success("Promoção eliminada com sucesso!");
+    toast({
+      title: "Promoção eliminada",
+      description: "A promoção foi eliminada com sucesso.",
+      variant: "destructive",
+    });
   };
 
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Dados do formulário:", formData);
-    toast.success("Promoção do Ministério Público registada com sucesso!");
+    toast({
+      title: "Promoção registada",
+      description: "Promoção do Ministério Público registada com sucesso!",
+    });
     setActiveForm(null);
     setFormData({
       numeroProcesso: "",
@@ -505,6 +525,16 @@ export const PromocaoMinisterioPublico = ({ onBack, onNavigate }: PromocaoMinist
           </form>
         </DialogContent>
       </Dialog>
+
+      {/* Dialog de Visualização */}
+      <PromocaoMPViewDialog
+        open={showViewDialog}
+        onOpenChange={setShowViewDialog}
+        data={selectedPromocao}
+        onEdit={handleEdit}
+        getStatusColor={getStatusColor}
+        getParecerColor={getParecerColor}
+      />
     </div>
   );
 };

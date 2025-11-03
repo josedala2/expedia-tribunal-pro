@@ -32,7 +32,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { toast } from "sonner";
+import { ConclusaoAutosViewDialog } from "@/components/visto/ViewDialogs";
+import { useToast } from "@/hooks/use-toast";
 
 interface ConclusaoAutosCGSFPProps {
   onBack: () => void;
@@ -40,7 +41,10 @@ interface ConclusaoAutosCGSFPProps {
 }
 
 export const ConclusaoAutosCGSFP = ({ onBack, onNavigate }: ConclusaoAutosCGSFPProps) => {
+  const { toast } = useToast();
   const [activeForm, setActiveForm] = useState<string | null>(null);
+  const [selectedTermo, setSelectedTermo] = useState<any>(null);
+  const [showViewDialog, setShowViewDialog] = useState(false);
   const [formData, setFormData] = useState({
     numeroProcesso: "",
     escrivao: "",
@@ -50,23 +54,39 @@ export const ConclusaoAutosCGSFP = ({ onBack, onNavigate }: ConclusaoAutosCGSFPP
   });
 
   const handleView = (id: string) => {
-    console.log("Ver termo:", id);
+    const termo = termos.find(t => t.id === id);
+    if (termo) {
+      setSelectedTermo(termo);
+      setShowViewDialog(true);
+    }
+  };
+
+  const handleEdit = () => {
+    setShowViewDialog(false);
+    setActiveForm("novo");
   };
 
   const handleChangeStatus = (id: string, status: string) => {
-    console.log("Mudar status do termo:", id, "para", status);
-    toast.success("Status alterado com sucesso!");
+    toast({
+      title: "Status alterado",
+      description: `Status alterado para: ${status}`,
+    });
   };
 
   const handleDelete = (id: string) => {
-    console.log("Eliminar termo:", id);
-    toast.success("Termo eliminado com sucesso!");
+    toast({
+      title: "Termo eliminado",
+      description: "O termo foi eliminado com sucesso.",
+      variant: "destructive",
+    });
   };
 
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Dados do formulário:", formData);
-    toast.success("Termo de Conclusão elaborado com sucesso!");
+    toast({
+      title: "Termo registado",
+      description: "Termo de Conclusão elaborado com sucesso!",
+    });
     setActiveForm(null);
     setFormData({
       numeroProcesso: "",
@@ -481,6 +501,15 @@ export const ConclusaoAutosCGSFP = ({ onBack, onNavigate }: ConclusaoAutosCGSFPP
           </form>
         </DialogContent>
       </Dialog>
+
+      {/* Dialog de Visualização */}
+      <ConclusaoAutosViewDialog
+        open={showViewDialog}
+        onOpenChange={setShowViewDialog}
+        data={selectedTermo}
+        onEdit={handleEdit}
+        getStatusColor={getStatusColor}
+      />
     </div>
   );
 };

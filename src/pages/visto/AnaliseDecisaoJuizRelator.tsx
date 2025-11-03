@@ -32,7 +32,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { toast } from "sonner";
+import { AnaliseDecisaoViewDialog } from "@/components/visto/ViewDialogs";
+import { useToast } from "@/hooks/use-toast";
 
 interface AnaliseDecisaoJuizRelatorProps {
   onBack: () => void;
@@ -40,7 +41,10 @@ interface AnaliseDecisaoJuizRelatorProps {
 }
 
 export const AnaliseDecisaoJuizRelator = ({ onBack, onNavigate }: AnaliseDecisaoJuizRelatorProps) => {
+  const { toast } = useToast();
   const [activeForm, setActiveForm] = useState<string | null>(null);
+  const [selectedAnalise, setSelectedAnalise] = useState<any>(null);
+  const [showViewDialog, setShowViewDialog] = useState(false);
   const [formData, setFormData] = useState({
     numeroProcesso: "",
     juizRelator: "",
@@ -51,23 +55,39 @@ export const AnaliseDecisaoJuizRelator = ({ onBack, onNavigate }: AnaliseDecisao
   });
 
   const handleView = (id: string) => {
-    console.log("Ver análise:", id);
+    const analise = analises.find(a => a.id === id);
+    if (analise) {
+      setSelectedAnalise(analise);
+      setShowViewDialog(true);
+    }
+  };
+
+  const handleEdit = () => {
+    setShowViewDialog(false);
+    setActiveForm("novo");
   };
 
   const handleChangeStatus = (id: string, status: string) => {
-    console.log("Mudar status da análise:", id, "para", status);
-    toast.success("Status alterado com sucesso!");
+    toast({
+      title: "Status alterado",
+      description: `Status alterado para: ${status}`,
+    });
   };
 
   const handleDelete = (id: string) => {
-    console.log("Eliminar análise:", id);
-    toast.success("Análise eliminada com sucesso!");
+    toast({
+      title: "Análise eliminada",
+      description: "A análise foi eliminada com sucesso.",
+      variant: "destructive",
+    });
   };
 
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Dados do formulário:", formData);
-    toast.success("Decisão do Juiz Relator registada com sucesso!");
+    toast({
+      title: "Decisão registada",
+      description: "Decisão do Juiz Relator registada com sucesso!",
+    });
     setActiveForm(null);
     setFormData({
       numeroProcesso: "",
@@ -507,6 +527,15 @@ export const AnaliseDecisaoJuizRelator = ({ onBack, onNavigate }: AnaliseDecisao
           </form>
         </DialogContent>
       </Dialog>
+
+      {/* Dialog de Visualização */}
+      <AnaliseDecisaoViewDialog
+        open={showViewDialog}
+        onOpenChange={setShowViewDialog}
+        data={selectedAnalise}
+        onEdit={handleEdit}
+        getStatusColor={getStatusColor}
+      />
     </div>
   );
 };
