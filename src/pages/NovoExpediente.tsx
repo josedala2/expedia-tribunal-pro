@@ -76,18 +76,22 @@ export const NovoExpediente = ({ onBack }: NovoExpedienteProps) => {
     
     const novaActa: ActaRecepcaoData = {
       numeroExpediente,
-      numeroActa,
       tipo: data.tipo,
       assunto: data.assunto,
       entidade: data.natureza === "externo" 
         ? (data.entidadeExterna || "Entidade Externa") 
         : data.origem,
-      remetente: data.origem,
-      email: data.emailExterno,
-      telefone: data.telefoneExterno,
+      dataEmissao: new Date().toISOString(),
+      numeroPaginas: "1",
+      responsavelEntregaNome: data.origem,
+      responsavelEntregaCargo: data.natureza === "externo" ? "Representante" : undefined,
+      responsavelEntregaInstituicao: data.natureza === "externo" ? data.entidadeExterna : undefined,
+      responsavelRecepcaoNome: "Funcionário do Tribunal de Contas",
+      responsavelRecepcaoCargo: "Técnico de Protocolo",
+      responsavelRecepcaoDepartamento: data.destino,
       dataRecepcao: new Date().toISOString(),
-      recebidoPor: "Sistema de Gestão de Processos",
-      urlVerificacao,
+      local: "Luanda, Tribunal de Contas da República de Angola",
+      observacoes: "Documento recebido e registado no sistema de gestão documental.",
     };
     
     setActaData(novaActa);
