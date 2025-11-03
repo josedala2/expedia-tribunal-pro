@@ -38,7 +38,7 @@ export default function AnaliseDecisaoFinalJuizRelator() {
   ]);
 
   const [filtroProcesso, setFiltroProcesso] = useState("");
-  const [filtroDecisao, setFiltroDecisao] = useState("");
+  const [filtroDecisao, setFiltroDecisao] = useState("all");
   const [novaAnalise, setNovaAnalise] = useState({
     numeroProcesso: "",
     entidade: "",
@@ -72,7 +72,7 @@ export default function AnaliseDecisaoFinalJuizRelator() {
 
   const analisesFiltered = analises.filter(a => 
     a.numeroProcesso.toLowerCase().includes(filtroProcesso.toLowerCase()) &&
-    (filtroDecisao === "" || a.decisao === filtroDecisao)
+    (filtroDecisao === "all" || a.decisao === filtroDecisao)
   );
 
   const getDecisaoBadge = (decisao: AnaliseDecisao["decisao"]) => {
@@ -260,7 +260,7 @@ export default function AnaliseDecisaoFinalJuizRelator() {
                 <SelectValue placeholder="Filtrar por decisão" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todas</SelectItem>
+                <SelectItem value="all">Todas</SelectItem>
                 <SelectItem value="Aprovado">Aprovado</SelectItem>
                 <SelectItem value="Rejeitado">Rejeitado</SelectItem>
                 <SelectItem value="Diligência">Diligência</SelectItem>

@@ -44,7 +44,7 @@ export default function CumprimentoDespachoADFJR() {
   ]);
 
   const [filtroProcesso, setFiltroProcesso] = useState("");
-  const [filtroStatus, setFiltroStatus] = useState("");
+  const [filtroStatus, setFiltroStatus] = useState("all");
   const [novoCumprimento, setNovoCumprimento] = useState({
     numeroProcesso: "",
     entidade: "",
@@ -84,7 +84,7 @@ export default function CumprimentoDespachoADFJR() {
 
   const cumprimentosFiltered = cumprimentos.filter(c => 
     c.numeroProcesso.toLowerCase().includes(filtroProcesso.toLowerCase()) &&
-    (filtroStatus === "" || c.status === filtroStatus)
+    (filtroStatus === "all" || c.status === filtroStatus)
   );
 
   const getStatusBadge = (status: CumprimentoDespacho["status"]) => {
@@ -305,7 +305,7 @@ export default function CumprimentoDespachoADFJR() {
                 <SelectValue placeholder="Filtrar por status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todos</SelectItem>
+                <SelectItem value="all">Todos</SelectItem>
                 <SelectItem value="Cumprido">Cumprido</SelectItem>
                 <SelectItem value="Pendente">Pendente</SelectItem>
                 <SelectItem value="Parcial">Parcial</SelectItem>
