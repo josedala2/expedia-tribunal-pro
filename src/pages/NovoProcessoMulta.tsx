@@ -108,7 +108,7 @@ export const NovoProcessoMulta = ({ onBack }: NovoProcessoMultaProps) => {
                 <EntitySelector
                   value={watch("entidade")}
                   onChange={(value) => setValue("entidade", value)}
-                  label="Nome da Entidade/Pessoa"
+                  label="Entidade/Demandado"
                   required
                   error={errors.entidade?.message}
                 />
