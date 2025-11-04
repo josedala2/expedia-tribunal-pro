@@ -65,7 +65,6 @@ export const NovoProcessoPrestacao = ({ onBack }: NovoProcessoPrestacaoProps) =>
   });
 
   const onSubmit = (data: PrestacaoForm) => {
-    console.log("Processo criado:", data);
     toast({
       title: "Processo de Prestação de Contas criado!",
       description: `Expediente da entidade ${data.entidade} registado com sucesso. Acta de recebimento será emitida.`,

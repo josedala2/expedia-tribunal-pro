@@ -41,7 +41,6 @@ export const NovoProcessoVisto = ({ onBack }: NovoProcessoVistoProps) => {
 
   const onSubmit = (data: VistoForm) => {
     setIsSubmitting(true);
-    console.log("Pedido de visto criado:", data);
     
     setTimeout(() => {
       toast({

@@ -47,21 +47,18 @@ export const InterposicaoRecurso = ({ onBack, onNavigate }: InterposicaoRecursoP
   const [activeForm, setActiveForm] = useState<string | null>(null);
 
   const handleView = (id: string) => {
-    console.log("Ver recurso:", id);
+    // Ver recurso
   };
 
   const handleChangeStatus = (id: string, status: string) => {
-    console.log("Mudar status do recurso:", id, "para", status);
     toast.success("Status alterado com sucesso!");
   };
 
   const handleDelete = (id: string) => {
-    console.log("Eliminar recurso:", id);
     toast.success("Recurso eliminado com sucesso!");
   };
 
   const handleFormSubmit = (data: any) => {
-    console.log("Dados do formulário:", data);
     toast.success("Formulário submetido com sucesso!");
     setActiveForm(null);
   };

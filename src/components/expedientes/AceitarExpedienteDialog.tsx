@@ -58,7 +58,6 @@ export const AceitarExpedienteDialog = ({
         .eq('id', expediente.id);
 
       if (error) {
-        console.error("Erro ao aceitar expediente:", error);
         toast({
           title: "Erro",
           description: "Não foi possível aceitar o expediente.",
@@ -75,8 +74,7 @@ export const AceitarExpedienteDialog = ({
       onAceito();
       onOpenChange(false);
       setNomeResponsavel("");
-    } catch (error) {
-      console.error("Erro ao aceitar expediente:", error);
+    } catch (error: any) {
       toast({
         title: "Erro",
         description: "Ocorreu um erro inesperado.",

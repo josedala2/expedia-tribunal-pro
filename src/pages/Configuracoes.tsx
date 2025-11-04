@@ -1,11 +1,31 @@
 import { ArrowLeft, Settings, User, Bell, Shield, Database } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useTheme } from "next-themes";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+
+const passwordSchema = z.object({
+  senhaAtual: z.string().min(6, "Senha deve ter no mínimo 6 caracteres"),
+  novaSenha: z.string()
+    .min(8, "Nova senha deve ter no mínimo 8 caracteres")
+    .regex(/[A-Z]/, "Deve conter pelo menos uma letra maiúscula")
+    .regex(/[a-z]/, "Deve conter pelo menos uma letra minúscula")
+    .regex(/[0-9]/, "Deve conter pelo menos um número"),
+  confirmarSenha: z.string()
+}).refine((data) => data.novaSenha === data.confirmarSenha, {
+  message: "As senhas não coincidem",
+  path: ["confirmarSenha"],
+});
+
+type PasswordForm = z.infer<typeof passwordSchema>;
 
 interface ConfiguracoesProps {
   onBack: () => void;
@@ -13,6 +33,33 @@ interface ConfiguracoesProps {
 
 export const Configuracoes = ({ onBack }: ConfiguracoesProps) => {
   const { theme, setTheme } = useTheme();
+  const { toast } = useToast();
+  
+  const { register, handleSubmit, formState: { errors }, reset } = useForm<PasswordForm>({
+    resolver: zodResolver(passwordSchema)
+  });
+
+  const onPasswordSubmit = async (data: PasswordForm) => {
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: data.novaSenha
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Senha atualizada",
+        description: "Sua senha foi alterada com sucesso.",
+      });
+      reset();
+    } catch (error: any) {
+      toast({
+        title: "Erro ao atualizar senha",
+        description: error.message || "Ocorreu um erro ao alterar a senha.",
+        variant: "destructive"
+      });
+    }
+  };
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
@@ -130,23 +177,49 @@ export const Configuracoes = ({ onBack }: ConfiguracoesProps) => {
               </div>
             </div>
 
-            <div className="space-y-4">
+            <form onSubmit={handleSubmit(onPasswordSubmit)} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="senha-atual">Senha Atual</Label>
-                <Input id="senha-atual" type="password" />
+                <Input 
+                  id="senha-atual" 
+                  type="password" 
+                  {...register("senhaAtual")}
+                />
+                {errors.senhaAtual && (
+                  <p className="text-sm text-destructive">{errors.senhaAtual.message}</p>
+                )}
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="nova-senha">Nova Senha</Label>
-                <Input id="nova-senha" type="password" />
+                <Input 
+                  id="nova-senha" 
+                  type="password" 
+                  {...register("novaSenha")}
+                />
+                {errors.novaSenha && (
+                  <p className="text-sm text-destructive">{errors.novaSenha.message}</p>
+                )}
+                <p className="text-sm text-muted-foreground">
+                  Mínimo 8 caracteres, com letras maiúsculas, minúsculas e números
+                </p>
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="confirmar-senha">Confirmar Nova Senha</Label>
-                <Input id="confirmar-senha" type="password" />
+                <Input 
+                  id="confirmar-senha" 
+                  type="password" 
+                  {...register("confirmarSenha")}
+                />
+                {errors.confirmarSenha && (
+                  <p className="text-sm text-destructive">{errors.confirmarSenha.message}</p>
+                )}
               </div>
 
-              <Button className="bg-primary hover:bg-primary-hover">Atualizar Senha</Button>
+              <Button type="submit" className="bg-primary hover:bg-primary-hover">
+                Atualizar Senha
+              </Button>
 
               <div className="pt-6 border-t">
                 <div className="flex items-center justify-between">
@@ -157,7 +230,7 @@ export const Configuracoes = ({ onBack }: ConfiguracoesProps) => {
                   <Switch />
                 </div>
               </div>
-            </div>
+            </form>
           </Card>
         </TabsContent>
 

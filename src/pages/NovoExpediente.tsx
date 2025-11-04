@@ -98,8 +98,6 @@ export const NovoExpediente = ({ onBack }: NovoExpedienteProps) => {
   };
 
   const onSubmit = async (data: ExpedienteForm) => {
-    console.log("Expediente criado:", data);
-    
     // Sempre gera a acta de recepção para todos os expedientes
     const numeroExpediente = gerarNumeroExpediente();
     const numeroActa = gerarNumeroActa();
@@ -201,7 +199,6 @@ export const NovoExpediente = ({ onBack }: NovoExpedienteProps) => {
       });
 
       if (error) {
-        console.error("Erro ao salvar expediente:", error);
         toast({
           title: "Erro ao criar expediente",
           description: "Ocorreu um erro ao salvar o expediente no sistema.",
@@ -218,8 +215,7 @@ export const NovoExpediente = ({ onBack }: NovoExpedienteProps) => {
           : "Acta de recepção gerada e expediente registado no sistema.",
       });
       onBack();
-    } catch (error) {
-      console.error("Erro ao finalizar expediente:", error);
+    } catch (error: any) {
       toast({
         title: "Erro",
         description: "Ocorreu um erro inesperado.",

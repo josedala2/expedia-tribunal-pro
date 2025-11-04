@@ -51,7 +51,6 @@ export const NovoProcessoFiscalizacao = ({ onBack }: NovoProcessoFiscalizacaoPro
   });
 
   const onSubmit = (data: FiscalizacaoForm) => {
-    console.log("Processo de Fiscalização OGE criado:", data);
     toast({
       title: "Processo de Fiscalização OGE registado!",
       description: `Relatório trimestral do ${data.trimestre} registado com sucesso. Acta de recebimento será emitida.`,

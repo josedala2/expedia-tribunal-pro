@@ -37,8 +37,8 @@ export const ComunicacoesInternas = ({ onBack }: ComunicacoesInternasProps) => {
         
         setUserProfile(data);
       }
-    } catch (error) {
-      console.error("Erro ao carregar perfil:", error);
+    } catch (error: any) {
+      // Erro ao carregar perfil
     }
   };
 
@@ -65,18 +65,17 @@ export const ComunicacoesInternas = ({ onBack }: ComunicacoesInternasProps) => {
         .order('criado_em', { ascending: false });
 
       if (error) {
-        console.error("Erro ao carregar expedientes:", error);
         toast({
           title: "Erro",
           description: "Não foi possível carregar as comunicações internas.",
-          variant: "destructive",
+          variant: "destructive"
         });
         return;
       }
 
       setExpedientes(data || []);
-    } catch (error) {
-      console.error("Erro ao carregar expedientes:", error);
+    } catch (error: any) {
+      // Erro ao carregar expedientes
     } finally {
       setLoading(false);
     }

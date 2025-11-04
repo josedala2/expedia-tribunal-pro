@@ -181,30 +181,7 @@ export type Database = {
       }
     }
     Views: {
-      expedientes_contactos_externos: {
-        Row: {
-          email_externo: string | null
-          entidade_externa: string | null
-          id: string | null
-          numero: string | null
-          telefone_externo: string | null
-        }
-        Insert: {
-          email_externo?: never
-          entidade_externa?: string | null
-          id?: string | null
-          numero?: string | null
-          telefone_externo?: never
-        }
-        Update: {
-          email_externo?: never
-          entidade_externa?: string | null
-          id?: string | null
-          numero?: string | null
-          telefone_externo?: never
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       get_user_roles: {
