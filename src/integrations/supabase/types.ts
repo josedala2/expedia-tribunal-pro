@@ -181,7 +181,30 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      expedientes_contactos_externos: {
+        Row: {
+          email_externo: string | null
+          entidade_externa: string | null
+          id: string | null
+          numero: string | null
+          telefone_externo: string | null
+        }
+        Insert: {
+          email_externo?: never
+          entidade_externa?: string | null
+          id?: string | null
+          numero?: string | null
+          telefone_externo?: never
+        }
+        Update: {
+          email_externo?: never
+          entidade_externa?: string | null
+          id?: string | null
+          numero?: string | null
+          telefone_externo?: never
+        }
+        Relationships: []
+      }
     }
     Functions: {
       get_user_roles: {
@@ -193,6 +216,10 @@ export type Database = {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
+        Returns: boolean
+      }
+      user_can_access_expediente: {
+        Args: { expediente_id: string; user_id: string }
         Returns: boolean
       }
     }
