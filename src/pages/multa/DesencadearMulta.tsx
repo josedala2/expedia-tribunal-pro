@@ -10,6 +10,23 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+
+const desencadearMultaSchema = z.object({
+  processoOrigem: z.string().trim().min(1, "Processo de origem é obrigatório").max(50, "Máximo 50 caracteres"),
+  tipoProcesso: z.string().trim().min(1, "Tipo de processo é obrigatório"),
+  entidade: z.string().trim().min(3, "Nome da entidade é obrigatório").max(200, "Máximo 200 caracteres"),
+  infracoes: z.string().trim().min(10, "Descrição das infrações deve ter no mínimo 10 caracteres").max(2000, "Máximo 2000 caracteres"),
+  fundamentacao: z.string().trim().min(20, "Fundamentação deve ter no mínimo 20 caracteres").max(5000, "Máximo 5000 caracteres"),
+  numeroMulta: z.string().trim().min(1, "Número do processo de multa é obrigatório").max(50, "Máximo 50 caracteres"),
+  dataDespacho: z.string().trim().min(1, "Data do despacho é obrigatória"),
+  artigosLei: z.string().trim().min(1, "Artigos da lei são obrigatórios").max(200, "Máximo 200 caracteres"),
+  procuradorMP: z.string().trim().min(1, "Procurador do MP é obrigatório"),
+  observacoes: z.string().trim().max(1000, "Máximo 1000 caracteres").optional().or(z.literal("")),
+});
+
+type DesencadearMultaForm = z.infer<typeof desencadearMultaSchema>;
 
 interface DesencadearMultaProps {
   onBack: () => void;
@@ -18,7 +35,9 @@ interface DesencadearMultaProps {
 
 export const DesencadearMulta = ({ onBack }: DesencadearMultaProps) => {
   const { toast } = useToast();
-  const { register, handleSubmit, setValue } = useForm();
+  const { register, handleSubmit, formState: { errors }, setValue } = useForm<DesencadearMultaForm>({
+    resolver: zodResolver(desencadearMultaSchema)
+  });
   const [showForm, setShowForm] = useState(false);
 
   const processosComInfracoes = [
@@ -27,7 +46,7 @@ export const DesencadearMulta = ({ onBack }: DesencadearMultaProps) => {
     { id: "3", numero: "FO/2024/089", entidade: "Fundação Z", tipo: "Fiscalização OGE", infracoes: "Desvio de Fundos", status: "Pendente" },
   ];
 
-  const onSubmit = (data: any) => {
+  const onSubmit = (data: DesencadearMultaForm) => {
     toast({
       title: "Processo Autónomo de Multa Desencadeado",
       description: "Autos remetidos ao Ministério Público para elaboração do requerimento inicial.",

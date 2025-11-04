@@ -263,17 +263,15 @@ export default function NovoExpedienteSaida({ onNavigate }: NovoExpedienteSaidaP
           </DialogHeader>
           {formData.tipo === "oficio" && (
             <OficioTemplate
-              data={{
-                numero: formData.numero,
-                destinatario: formData.destinatario,
-                cargo: formData.cargo,
-                entidade: formData.entidade,
-                assunto: formData.assunto,
-                conteudo: formData.conteudo,
-                assinante: formData.responsavel,
-                cargoAssinante: formData.cargoResponsavel,
-                data: new Date()
-              }}
+              numero={formData.numero}
+              data={new Date().toISOString()}
+              destinatario={formData.destinatario}
+              cargo={formData.cargo}
+              entidade={formData.entidade}
+              assunto={formData.assunto}
+              conteudo={formData.conteudo}
+              assinante={formData.responsavel}
+              cargoAssinante={formData.cargoResponsavel}
             />
           )}
         </DialogContent>
