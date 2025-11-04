@@ -108,8 +108,8 @@ const Index = () => {
           onNavigate={handleNavigate}
         />
         
-        <main className={`flex-1 transition-all duration-300 ${isSidebarOpen ? 'ml-80' : 'ml-0'}`}>
-          <div className="container mx-auto p-6">
+        <main className={`flex-1 transition-all duration-300 ${isSidebarOpen ? 'lg:ml-80' : 'ml-0'}`}>
+          <div className="container mx-auto p-3 md:p-6">
             {currentView === "dashboard" && <Dashboard onNavigate={handleNavigate} />}
             {currentView === "processes" && <ProcessList onViewProcess={handleViewProcess} />}
             {currentView === "process-detail" && selectedProcessId && (

@@ -160,20 +160,21 @@ export const TramitacaoFiscalizacaoOGE = ({ onBack, onNavigate }: TramitacaoFisc
           <CardTitle>Processos de Fiscalização OGE em Tramitação</CardTitle>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Nº Processo</TableHead>
-                <TableHead>Ano Exercício</TableHead>
-                <TableHead>Trimestre</TableHead>
-                <TableHead>Etapa Atual</TableHead>
-                <TableHead>Divisão/Câmara</TableHead>
-                <TableHead>Responsável</TableHead>
-                <TableHead>Data Início</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Ações</TableHead>
-              </TableRow>
-            </TableHeader>
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="min-w-[120px]">Nº Processo</TableHead>
+                  <TableHead className="min-w-[100px]">Ano Exercício</TableHead>
+                  <TableHead className="min-w-[100px]">Trimestre</TableHead>
+                  <TableHead className="min-w-[150px]">Etapa Atual</TableHead>
+                  <TableHead className="min-w-[150px]">Divisão/Câmara</TableHead>
+                  <TableHead className="min-w-[150px]">Responsável</TableHead>
+                  <TableHead className="min-w-[100px]">Data Início</TableHead>
+                  <TableHead className="min-w-[100px]">Status</TableHead>
+                  <TableHead className="text-right min-w-[150px]">Ações</TableHead>
+                </TableRow>
+              </TableHeader>
             <TableBody>
               {processos.map((processo) => (
                 <TableRow key={processo.id}>
@@ -250,7 +251,7 @@ export const TramitacaoFiscalizacaoOGE = ({ onBack, onNavigate }: TramitacaoFisc
                           </AlertDialogHeader>
                           <AlertDialogFooter>
                             <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                            <AlertDialogAction onClick={() => handleDelete(processo.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                            <AlertDialogAction onClick={() => handleDelete(processo.id)}>
                               Eliminar
                             </AlertDialogAction>
                           </AlertDialogFooter>
@@ -262,6 +263,7 @@ export const TramitacaoFiscalizacaoOGE = ({ onBack, onNavigate }: TramitacaoFisc
               ))}
             </TableBody>
           </Table>
+          </div>
         </CardContent>
       </Card>
     </div>
