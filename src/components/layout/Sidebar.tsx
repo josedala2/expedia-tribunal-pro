@@ -28,7 +28,6 @@ const menuGroups = [
         icon: LayoutDashboard,
         submenu: [
           { id: "portal-intranet", label: "Início" },
-          { id: "meu-perfil", label: "Meu Perfil" },
           { id: "assiduidade", label: "Assiduidade e Ponto" },
           { id: "ferias", label: "Férias" },
           { id: "remuneracoes", label: "Remunerações" },
@@ -169,7 +168,7 @@ const menuGroups = [
 
 export const Sidebar = ({ isOpen, currentView, onNavigate }: SidebarProps) => {
   const [expandedGroups, setExpandedGroups] = useState<string[]>(["dashboard-group", "portal-intranet-group", "expedientes-group", "prestacao-contas-group", "visto-group", "fiscalizacao-group", "multas-group"]);
-  const [expandedMenus, setExpandedMenus] = useState<string[]>(["portal-intranet", "meu-perfil", "prestacao-contas", "visto", "fiscalizacao", "recurso-ordinario", "recurso-inconstitucionalidade"]);
+  const [expandedMenus, setExpandedMenus] = useState<string[]>(["portal-intranet", "prestacao-contas", "visto", "fiscalizacao", "recurso-ordinario", "recurso-inconstitucionalidade"]);
 
   const toggleGroup = (groupId: string) => {
     setExpandedGroups(prev => 
