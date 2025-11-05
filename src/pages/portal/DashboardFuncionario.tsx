@@ -247,17 +247,17 @@ export default function DashboardFuncionario({ onNavigate }: DashboardFuncionari
         <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => onNavigate('assiduidade')}>
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
-              <Clock className="h-5 w-5 text-blue-500" />
-              <CheckCircle className="h-4 w-4 text-green-500" />
+              <FileText className="h-5 w-5 text-blue-500" />
+              <Badge variant="secondary">Pendentes</Badge>
             </div>
           </CardHeader>
           <CardContent>
             <div className="space-y-1">
-              <p className="text-2xl font-bold">98.5%</p>
-              <p className="text-xs text-muted-foreground">Taxa de Pontualidade</p>
+              <p className="text-2xl font-bold">3</p>
+              <p className="text-xs text-muted-foreground">Correspondências Pendentes</p>
             </div>
             <div className="mt-2 text-xs text-muted-foreground">
-              Este mês: {format(new Date(), 'MMMM', { locale: ptBR })}
+              Requer atenção
             </div>
           </CardContent>
         </Card>
