@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Header } from "@/components/layout/Header";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Dashboard } from "@/components/dashboard/Dashboard";
+import PortalIntranet from "./portal/PortalIntranet";
+import MeuPerfil from "./portal/MeuPerfil";
 import { ProcessList } from "@/components/processes/ProcessList";
 import { ProcessDetail } from "@/components/processes/ProcessDetail";
 import { PrestacaoContas } from "@/pages/PrestacaoContas";
@@ -71,7 +73,7 @@ import { NotificacaoAcordao } from "@/pages/multa/NotificacaoAcordao";
 import { PedidoAclaracao } from "@/pages/multa/PedidoAclaracao";
 import { CobrancaCoerciva } from "@/pages/multa/CobrancaCoerciva";
 
-type View = "dashboard" | "processes" | "process-detail" | "prestacao-contas" | "visto" | "fiscalizacao" | "multas" | "novo-processo-multa" | "usuarios" | "relatorios" | "documentos" | "configuracoes" | "comunicacoes-internas" | "expedientes" | "novo-expediente" | "detalhe-expediente" | "novo-prestacao" | "detalhe-prestacao" | "novo-visto" | "detalhe-visto" | "novo-fiscalizacao" | "detalhe-fiscalizacao" | "detalhe-multa" | "expediente-processual" | "tramitacao-visto" | "cumprimento-despachos" | "saida-expediente-visto" | "interposicao-recurso" | "pedido-reducao-emolumentos" | "conclusao-autos-cgsfp" | "analise-decisao-juiz" | "promocao-mp" | "analise-decisao-final-juiz" | "cumprimento-despacho-adfjr" | "expediente-prestacao" | "tramitacao-prestacao" | "cumprimento-despachos-prestacao" | "saida-expediente-prestacao" | "prestacao-soberania" | "expediente-fiscalizacao" | "tramitacao-fiscalizacao" | "parecer-trimestral" | "saida-expediente-fiscalizacao" | "cobranca-emolumentos" | "nova-guia-cobranca" | "despacho-promocao" | "novo-despacho-promocao" | "cumprimento-despachos-geral" | "cumprimento-despacho-detail" | "oficios-remessa" | "novo-oficio-remessa" | "expedientes-saida" | "novo-expediente-saida" | "recurso-ordinario" | "recurso-ordinario-registo" | "recurso-ordinario-plenario" | "recurso-ordinario-projeto" | "recurso-ordinario-vista" | "recurso-ordinario-resolucao" | "recurso-ordinario-notificacao" | "recurso-inconstitucionalidade" | "recurso-inconstitucionalidade-apresentacao" | "recurso-inconstitucionalidade-analise" | "recursos-ativos" | "desencadear-multa" | "requerimento-inicial-multa" | "notificacao-demandado" | "pagamento-voluntario-multa" | "pagamento-prestacoes" | "contestacao-multa" | "constituicao-advogado" | "confianca-processo" | "audiencia-julgamento-multa" | "acordao-multa" | "notificacao-acordao" | "pedido-aclaracao" | "cobranca-coerciva";
+type View = "dashboard" | "portal-intranet" | "meu-perfil" | "processes" | "process-detail" | "prestacao-contas" | "visto" | "fiscalizacao" | "multas" | "novo-processo-multa" | "usuarios" | "relatorios" | "documentos" | "configuracoes" | "comunicacoes-internas" | "expedientes" | "novo-expediente" | "detalhe-expediente" | "novo-prestacao" | "detalhe-prestacao" | "novo-visto" | "detalhe-visto" | "novo-fiscalizacao" | "detalhe-fiscalizacao" | "detalhe-multa" | "expediente-processual" | "tramitacao-visto" | "cumprimento-despachos" | "saida-expediente-visto" | "interposicao-recurso" | "pedido-reducao-emolumentos" | "conclusao-autos-cgsfp" | "analise-decisao-juiz" | "promocao-mp" | "analise-decisao-final-juiz" | "cumprimento-despacho-adfjr" | "expediente-prestacao" | "tramitacao-prestacao" | "cumprimento-despachos-prestacao" | "saida-expediente-prestacao" | "prestacao-soberania" | "expediente-fiscalizacao" | "tramitacao-fiscalizacao" | "parecer-trimestral" | "saida-expediente-fiscalizacao" | "cobranca-emolumentos" | "nova-guia-cobranca" | "despacho-promocao" | "novo-despacho-promocao" | "cumprimento-despachos-geral" | "cumprimento-despacho-detail" | "oficios-remessa" | "novo-oficio-remessa" | "expedientes-saida" | "novo-expediente-saida" | "recurso-ordinario" | "recurso-ordinario-registo" | "recurso-ordinario-plenario" | "recurso-ordinario-projeto" | "recurso-ordinario-vista" | "recurso-ordinario-resolucao" | "recurso-ordinario-notificacao" | "recurso-inconstitucionalidade" | "recurso-inconstitucionalidade-apresentacao" | "recurso-inconstitucionalidade-analise" | "recursos-ativos" | "desencadear-multa" | "requerimento-inicial-multa" | "notificacao-demandado" | "pagamento-voluntario-multa" | "pagamento-prestacoes" | "contestacao-multa" | "constituicao-advogado" | "confianca-processo" | "audiencia-julgamento-multa" | "acordao-multa" | "notificacao-acordao" | "pedido-aclaracao" | "cobranca-coerciva";
 
 const Index = () => {
   const [currentView, setCurrentView] = useState<View>("dashboard");
@@ -111,6 +113,8 @@ const Index = () => {
         <main className={`flex-1 transition-all duration-300 ${isSidebarOpen ? 'lg:ml-80' : 'ml-0'}`}>
           <div className="container mx-auto p-3 md:p-6">
             {currentView === "dashboard" && <Dashboard onNavigate={handleNavigate} />}
+            {currentView === "portal-intranet" && <PortalIntranet />}
+            {currentView === "meu-perfil" && <MeuPerfil onBack={() => handleNavigate("portal-intranet")} />}
             {currentView === "processes" && <ProcessList onViewProcess={handleViewProcess} />}
             {currentView === "process-detail" && selectedProcessId && (
               <ProcessDetail processId={selectedProcessId} onBack={handleBackToList} />

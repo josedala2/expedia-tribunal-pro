@@ -19,6 +19,14 @@ const menuGroups = [
     ]
   },
   {
+    id: "portal-intranet-group",
+    title: "Portal Intranet",
+    items: [
+      { id: "portal-intranet", label: "Portal Intranet", icon: LayoutDashboard },
+      { id: "meu-perfil", label: "Meu Perfil", icon: Users },
+    ]
+  },
+  {
     id: "expedientes-group",
     title: "Expedientes Internos e Externos",
     items: [

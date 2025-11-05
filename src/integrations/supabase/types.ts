@@ -14,6 +14,95 @@ export type Database = {
   }
   public: {
     Tables: {
+      dependentes_funcionario: {
+        Row: {
+          bi: string | null
+          criado_em: string
+          data_nascimento: string | null
+          funcionario_id: string
+          id: string
+          nome_completo: string
+          parentesco: string
+        }
+        Insert: {
+          bi?: string | null
+          criado_em?: string
+          data_nascimento?: string | null
+          funcionario_id: string
+          id?: string
+          nome_completo: string
+          parentesco: string
+        }
+        Update: {
+          bi?: string | null
+          criado_em?: string
+          data_nascimento?: string | null
+          funcionario_id?: string
+          id?: string
+          nome_completo?: string
+          parentesco?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dependentes_funcionario_funcionario_id_fkey"
+            columns: ["funcionario_id"]
+            isOneToOne: false
+            referencedRelation: "funcionarios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      documentos_oficiais: {
+        Row: {
+          atualizado_em: string
+          autor_id: string | null
+          categoria: string
+          criado_em: string
+          data_documento: string | null
+          descricao: string | null
+          id: string
+          numero_documento: string | null
+          publicado: boolean | null
+          publicado_em: string | null
+          tamanho_arquivo: number | null
+          tipo_arquivo: string | null
+          titulo: string
+          url_arquivo: string | null
+        }
+        Insert: {
+          atualizado_em?: string
+          autor_id?: string | null
+          categoria: string
+          criado_em?: string
+          data_documento?: string | null
+          descricao?: string | null
+          id?: string
+          numero_documento?: string | null
+          publicado?: boolean | null
+          publicado_em?: string | null
+          tamanho_arquivo?: number | null
+          tipo_arquivo?: string | null
+          titulo: string
+          url_arquivo?: string | null
+        }
+        Update: {
+          atualizado_em?: string
+          autor_id?: string | null
+          categoria?: string
+          criado_em?: string
+          data_documento?: string | null
+          descricao?: string | null
+          id?: string
+          numero_documento?: string | null
+          publicado?: boolean | null
+          publicado_em?: string | null
+          tamanho_arquivo?: number | null
+          tipo_arquivo?: string | null
+          titulo?: string
+          url_arquivo?: string | null
+        }
+        Relationships: []
+      }
       expedientes: {
         Row: {
           aceito_destinatario: boolean | null
@@ -125,6 +214,315 @@ export type Database = {
         }
         Relationships: []
       }
+      ferias: {
+        Row: {
+          ano: number
+          aprovado_chefia_em: string | null
+          aprovado_chefia_por: string | null
+          aprovado_rh_em: string | null
+          aprovado_rh_por: string | null
+          atualizado_em: string
+          criado_em: string
+          data_fim: string
+          data_inicio: string
+          dias_solicitados: number
+          funcionario_id: string
+          id: string
+          motivo_rejeicao: string | null
+          solicitado_em: string
+          status: string
+          tipo: string
+        }
+        Insert: {
+          ano: number
+          aprovado_chefia_em?: string | null
+          aprovado_chefia_por?: string | null
+          aprovado_rh_em?: string | null
+          aprovado_rh_por?: string | null
+          atualizado_em?: string
+          criado_em?: string
+          data_fim: string
+          data_inicio: string
+          dias_solicitados: number
+          funcionario_id: string
+          id?: string
+          motivo_rejeicao?: string | null
+          solicitado_em?: string
+          status?: string
+          tipo?: string
+        }
+        Update: {
+          ano?: number
+          aprovado_chefia_em?: string | null
+          aprovado_chefia_por?: string | null
+          aprovado_rh_em?: string | null
+          aprovado_rh_por?: string | null
+          atualizado_em?: string
+          criado_em?: string
+          data_fim?: string
+          data_inicio?: string
+          dias_solicitados?: number
+          funcionario_id?: string
+          id?: string
+          motivo_rejeicao?: string | null
+          solicitado_em?: string
+          status?: string
+          tipo?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ferias_funcionario_id_fkey"
+            columns: ["funcionario_id"]
+            isOneToOne: false
+            referencedRelation: "funcionarios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      funcionarios: {
+        Row: {
+          atualizado_em: string
+          banco: string | null
+          bi: string | null
+          carreira: string | null
+          categoria: string | null
+          chefia_direta: string | null
+          contacto_email: string | null
+          contacto_telefone: string | null
+          criado_em: string
+          data_admissao: string | null
+          data_nascimento: string | null
+          departamento: string | null
+          documentos: Json | null
+          estado_civil: string | null
+          funcao_atual: string | null
+          genero: string | null
+          iban: string | null
+          id: string
+          morada: string | null
+          nif: string | null
+          nivel: number | null
+          nome_completo: string
+          numero_funcionario: string
+          situacao: string
+          tipo_vinculo: string | null
+          unidade_organica: string | null
+          user_id: string | null
+        }
+        Insert: {
+          atualizado_em?: string
+          banco?: string | null
+          bi?: string | null
+          carreira?: string | null
+          categoria?: string | null
+          chefia_direta?: string | null
+          contacto_email?: string | null
+          contacto_telefone?: string | null
+          criado_em?: string
+          data_admissao?: string | null
+          data_nascimento?: string | null
+          departamento?: string | null
+          documentos?: Json | null
+          estado_civil?: string | null
+          funcao_atual?: string | null
+          genero?: string | null
+          iban?: string | null
+          id?: string
+          morada?: string | null
+          nif?: string | null
+          nivel?: number | null
+          nome_completo: string
+          numero_funcionario: string
+          situacao?: string
+          tipo_vinculo?: string | null
+          unidade_organica?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          atualizado_em?: string
+          banco?: string | null
+          bi?: string | null
+          carreira?: string | null
+          categoria?: string | null
+          chefia_direta?: string | null
+          contacto_email?: string | null
+          contacto_telefone?: string | null
+          criado_em?: string
+          data_admissao?: string | null
+          data_nascimento?: string | null
+          departamento?: string | null
+          documentos?: Json | null
+          estado_civil?: string | null
+          funcao_atual?: string | null
+          genero?: string | null
+          iban?: string | null
+          id?: string
+          morada?: string | null
+          nif?: string | null
+          nivel?: number | null
+          nome_completo?: string
+          numero_funcionario?: string
+          situacao?: string
+          tipo_vinculo?: string | null
+          unidade_organica?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "funcionarios_chefia_direta_fkey"
+            columns: ["chefia_direta"]
+            isOneToOne: false
+            referencedRelation: "funcionarios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      logs_auditoria: {
+        Row: {
+          acao: string
+          criado_em: string
+          dados_anteriores: Json | null
+          dados_novos: Json | null
+          id: string
+          ip_address: string | null
+          registro_id: string | null
+          tabela: string
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          acao: string
+          criado_em?: string
+          dados_anteriores?: Json | null
+          dados_novos?: Json | null
+          id?: string
+          ip_address?: string | null
+          registro_id?: string | null
+          tabela: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          acao?: string
+          criado_em?: string
+          dados_anteriores?: Json | null
+          dados_novos?: Json | null
+          id?: string
+          ip_address?: string | null
+          registro_id?: string | null
+          tabela?: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      movimentacoes_funcionarios: {
+        Row: {
+          aprovado_por: string | null
+          atualizado_em: string
+          categoria_destino: string | null
+          categoria_origem: string | null
+          criado_em: string
+          data_movimentacao: string
+          despacho_numero: string | null
+          documentos: Json | null
+          funcionario_id: string
+          id: string
+          motivo: string | null
+          solicitado_por: string | null
+          status: string
+          tipo: string
+          unidade_destino: string | null
+          unidade_origem: string | null
+        }
+        Insert: {
+          aprovado_por?: string | null
+          atualizado_em?: string
+          categoria_destino?: string | null
+          categoria_origem?: string | null
+          criado_em?: string
+          data_movimentacao: string
+          despacho_numero?: string | null
+          documentos?: Json | null
+          funcionario_id: string
+          id?: string
+          motivo?: string | null
+          solicitado_por?: string | null
+          status?: string
+          tipo: string
+          unidade_destino?: string | null
+          unidade_origem?: string | null
+        }
+        Update: {
+          aprovado_por?: string | null
+          atualizado_em?: string
+          categoria_destino?: string | null
+          categoria_origem?: string | null
+          criado_em?: string
+          data_movimentacao?: string
+          despacho_numero?: string | null
+          documentos?: Json | null
+          funcionario_id?: string
+          id?: string
+          motivo?: string | null
+          solicitado_por?: string | null
+          status?: string
+          tipo?: string
+          unidade_destino?: string | null
+          unidade_origem?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "movimentacoes_funcionarios_funcionario_id_fkey"
+            columns: ["funcionario_id"]
+            isOneToOne: false
+            referencedRelation: "funcionarios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      noticias_comunicados: {
+        Row: {
+          anexos: Json | null
+          atualizado_em: string
+          autor_id: string | null
+          conteudo: string
+          criado_em: string
+          id: string
+          prioridade: string
+          publicado_em: string | null
+          status: string
+          tipo: string
+          titulo: string
+        }
+        Insert: {
+          anexos?: Json | null
+          atualizado_em?: string
+          autor_id?: string | null
+          conteudo: string
+          criado_em?: string
+          id?: string
+          prioridade?: string
+          publicado_em?: string | null
+          status?: string
+          tipo: string
+          titulo: string
+        }
+        Update: {
+          anexos?: Json | null
+          atualizado_em?: string
+          autor_id?: string | null
+          conteudo?: string
+          criado_em?: string
+          id?: string
+          prioridade?: string
+          publicado_em?: string | null
+          status?: string
+          tipo?: string
+          titulo?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string | null
@@ -157,6 +555,180 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      registos_ponto: {
+        Row: {
+          criado_em: string
+          data: string
+          entrada_manha: string | null
+          entrada_tarde: string | null
+          funcionario_id: string
+          id: string
+          observacoes: string | null
+          saida_manha: string | null
+          saida_tarde: string | null
+          tipo: string
+          validado: boolean | null
+          validado_em: string | null
+          validado_por: string | null
+        }
+        Insert: {
+          criado_em?: string
+          data: string
+          entrada_manha?: string | null
+          entrada_tarde?: string | null
+          funcionario_id: string
+          id?: string
+          observacoes?: string | null
+          saida_manha?: string | null
+          saida_tarde?: string | null
+          tipo?: string
+          validado?: boolean | null
+          validado_em?: string | null
+          validado_por?: string | null
+        }
+        Update: {
+          criado_em?: string
+          data?: string
+          entrada_manha?: string | null
+          entrada_tarde?: string | null
+          funcionario_id?: string
+          id?: string
+          observacoes?: string | null
+          saida_manha?: string | null
+          saida_tarde?: string | null
+          tipo?: string
+          validado?: boolean | null
+          validado_em?: string | null
+          validado_por?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "registos_ponto_funcionario_id_fkey"
+            columns: ["funcionario_id"]
+            isOneToOne: false
+            referencedRelation: "funcionarios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      remuneracoes: {
+        Row: {
+          ano: number
+          criado_em: string
+          desconto_inss: number | null
+          desconto_irt: number | null
+          funcionario_id: string
+          id: string
+          liquido: number | null
+          mes: number
+          observacoes: string | null
+          outros_descontos: number | null
+          outros_subsidios: number | null
+          processado: boolean | null
+          processado_em: string | null
+          subsidio_alimentacao: number | null
+          subsidio_ferias: number | null
+          subsidio_natal: number | null
+          subsidio_transporte: number | null
+          total_descontos: number | null
+          total_vencimentos: number | null
+          vencimento_base: number
+        }
+        Insert: {
+          ano: number
+          criado_em?: string
+          desconto_inss?: number | null
+          desconto_irt?: number | null
+          funcionario_id: string
+          id?: string
+          liquido?: number | null
+          mes: number
+          observacoes?: string | null
+          outros_descontos?: number | null
+          outros_subsidios?: number | null
+          processado?: boolean | null
+          processado_em?: string | null
+          subsidio_alimentacao?: number | null
+          subsidio_ferias?: number | null
+          subsidio_natal?: number | null
+          subsidio_transporte?: number | null
+          total_descontos?: number | null
+          total_vencimentos?: number | null
+          vencimento_base: number
+        }
+        Update: {
+          ano?: number
+          criado_em?: string
+          desconto_inss?: number | null
+          desconto_irt?: number | null
+          funcionario_id?: string
+          id?: string
+          liquido?: number | null
+          mes?: number
+          observacoes?: string | null
+          outros_descontos?: number | null
+          outros_subsidios?: number | null
+          processado?: boolean | null
+          processado_em?: string | null
+          subsidio_alimentacao?: number | null
+          subsidio_ferias?: number | null
+          subsidio_natal?: number | null
+          subsidio_transporte?: number | null
+          total_descontos?: number | null
+          total_vencimentos?: number | null
+          vencimento_base?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "remuneracoes_funcionario_id_fkey"
+            columns: ["funcionario_id"]
+            isOneToOne: false
+            referencedRelation: "funcionarios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      saldo_ferias: {
+        Row: {
+          ano: number
+          atualizado_em: string
+          dias_direito: number
+          dias_disponiveis: number | null
+          dias_gozados: number
+          dias_pendentes: number
+          funcionario_id: string
+          id: string
+        }
+        Insert: {
+          ano: number
+          atualizado_em?: string
+          dias_direito?: number
+          dias_disponiveis?: number | null
+          dias_gozados?: number
+          dias_pendentes?: number
+          funcionario_id: string
+          id?: string
+        }
+        Update: {
+          ano?: number
+          atualizado_em?: string
+          dias_direito?: number
+          dias_disponiveis?: number | null
+          dias_gozados?: number
+          dias_pendentes?: number
+          funcionario_id?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "saldo_ferias_funcionario_id_fkey"
+            columns: ["funcionario_id"]
+            isOneToOne: false
+            referencedRelation: "funcionarios"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
