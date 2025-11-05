@@ -5,9 +5,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { ArrowLeft, User, Building, CreditCard, Users as UsersIcon, FileText } from "lucide-react";
+import { ArrowLeft, User, Building, CreditCard, Users as UsersIcon, FileText, Edit, Plus, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
@@ -19,6 +20,19 @@ export default function MeuPerfil({ onBack }: MeuPerfilProps) {
   const [funcionario, setFuncionario] = useState<any>(null);
   const [dependentes, setDependentes] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [editando, setEditando] = useState(false);
+  const [dialogDependente, setDialogDependente] = useState(false);
+  
+  // Form edição
+  const [telefone, setTelefone] = useState("");
+  const [email, setEmail] = useState("");
+  const [morada, setMorada] = useState("");
+  
+  // Form dependente
+  const [nomeDependente, setNomeDependente] = useState("");
+  const [parentesco, setParentesco] = useState("");
+  const [dataNascDep, setDataNascDep] = useState("");
+  const [biDep, setBiDep] = useState("");
 
   useEffect(() => {
     carregarPerfil();
@@ -37,8 +51,12 @@ export default function MeuPerfil({ onBack }: MeuPerfilProps) {
           .single();
         
         setFuncionario(funcData);
-
+        
         if (funcData) {
+          setTelefone(funcData.contacto_telefone || "");
+          setEmail(funcData.contacto_email || "");
+          setMorada(funcData.morada || "");
+
           const { data: depData } = await supabase
             .from('dependentes_funcionario')
             .select('*')
@@ -52,6 +70,81 @@ export default function MeuPerfil({ onBack }: MeuPerfilProps) {
       toast.error('Erro ao carregar perfil');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const atualizarContactos = async () => {
+    if (!funcionario) return;
+
+    try {
+      const { error } = await supabase
+        .from('funcionarios')
+        .update({
+          contacto_telefone: telefone,
+          contacto_email: email,
+          morada: morada
+        })
+        .eq('id', funcionario.id);
+
+      if (error) throw error;
+
+      toast.success('Dados atualizados com sucesso');
+      setEditando(false);
+      carregarPerfil();
+    } catch (error) {
+      console.error('Erro ao atualizar dados:', error);
+      toast.error('Erro ao atualizar dados');
+    }
+  };
+
+  const adicionarDependente = async () => {
+    if (!funcionario || !nomeDependente.trim() || !parentesco.trim()) {
+      toast.error('Preencha os campos obrigatórios');
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('dependentes_funcionario')
+        .insert({
+          funcionario_id: funcionario.id,
+          nome_completo: nomeDependente,
+          parentesco: parentesco,
+          data_nascimento: dataNascDep || null,
+          bi: biDep || null
+        });
+
+      if (error) throw error;
+
+      toast.success('Dependente adicionado');
+      setDialogDependente(false);
+      setNomeDependente("");
+      setParentesco("");
+      setDataNascDep("");
+      setBiDep("");
+      carregarPerfil();
+    } catch (error) {
+      console.error('Erro ao adicionar dependente:', error);
+      toast.error('Erro ao adicionar dependente');
+    }
+  };
+
+  const removerDependente = async (id: string) => {
+    if (!confirm('Deseja realmente remover este dependente?')) return;
+
+    try {
+      const { error } = await supabase
+        .from('dependentes_funcionario')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+
+      toast.success('Dependente removido');
+      carregarPerfil();
+    } catch (error) {
+      console.error('Erro ao remover dependente:', error);
+      toast.error('Erro ao remover dependente');
     }
   };
 
@@ -117,8 +210,16 @@ export default function MeuPerfil({ onBack }: MeuPerfilProps) {
           <TabsContent value="pessoal">
             <Card>
               <CardHeader>
-                <CardTitle>Dados Pessoais</CardTitle>
-                <CardDescription>Informações básicas do funcionário</CardDescription>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>Dados Pessoais</CardTitle>
+                    <CardDescription>Informações básicas do funcionário</CardDescription>
+                  </div>
+                  <Button variant="outline" size="sm" onClick={() => setEditando(!editando)} className="gap-2">
+                    <Edit className="h-4 w-4" />
+                    {editando ? 'Cancelar' : 'Editar Contatos'}
+                  </Button>
+                </div>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -155,17 +256,40 @@ export default function MeuPerfil({ onBack }: MeuPerfilProps) {
                   </div>
                   <div>
                     <Label>Telefone</Label>
-                    <Input value={funcionario.contacto_telefone || 'N/A'} disabled />
+                    <Input 
+                      value={editando ? telefone : (funcionario.contacto_telefone || 'N/A')} 
+                      onChange={(e) => setTelefone(e.target.value)}
+                      disabled={!editando}
+                    />
                   </div>
                   <div className="md:col-span-2">
                     <Label>Email</Label>
-                    <Input value={funcionario.contacto_email || 'N/A'} disabled />
+                    <Input 
+                      type="email"
+                      value={editando ? email : (funcionario.contacto_email || 'N/A')} 
+                      onChange={(e) => setEmail(e.target.value)}
+                      disabled={!editando}
+                    />
                   </div>
                   <div className="md:col-span-2">
                     <Label>Morada</Label>
-                    <Input value={funcionario.morada || 'N/A'} disabled />
+                    <Input 
+                      value={editando ? morada : (funcionario.morada || 'N/A')} 
+                      onChange={(e) => setMorada(e.target.value)}
+                      disabled={!editando}
+                    />
                   </div>
                 </div>
+                {editando && (
+                  <div className="flex justify-end gap-2 pt-4">
+                    <Button variant="outline" onClick={() => setEditando(false)}>
+                      Cancelar
+                    </Button>
+                    <Button onClick={atualizarContactos}>
+                      Salvar Alterações
+                    </Button>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
@@ -248,8 +372,70 @@ export default function MeuPerfil({ onBack }: MeuPerfilProps) {
           <TabsContent value="dependentes">
             <Card>
               <CardHeader>
-                <CardTitle>Dependentes</CardTitle>
-                <CardDescription>Lista de dependentes registados</CardDescription>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>Dependentes</CardTitle>
+                    <CardDescription>Lista de dependentes registados</CardDescription>
+                  </div>
+                  <Dialog open={dialogDependente} onOpenChange={setDialogDependente}>
+                    <DialogTrigger asChild>
+                      <Button size="sm" className="gap-2">
+                        <Plus className="h-4 w-4" />
+                        Adicionar
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Adicionar Dependente</DialogTitle>
+                        <DialogDescription>
+                          Preencha os dados do dependente
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="space-y-4">
+                        <div>
+                          <Label>Nome Completo*</Label>
+                          <Input
+                            value={nomeDependente}
+                            onChange={(e) => setNomeDependente(e.target.value)}
+                            placeholder="Nome do dependente"
+                          />
+                        </div>
+                        <div>
+                          <Label>Parentesco*</Label>
+                          <Input
+                            value={parentesco}
+                            onChange={(e) => setParentesco(e.target.value)}
+                            placeholder="Ex: Filho(a), Cônjuge, etc."
+                          />
+                        </div>
+                        <div>
+                          <Label>Data de Nascimento</Label>
+                          <Input
+                            type="date"
+                            value={dataNascDep}
+                            onChange={(e) => setDataNascDep(e.target.value)}
+                          />
+                        </div>
+                        <div>
+                          <Label>BI</Label>
+                          <Input
+                            value={biDep}
+                            onChange={(e) => setBiDep(e.target.value)}
+                            placeholder="Número do BI"
+                          />
+                        </div>
+                      </div>
+                      <DialogFooter>
+                        <Button variant="outline" onClick={() => setDialogDependente(false)}>
+                          Cancelar
+                        </Button>
+                        <Button onClick={adicionarDependente}>
+                          Adicionar
+                        </Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+                </div>
               </CardHeader>
               <CardContent>
                 {dependentes.length === 0 ? (
@@ -262,21 +448,34 @@ export default function MeuPerfil({ onBack }: MeuPerfilProps) {
                     {dependentes.map((dep) => (
                       <Card key={dep.id} className="border">
                         <CardContent className="pt-6">
-                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div>
-                              <Label className="text-xs text-muted-foreground">Nome</Label>
-                              <p className="font-medium">{dep.nome_completo}</p>
+                          <div className="flex items-start justify-between">
+                            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 flex-1">
+                              <div>
+                                <Label className="text-xs text-muted-foreground">Nome</Label>
+                                <p className="font-medium">{dep.nome_completo}</p>
+                              </div>
+                              <div>
+                                <Label className="text-xs text-muted-foreground">Parentesco</Label>
+                                <p className="font-medium">{dep.parentesco}</p>
+                              </div>
+                              <div>
+                                <Label className="text-xs text-muted-foreground">Data de Nascimento</Label>
+                                <p className="font-medium">
+                                  {dep.data_nascimento ? format(new Date(dep.data_nascimento), 'dd/MM/yyyy') : 'N/A'}
+                                </p>
+                              </div>
+                              <div>
+                                <Label className="text-xs text-muted-foreground">BI</Label>
+                                <p className="font-medium">{dep.bi || 'N/A'}</p>
+                              </div>
                             </div>
-                            <div>
-                              <Label className="text-xs text-muted-foreground">Parentesco</Label>
-                              <p className="font-medium">{dep.parentesco}</p>
-                            </div>
-                            <div>
-                              <Label className="text-xs text-muted-foreground">Data de Nascimento</Label>
-                              <p className="font-medium">
-                                {dep.data_nascimento ? format(new Date(dep.data_nascimento), 'dd/MM/yyyy') : 'N/A'}
-                              </p>
-                            </div>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => removerDependente(dep.id)}
+                            >
+                              <Trash2 className="h-4 w-4 text-destructive" />
+                            </Button>
                           </div>
                         </CardContent>
                       </Card>

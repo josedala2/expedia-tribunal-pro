@@ -34,6 +34,7 @@ const menuGroups = [
           { id: "remuneracoes", label: "Remunerações" },
           { id: "documentos-oficiais", label: "Documentos Oficiais" },
           { id: "gestao-noticias", label: "Gestão de Notícias" },
+          { id: "gestao-rh", label: "Gestão RH (Admin)" },
         ]
       },
     ]
