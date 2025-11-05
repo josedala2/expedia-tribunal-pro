@@ -22,8 +22,20 @@ const menuGroups = [
     id: "portal-intranet-group",
     title: "Portal Intranet",
     items: [
-      { id: "portal-intranet", label: "Portal Intranet", icon: LayoutDashboard },
-      { id: "meu-perfil", label: "Meu Perfil", icon: Users },
+      { 
+        id: "portal-intranet", 
+        label: "Portal Intranet", 
+        icon: LayoutDashboard,
+        submenu: [
+          { id: "portal-intranet", label: "Início" },
+          { id: "meu-perfil", label: "Meu Perfil" },
+          { id: "assiduidade", label: "Assiduidade e Ponto" },
+          { id: "ferias", label: "Férias" },
+          { id: "remuneracoes", label: "Remunerações" },
+          { id: "documentos-oficiais", label: "Documentos Oficiais" },
+          { id: "gestao-noticias", label: "Gestão de Notícias" },
+        ]
+      },
     ]
   },
   {
