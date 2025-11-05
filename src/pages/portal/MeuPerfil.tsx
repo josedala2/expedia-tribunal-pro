@@ -226,9 +226,12 @@ export default function MeuPerfil({ onBack }: MeuPerfilProps) {
             <Card>
               <CardHeader>
                 <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle>Dados Pessoais</CardTitle>
-                    <CardDescription>Informações básicas do funcionário</CardDescription>
+                  <div className="flex items-center gap-2">
+                    <User className="h-5 w-5 text-primary" />
+                    <div>
+                      <CardTitle>Dados Pessoais</CardTitle>
+                      <CardDescription>Informações básicas do funcionário</CardDescription>
+                    </div>
                   </div>
                   <Button variant="outline" size="sm" onClick={() => setEditando(!editando)} className="gap-2">
                     <Edit className="h-4 w-4" />
