@@ -119,7 +119,7 @@ const Index = () => {
         <main className={`flex-1 transition-all duration-300 ${isSidebarOpen ? 'lg:ml-80' : 'ml-0'}`}>
           <div className="container mx-auto p-3 md:p-6">
             {currentView === "dashboard" && <Dashboard onNavigate={handleNavigate} />}
-        {currentView === "portal-intranet" && <PortalIntranet />}
+        {currentView === "portal-intranet" && <PortalIntranet onNavigate={handleNavigate} />}
         {currentView === "meu-perfil" && <MeuPerfil onBack={() => handleNavigate("portal-intranet")} />}
         {currentView === "assiduidade" && <Assiduidade onBack={() => handleNavigate("portal-intranet")} />}
             {currentView === "ferias" && <Ferias onBack={() => handleNavigate("portal-intranet")} />}
