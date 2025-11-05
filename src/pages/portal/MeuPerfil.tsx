@@ -8,9 +8,12 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { ArrowLeft, User, Building, CreditCard, Users as UsersIcon, FileText, Edit, Plus, Trash2 } from "lucide-react";
+import { ArrowLeft, User, Building, CreditCard, Users as UsersIcon, FileText, Edit, Plus, Trash2, GraduationCap, BarChart3, FileCheck } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import FormacaoAvaliacao from "./FormacaoAvaliacao";
+import RelatoriosPessoais from "./RelatoriosPessoais";
+import Declaracoes from "./Declaracoes";
 
 interface MeuPerfilProps {
   onBack: () => void;
@@ -188,7 +191,7 @@ export default function MeuPerfil({ onBack }: MeuPerfilProps) {
 
       <main className="container mx-auto px-4 py-6">
         <Tabs defaultValue="pessoal" className="w-full">
-          <TabsList className="grid w-full grid-cols-4 mb-6">
+          <TabsList className="grid w-full grid-cols-7 mb-6">
             <TabsTrigger value="pessoal">
               <User className="h-4 w-4 mr-2" />
               Pessoal
@@ -204,6 +207,18 @@ export default function MeuPerfil({ onBack }: MeuPerfilProps) {
             <TabsTrigger value="dependentes">
               <UsersIcon className="h-4 w-4 mr-2" />
               Dependentes
+            </TabsTrigger>
+            <TabsTrigger value="formacao">
+              <GraduationCap className="h-4 w-4 mr-2" />
+              Formação
+            </TabsTrigger>
+            <TabsTrigger value="relatorios">
+              <BarChart3 className="h-4 w-4 mr-2" />
+              Relatórios
+            </TabsTrigger>
+            <TabsTrigger value="declaracoes">
+              <FileCheck className="h-4 w-4 mr-2" />
+              Declarações
             </TabsTrigger>
           </TabsList>
 
@@ -484,6 +499,18 @@ export default function MeuPerfil({ onBack }: MeuPerfilProps) {
                 )}
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="formacao">
+            <FormacaoAvaliacao />
+          </TabsContent>
+
+          <TabsContent value="relatorios">
+            <RelatoriosPessoais />
+          </TabsContent>
+
+          <TabsContent value="declaracoes">
+            <Declaracoes />
           </TabsContent>
         </Tabs>
       </main>

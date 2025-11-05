@@ -28,16 +28,7 @@ const menuGroups = [
         icon: LayoutDashboard,
         submenu: [
           { id: "portal-intranet", label: "Início" },
-          { 
-            id: "meu-perfil", 
-            label: "Meu Perfil",
-            submenu: [
-              { id: "meu-perfil", label: "Dados Pessoais" },
-              { id: "formacao-avaliacao", label: "Formação e Avaliação" },
-              { id: "relatorios-pessoais", label: "Relatórios Pessoais" },
-              { id: "declaracoes", label: "Documentos e Declarações" },
-            ]
-          },
+          { id: "meu-perfil", label: "Meu Perfil" },
           { id: "assiduidade", label: "Assiduidade e Ponto" },
           { id: "ferias", label: "Férias" },
           { id: "remuneracoes", label: "Remunerações" },
@@ -293,58 +284,20 @@ export const Sidebar = ({ isOpen, currentView, onNavigate }: SidebarProps) => {
                             <div className="ml-6 space-y-1">
                               {item.submenu.map((subItem) => {
                                 const isSubActive = currentView === subItem.id;
-                                const hasNestedSubmenu = subItem.submenu && subItem.submenu.length > 0;
-                                const isNestedExpanded = expandedMenus.includes(subItem.id);
                                 
                                 return (
-                                  <div key={subItem.id} className="space-y-1">
-                                    <button
-                                      onClick={() => {
-                                        if (hasNestedSubmenu) {
-                                          toggleSubmenu(subItem.id);
-                                        } else {
-                                          onNavigate(subItem.id);
-                                        }
-                                      }}
-                                      className={cn(
-                                        "w-full flex items-center gap-2 px-2 py-1.5 rounded-md transition-all text-left text-xs",
-                                        isSubActive
-                                          ? "bg-primary/10 text-primary font-medium"
-                                          : "text-muted-foreground hover:bg-secondary hover:text-foreground"
-                                      )}
-                                    >
-                                      <span className="flex-1">{subItem.label}</span>
-                                      {hasNestedSubmenu && (
-                                        isNestedExpanded ? (
-                                          <ChevronDown className="h-3 w-3 flex-shrink-0" strokeWidth={2.5} />
-                                        ) : (
-                                          <ChevronRight className="h-3 w-3 flex-shrink-0" strokeWidth={2.5} />
-                                        )
-                                      )}
-                                    </button>
-                                    
-                                    {hasNestedSubmenu && isNestedExpanded && (
-                                      <div className="ml-4 space-y-1">
-                                        {subItem.submenu.map((nestedItem) => {
-                                          const isNestedActive = currentView === nestedItem.id;
-                                          return (
-                                            <button
-                                              key={nestedItem.id}
-                                              onClick={() => onNavigate(nestedItem.id)}
-                                              className={cn(
-                                                "w-full flex items-center gap-2 px-2 py-1.5 rounded-md transition-all text-left text-xs",
-                                                isNestedActive
-                                                  ? "bg-primary/10 text-primary font-medium"
-                                                  : "text-muted-foreground hover:bg-secondary hover:text-foreground"
-                                              )}
-                                            >
-                                              <span>{nestedItem.label}</span>
-                                            </button>
-                                          );
-                                        })}
-                                      </div>
+                                  <button
+                                    key={subItem.id}
+                                    onClick={() => onNavigate(subItem.id)}
+                                    className={cn(
+                                      "w-full flex items-center gap-2 px-2 py-1.5 rounded-md transition-all text-left text-xs",
+                                      isSubActive
+                                        ? "bg-primary/10 text-primary font-medium"
+                                        : "text-muted-foreground hover:bg-secondary hover:text-foreground"
                                     )}
-                                  </div>
+                                  >
+                                    <span className="flex-1">{subItem.label}</span>
+                                  </button>
                                 );
                               })}
                             </div>

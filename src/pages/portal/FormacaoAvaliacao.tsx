@@ -8,15 +8,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { ArrowLeft, GraduationCap, Award, TrendingUp, Plus, Download, BookOpen } from "lucide-react";
+import { GraduationCap, Award, TrendingUp, Plus, Download, BookOpen } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
-interface FormacaoAvaliacaoProps {
-  onBack: () => void;
-}
-
-export default function FormacaoAvaliacao({ onBack }: FormacaoAvaliacaoProps) {
+export default function FormacaoAvaliacao() {
   const [funcionario, setFuncionario] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [dialogNova, setDialogNova] = useState(false);
@@ -125,22 +121,8 @@ export default function FormacaoAvaliacao({ onBack }: FormacaoAvaliacaoProps) {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="bg-card border-b sticky top-0 z-10 shadow-sm">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={onBack}>
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-            <div>
-              <h1 className="text-2xl font-bold">Formação e Avaliação</h1>
-              <p className="text-sm text-muted-foreground">Cursos, certificações e desempenho</p>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      <main className="container mx-auto px-4 py-6">
+    <div className="bg-background">
+      <div className="container mx-auto px-4 py-6">
         <Tabs defaultValue="cursos" className="w-full">
           <TabsList className="grid w-full grid-cols-3 mb-6">
             <TabsTrigger value="cursos" className="gap-2">
@@ -374,10 +356,10 @@ export default function FormacaoAvaliacao({ onBack }: FormacaoAvaliacaoProps) {
                   ))}
                 </div>
               </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
-      </main>
-    </div>
-  );
-}
+              </Card>
+            </TabsContent>
+          </Tabs>
+        </div>
+      </div>
+    );
+  }

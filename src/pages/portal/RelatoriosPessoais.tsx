@@ -4,15 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { ArrowLeft, Download, FileText, Calendar, DollarSign, Clock, TrendingUp } from "lucide-react";
+import { Download, FileText, Calendar, DollarSign, Clock, TrendingUp } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
-interface RelatoriosPessoaisProps {
-  onBack: () => void;
-}
-
-export default function RelatoriosPessoais({ onBack }: RelatoriosPessoaisProps) {
+export default function RelatoriosPessoais() {
   const [funcionario, setFuncionario] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [anoSelecionado, setAnoSelecionado] = useState(new Date().getFullYear().toString());
@@ -109,33 +105,26 @@ export default function RelatoriosPessoais({ onBack }: RelatoriosPessoaisProps) 
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="bg-card border-b sticky top-0 z-10 shadow-sm">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={onBack}>
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-            <div className="flex-1">
-              <h1 className="text-2xl font-bold">Relatórios Pessoais</h1>
-              <p className="text-sm text-muted-foreground">Geração e exportação de relatórios</p>
-            </div>
-            <Select value={anoSelecionado} onValueChange={setAnoSelecionado}>
-              <SelectTrigger className="w-[150px]">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {gerarAnos().map((ano) => (
-                  <SelectItem key={ano} value={ano}>Ano {ano}</SelectItem>
+    <div className="bg-background">
+      <div className="container mx-auto px-4 py-6">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2 className="text-2xl font-bold">Relatórios Pessoais</h2>
+            <p className="text-sm text-muted-foreground">Geração e exportação de relatórios</p>
+          </div>
+          <Select value={anoSelecionado} onValueChange={setAnoSelecionado}>
+            <SelectTrigger className="w-[150px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {gerarAnos().map((ano) => (
+                <SelectItem key={ano} value={ano}>Ano {ano}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </div>
-        </div>
-      </header>
 
-      <main className="container mx-auto px-4 py-6">
-        {/* Informações do Funcionário */}
+          {/* Informações do Funcionário */}
         {funcionario && (
           <Card className="mb-6">
             <CardHeader>
@@ -262,7 +251,7 @@ export default function RelatoriosPessoais({ onBack }: RelatoriosPessoaisProps) 
             </ul>
           </CardContent>
         </Card>
-      </main>
+      </div>
     </div>
   );
 }

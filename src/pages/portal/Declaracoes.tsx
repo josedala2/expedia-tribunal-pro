@@ -8,15 +8,11 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { ArrowLeft, FileText, Download, Plus, CheckCircle, Clock, FileCheck } from "lucide-react";
+import { FileText, Download, Plus, CheckCircle, Clock, FileCheck } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
-interface DeclaracoesProps {
-  onBack: () => void;
-}
-
-export default function Declaracoes({ onBack }: DeclaracoesProps) {
+export default function Declaracoes() {
   const [funcionario, setFuncionario] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [dialogSolicitar, setDialogSolicitar] = useState(false);
@@ -153,22 +149,8 @@ export default function Declaracoes({ onBack }: DeclaracoesProps) {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="bg-card border-b sticky top-0 z-10 shadow-sm">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={onBack}>
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-            <div className="flex-1">
-              <h1 className="text-2xl font-bold">Documentos e Declarações</h1>
-              <p className="text-sm text-muted-foreground">Solicitação e consulta de declarações</p>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      <main className="container mx-auto px-4 py-6">
+    <div className="bg-background">
+      <div className="container mx-auto px-4 py-6">
         {/* Tipos de Declarações Disponíveis */}
         <Card className="mb-6">
           <CardHeader>
@@ -313,7 +295,7 @@ export default function Declaracoes({ onBack }: DeclaracoesProps) {
             </div>
           </CardContent>
         </Card>
-      </main>
+      </div>
     </div>
   );
 }
