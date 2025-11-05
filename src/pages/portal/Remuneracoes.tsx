@@ -186,111 +186,179 @@ export default function Remuneracoes({ onBack }: RemuneracoesProps) {
                 </div>
               ) : (
                 <div className="space-y-6">
-                  {/* Vencimentos */}
-                  <div>
-                    <div className="flex items-center gap-2 mb-3">
-                      <TrendingUp className="h-5 w-5 text-green-500" />
-                      <h3 className="font-semibold">Vencimentos</h3>
-                    </div>
-                    <Table>
-                      <TableBody>
-                        <TableRow>
-                          <TableCell className="font-medium">Vencimento Base</TableCell>
-                          <TableCell className="text-right">
-                            {formatarValor(parseFloat(remuneracaoSelecionada.vencimento_base))}
-                          </TableCell>
-                        </TableRow>
-                        {parseFloat(remuneracaoSelecionada.subsidio_alimentacao) > 0 && (
-                          <TableRow>
-                            <TableCell className="font-medium">Subsídio de Alimentação</TableCell>
-                            <TableCell className="text-right">
-                              {formatarValor(parseFloat(remuneracaoSelecionada.subsidio_alimentacao))}
-                            </TableCell>
-                          </TableRow>
-                        )}
-                        {parseFloat(remuneracaoSelecionada.subsidio_transporte) > 0 && (
-                          <TableRow>
-                            <TableCell className="font-medium">Subsídio de Transporte</TableCell>
-                            <TableCell className="text-right">
-                              {formatarValor(parseFloat(remuneracaoSelecionada.subsidio_transporte))}
-                            </TableCell>
-                          </TableRow>
-                        )}
-                        {parseFloat(remuneracaoSelecionada.subsidio_ferias) > 0 && (
-                          <TableRow>
-                            <TableCell className="font-medium">Subsídio de Férias</TableCell>
-                            <TableCell className="text-right">
-                              {formatarValor(parseFloat(remuneracaoSelecionada.subsidio_ferias))}
-                            </TableCell>
-                          </TableRow>
-                        )}
-                        {parseFloat(remuneracaoSelecionada.subsidio_natal) > 0 && (
-                          <TableRow>
-                            <TableCell className="font-medium">Subsídio de Natal</TableCell>
-                            <TableCell className="text-right">
-                              {formatarValor(parseFloat(remuneracaoSelecionada.subsidio_natal))}
-                            </TableCell>
-                          </TableRow>
-                        )}
-                        {parseFloat(remuneracaoSelecionada.outros_subsidios) > 0 && (
-                          <TableRow>
-                            <TableCell className="font-medium">Outros Subsídios</TableCell>
-                            <TableCell className="text-right">
-                              {formatarValor(parseFloat(remuneracaoSelecionada.outros_subsidios))}
-                            </TableCell>
-                          </TableRow>
-                        )}
-                        <TableRow className="bg-green-500/10">
-                          <TableCell className="font-bold">Total Vencimentos</TableCell>
-                          <TableCell className="text-right font-bold text-green-600">
-                            {formatarValor(parseFloat(remuneracaoSelecionada.total_vencimentos))}
-                          </TableCell>
-                        </TableRow>
-                      </TableBody>
-                    </Table>
-                  </div>
+                  {/* Salário Base */}
+                  <Card className="border-2 border-primary/20">
+                    <CardHeader className="pb-3">
+                      <div className="flex items-center gap-2">
+                        <DollarSign className="h-5 w-5 text-primary" />
+                        <CardTitle className="text-lg">Salário Base</CardTitle>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="flex items-center justify-between p-4 bg-primary/5 rounded-lg">
+                        <span className="font-medium">Vencimento Base</span>
+                        <span className="text-xl font-bold text-primary">
+                          {formatarValor(parseFloat(remuneracaoSelecionada.vencimento_base))}
+                        </span>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Prêmios e Subsídios */}
+                  <Card className="border-2 border-green-500/20">
+                    <CardHeader className="pb-3">
+                      <div className="flex items-center gap-2">
+                        <TrendingUp className="h-5 w-5 text-green-600" />
+                        <CardTitle className="text-lg">Prêmios e Subsídios</CardTitle>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <Table>
+                        <TableBody>
+                          {parseFloat(remuneracaoSelecionada.subsidio_alimentacao) > 0 && (
+                            <TableRow>
+                              <TableCell className="font-medium">Subsídio de Alimentação</TableCell>
+                              <TableCell className="text-right font-semibold text-green-700">
+                                {formatarValor(parseFloat(remuneracaoSelecionada.subsidio_alimentacao))}
+                              </TableCell>
+                            </TableRow>
+                          )}
+                          {parseFloat(remuneracaoSelecionada.subsidio_transporte) > 0 && (
+                            <TableRow>
+                              <TableCell className="font-medium">Subsídio de Transporte</TableCell>
+                              <TableCell className="text-right font-semibold text-green-700">
+                                {formatarValor(parseFloat(remuneracaoSelecionada.subsidio_transporte))}
+                              </TableCell>
+                            </TableRow>
+                          )}
+                          {parseFloat(remuneracaoSelecionada.subsidio_ferias) > 0 && (
+                            <TableRow>
+                              <TableCell className="font-medium">Subsídio de Férias</TableCell>
+                              <TableCell className="text-right font-semibold text-green-700">
+                                {formatarValor(parseFloat(remuneracaoSelecionada.subsidio_ferias))}
+                              </TableCell>
+                            </TableRow>
+                          )}
+                          {parseFloat(remuneracaoSelecionada.subsidio_natal) > 0 && (
+                            <TableRow>
+                              <TableCell className="font-medium">Subsídio de Natal</TableCell>
+                              <TableCell className="text-right font-semibold text-green-700">
+                                {formatarValor(parseFloat(remuneracaoSelecionada.subsidio_natal))}
+                              </TableCell>
+                            </TableRow>
+                          )}
+                          {parseFloat(remuneracaoSelecionada.outros_subsidios) > 0 && (
+                            <TableRow>
+                              <TableCell className="font-medium">Outros Prêmios/Subsídios</TableCell>
+                              <TableCell className="text-right font-semibold text-green-700">
+                                {formatarValor(parseFloat(remuneracaoSelecionada.outros_subsidios))}
+                              </TableCell>
+                            </TableRow>
+                          )}
+                          {(parseFloat(remuneracaoSelecionada.subsidio_alimentacao) > 0 ||
+                            parseFloat(remuneracaoSelecionada.subsidio_transporte) > 0 ||
+                            parseFloat(remuneracaoSelecionada.subsidio_ferias) > 0 ||
+                            parseFloat(remuneracaoSelecionada.subsidio_natal) > 0 ||
+                            parseFloat(remuneracaoSelecionada.outros_subsidios) > 0) && (
+                            <TableRow className="bg-green-500/10 border-t-2">
+                              <TableCell className="font-bold">Total de Prêmios e Subsídios</TableCell>
+                              <TableCell className="text-right font-bold text-green-600 text-lg">
+                                {formatarValor(
+                                  parseFloat(remuneracaoSelecionada.subsidio_alimentacao || 0) +
+                                  parseFloat(remuneracaoSelecionada.subsidio_transporte || 0) +
+                                  parseFloat(remuneracaoSelecionada.subsidio_ferias || 0) +
+                                  parseFloat(remuneracaoSelecionada.subsidio_natal || 0) +
+                                  parseFloat(remuneracaoSelecionada.outros_subsidios || 0)
+                                )}
+                              </TableCell>
+                            </TableRow>
+                          )}
+                          {!(parseFloat(remuneracaoSelecionada.subsidio_alimentacao) > 0 ||
+                            parseFloat(remuneracaoSelecionada.subsidio_transporte) > 0 ||
+                            parseFloat(remuneracaoSelecionada.subsidio_ferias) > 0 ||
+                            parseFloat(remuneracaoSelecionada.subsidio_natal) > 0 ||
+                            parseFloat(remuneracaoSelecionada.outros_subsidios) > 0) && (
+                            <TableRow>
+                              <TableCell colSpan={2} className="text-center text-muted-foreground py-6">
+                                Nenhum prêmio ou subsídio neste período
+                              </TableCell>
+                            </TableRow>
+                          )}
+                        </TableBody>
+                      </Table>
+                    </CardContent>
+                  </Card>
+
+                  {/* Total Bruto */}
+                  <Card className="bg-green-500/5 border-green-500/30">
+                    <CardContent className="py-4">
+                      <div className="flex items-center justify-between">
+                        <span className="font-bold text-lg">Total Bruto</span>
+                        <span className="text-2xl font-bold text-green-600">
+                          {formatarValor(parseFloat(remuneracaoSelecionada.total_vencimentos))}
+                        </span>
+                      </div>
+                    </CardContent>
+                  </Card>
 
                   {/* Descontos */}
-                  <div>
-                    <div className="flex items-center gap-2 mb-3">
-                      <TrendingDown className="h-5 w-5 text-red-500" />
-                      <h3 className="font-semibold">Descontos</h3>
-                    </div>
-                    <Table>
-                      <TableBody>
-                        {parseFloat(remuneracaoSelecionada.desconto_irt) > 0 && (
-                          <TableRow>
-                            <TableCell className="font-medium">IRT</TableCell>
-                            <TableCell className="text-right">
-                              {formatarValor(parseFloat(remuneracaoSelecionada.desconto_irt))}
-                            </TableCell>
-                          </TableRow>
-                        )}
-                        {parseFloat(remuneracaoSelecionada.desconto_inss) > 0 && (
-                          <TableRow>
-                            <TableCell className="font-medium">INSS</TableCell>
-                            <TableCell className="text-right">
-                              {formatarValor(parseFloat(remuneracaoSelecionada.desconto_inss))}
-                            </TableCell>
-                          </TableRow>
-                        )}
-                        {parseFloat(remuneracaoSelecionada.outros_descontos) > 0 && (
-                          <TableRow>
-                            <TableCell className="font-medium">Outros Descontos</TableCell>
-                            <TableCell className="text-right">
-                              {formatarValor(parseFloat(remuneracaoSelecionada.outros_descontos))}
-                            </TableCell>
-                          </TableRow>
-                        )}
-                        <TableRow className="bg-red-500/10">
-                          <TableCell className="font-bold">Total Descontos</TableCell>
-                          <TableCell className="text-right font-bold text-red-600">
-                            {formatarValor(parseFloat(remuneracaoSelecionada.total_descontos))}
-                          </TableCell>
-                        </TableRow>
-                      </TableBody>
-                    </Table>
-                  </div>
+                  <Card className="border-2 border-red-500/20">
+                    <CardHeader className="pb-3">
+                      <div className="flex items-center gap-2">
+                        <TrendingDown className="h-5 w-5 text-red-600" />
+                        <CardTitle className="text-lg">Descontos</CardTitle>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <Table>
+                        <TableBody>
+                          {parseFloat(remuneracaoSelecionada.desconto_irt) > 0 && (
+                            <TableRow>
+                              <TableCell className="font-medium">IRT (Imposto sobre Rendimento do Trabalho)</TableCell>
+                              <TableCell className="text-right font-semibold text-red-700">
+                                {formatarValor(parseFloat(remuneracaoSelecionada.desconto_irt))}
+                              </TableCell>
+                            </TableRow>
+                          )}
+                          {parseFloat(remuneracaoSelecionada.desconto_inss) > 0 && (
+                            <TableRow>
+                              <TableCell className="font-medium">INSS (Instituto Nacional de Segurança Social)</TableCell>
+                              <TableCell className="text-right font-semibold text-red-700">
+                                {formatarValor(parseFloat(remuneracaoSelecionada.desconto_inss))}
+                              </TableCell>
+                            </TableRow>
+                          )}
+                          {parseFloat(remuneracaoSelecionada.outros_descontos) > 0 && (
+                            <TableRow>
+                              <TableCell className="font-medium">Outros Descontos</TableCell>
+                              <TableCell className="text-right font-semibold text-red-700">
+                                {formatarValor(parseFloat(remuneracaoSelecionada.outros_descontos))}
+                              </TableCell>
+                            </TableRow>
+                          )}
+                          {(parseFloat(remuneracaoSelecionada.desconto_irt) > 0 ||
+                            parseFloat(remuneracaoSelecionada.desconto_inss) > 0 ||
+                            parseFloat(remuneracaoSelecionada.outros_descontos) > 0) && (
+                            <TableRow className="bg-red-500/10 border-t-2">
+                              <TableCell className="font-bold">Total de Descontos</TableCell>
+                              <TableCell className="text-right font-bold text-red-600 text-lg">
+                                {formatarValor(parseFloat(remuneracaoSelecionada.total_descontos))}
+                              </TableCell>
+                            </TableRow>
+                          )}
+                          {!(parseFloat(remuneracaoSelecionada.desconto_irt) > 0 ||
+                            parseFloat(remuneracaoSelecionada.desconto_inss) > 0 ||
+                            parseFloat(remuneracaoSelecionada.outros_descontos) > 0) && (
+                            <TableRow>
+                              <TableCell colSpan={2} className="text-center text-muted-foreground py-6">
+                                Nenhum desconto neste período
+                              </TableCell>
+                            </TableRow>
+                          )}
+                        </TableBody>
+                      </Table>
+                    </CardContent>
+                  </Card>
 
                   {/* Líquido */}
                   <Card className="bg-primary/10 border-primary">
