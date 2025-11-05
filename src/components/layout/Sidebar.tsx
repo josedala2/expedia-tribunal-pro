@@ -27,7 +27,7 @@ const menuGroups = [
         label: "Portal Intranet", 
         icon: LayoutDashboard,
         submenu: [
-          { id: "portal-intranet", label: "Início" },
+          { id: "portal-intranet", label: "Meu Perfil" },
           { id: "assiduidade", label: "Assiduidade e Ponto" },
           { id: "ferias", label: "Férias" },
           { id: "remuneracoes", label: "Remunerações" },
