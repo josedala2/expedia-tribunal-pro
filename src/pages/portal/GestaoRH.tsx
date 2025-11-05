@@ -58,15 +58,6 @@ export default function GestaoRH({ onBack, onNavigate }: GestaoRHProps) {
       borderColor: "border-green-500/20"
     },
     {
-      id: "avaliacao-desempenho",
-      icon: TrendingUp,
-      title: "Avaliação de Desempenho",
-      description: "Gerir o processo de monitoria e avaliação dos funcionários",
-      color: "text-pink-600",
-      bgColor: "bg-pink-500/10",
-      borderColor: "border-pink-500/20"
-    },
-    {
       id: "formacao-desenvolvimento",
       icon: GraduationCap,
       title: "Formação e Desenvolvimento",
