@@ -236,9 +236,9 @@ export const Sidebar = ({ isOpen, currentView, onNavigate }: SidebarProps) => {
                       {group.title}
                     </CardTitle>
                     {isExpanded ? (
-                      <ChevronDown className="h-4 w-4" />
+                      <ChevronDown className="h-4 w-4" strokeWidth={2.5} />
                     ) : (
-                      <ChevronRight className="h-4 w-4" />
+                      <ChevronRight className="h-4 w-4" strokeWidth={2.5} />
                     )}
                   </div>
                 </CardHeader>
@@ -269,13 +269,13 @@ export const Sidebar = ({ isOpen, currentView, onNavigate }: SidebarProps) => {
                                 : "text-muted-foreground hover:bg-secondary hover:text-foreground"
                             )}
                           >
-                            <Icon className="h-4 w-4 flex-shrink-0" />
+                            <Icon className="h-4 w-4 flex-shrink-0" strokeWidth={2.5} />
                             <span className="flex-1">{item.label}</span>
                             {hasSubmenu && (
                               isSubmenuExpanded ? (
-                                <ChevronDown className="h-3 w-3 flex-shrink-0" />
+                                <ChevronDown className="h-3 w-3 flex-shrink-0" strokeWidth={2.5} />
                               ) : (
-                                <ChevronRight className="h-3 w-3 flex-shrink-0" />
+                                <ChevronRight className="h-3 w-3 flex-shrink-0" strokeWidth={2.5} />
                               )
                             )}
                           </button>
