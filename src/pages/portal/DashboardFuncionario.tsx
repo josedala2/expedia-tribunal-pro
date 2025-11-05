@@ -313,11 +313,7 @@ export default function DashboardFuncionario({ onNavigate }: DashboardFuncionari
           <CardTitle className="text-lg">Atalhos Rápidos</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-2 gap-3">
-            <Button variant="outline" className="h-auto flex-col gap-2 py-4" onClick={() => onNavigate('documentos-oficiais')}>
-              <FileText className="h-5 w-5" />
-              <span className="text-xs">Documentos</span>
-            </Button>
+          <div className="grid grid-cols-1 md:grid-cols-1 gap-3">
             <Button variant="outline" className="h-auto flex-col gap-2 py-4" onClick={() => onNavigate('meu-perfil')}>
               <Users className="h-5 w-5" />
               <span className="text-xs">Atualizar Dados</span>
