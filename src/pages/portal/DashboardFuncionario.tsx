@@ -314,19 +314,35 @@ export default function DashboardFuncionario({ onNavigate }: DashboardFuncionari
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <Button variant="outline" className="h-auto flex-col gap-2 py-4" onClick={() => onNavigate('ferias')}>
+            <Button 
+              variant="outline" 
+              className="h-auto flex-col gap-2 py-4 hover:bg-primary/10 hover:border-primary transition-all" 
+              onClick={() => onNavigate('ferias')}
+            >
               <Calendar className="h-5 w-5" />
               <span className="text-xs">Gestão de Férias</span>
             </Button>
-            <Button variant="outline" className="h-auto flex-col gap-2 py-4" onClick={() => onNavigate('documentos-oficiais')}>
+            <Button 
+              variant="outline" 
+              className="h-auto flex-col gap-2 py-4 hover:bg-primary/10 hover:border-primary transition-all" 
+              onClick={() => onNavigate('documentos-oficiais')}
+            >
               <FileText className="h-5 w-5" />
               <span className="text-xs">Documentos</span>
             </Button>
-            <Button variant="outline" className="h-auto flex-col gap-2 py-4" onClick={() => onNavigate('meu-perfil')}>
+            <Button 
+              variant="outline" 
+              className="h-auto flex-col gap-2 py-4 hover:bg-primary/10 hover:border-primary transition-all" 
+              onClick={() => onNavigate('portal-intranet')}
+            >
               <Users className="h-5 w-5" />
               <span className="text-xs">Atualizar Dados</span>
             </Button>
-            <Button variant="outline" className="h-auto flex-col gap-2 py-4" onClick={() => onNavigate('remuneracoes')}>
+            <Button 
+              variant="outline" 
+              className="h-auto flex-col gap-2 py-4 hover:bg-primary/10 hover:border-primary transition-all" 
+              onClick={() => onNavigate('remuneracoes')}
+            >
               <DollarSign className="h-5 w-5" />
               <span className="text-xs">Remunerações</span>
             </Button>
