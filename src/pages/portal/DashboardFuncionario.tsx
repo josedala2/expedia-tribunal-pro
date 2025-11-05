@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { 
   Calendar, Clock, DollarSign, FileText, Bell, 
   AlertCircle, CheckCircle, TrendingUp, Users,
-  CalendarCheck, ClockIcon, Briefcase, Award
+  CalendarCheck, ClockIcon, Briefcase, Award, Inbox
 } from "lucide-react";
 import { format, isToday } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -247,7 +247,7 @@ export default function DashboardFuncionario({ onNavigate }: DashboardFuncionari
         <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => onNavigate('assiduidade')}>
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
-              <FileText className="h-5 w-5 text-blue-500" />
+              <Inbox className="h-5 w-5 text-blue-500" />
               <Badge variant="secondary">Pendentes</Badge>
             </div>
           </CardHeader>
