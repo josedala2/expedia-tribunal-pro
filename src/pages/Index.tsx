@@ -126,6 +126,7 @@ const Index = () => {
             {currentView === "remuneracoes" && <Remuneracoes onBack={() => handleNavigate("portal-intranet")} />}
             {currentView === "documentos-oficiais" && <DocumentosOficiais onBack={() => handleNavigate("portal-intranet")} />}
             {currentView === "gestao-noticias" && <GestaoNoticias onBack={() => handleNavigate("portal-intranet")} />}
+            {currentView === "gestao-rh" && <GestaoRH onBack={() => handleNavigate("portal-intranet")} />}
             {currentView === "processes" && <ProcessList onViewProcess={handleViewProcess} />}
             {currentView === "process-detail" && selectedProcessId && (
               <ProcessDetail processId={selectedProcessId} onBack={handleBackToList} />
