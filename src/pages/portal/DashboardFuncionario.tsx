@@ -316,7 +316,7 @@ export default function DashboardFuncionario({ onNavigate }: DashboardFuncionari
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             <Button variant="outline" className="h-auto flex-col gap-2 py-4" onClick={() => onNavigate('ferias')}>
               <Calendar className="h-5 w-5" />
-              <span className="text-xs">Solicitar Férias</span>
+              <span className="text-xs">Gestão de Férias</span>
             </Button>
             <Button variant="outline" className="h-auto flex-col gap-2 py-4" onClick={() => onNavigate('documentos-oficiais')}>
               <FileText className="h-5 w-5" />
