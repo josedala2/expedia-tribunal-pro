@@ -10,6 +10,16 @@ import Remuneracoes from "./portal/Remuneracoes";
 import DocumentosOficiais from "./portal/DocumentosOficiais";
 import GestaoNoticias from "./portal/GestaoNoticias";
 import GestaoRH from "./portal/GestaoRH";
+import CadastroFuncionarios from "./portal/rh/CadastroFuncionarios";
+import GestaoContratos from "./portal/rh/GestaoContratos";
+import AssiduidadePontualidade from "./portal/rh/AssiduidadePontualidade";
+import GestaoFeriasLicencas from "./portal/rh/GestaoFeriasLicencas";
+import AvaliacaoDesempenho from "./portal/rh/AvaliacaoDesempenho";
+import FormacaoDesenvolvimento from "./portal/rh/FormacaoDesenvolvimento";
+import GestaoRemuneracoesBeneficios from "./portal/rh/GestaoRemuneracoesBeneficios";
+import GestaoDocumentalRH from "./portal/rh/GestaoDocumentalRH";
+import GestaoSaidasAposentadorias from "./portal/rh/GestaoSaidasAposentadorias";
+import RelatoriosEstatisticasRH from "./portal/rh/RelatoriosEstatisticasRH";
 import { ProcessList } from "@/components/processes/ProcessList";
 import { ProcessDetail } from "@/components/processes/ProcessDetail";
 import { PrestacaoContas } from "@/pages/PrestacaoContas";
@@ -79,7 +89,7 @@ import { NotificacaoAcordao } from "@/pages/multa/NotificacaoAcordao";
 import { PedidoAclaracao } from "@/pages/multa/PedidoAclaracao";
 import { CobrancaCoerciva } from "@/pages/multa/CobrancaCoerciva";
 
-type View = "dashboard" | "portal-intranet" | "meu-perfil" | "assiduidade" | "ferias" | "remuneracoes" | "documentos-oficiais" | "gestao-noticias" | "gestao-rh" | "processes" | "process-detail" | "prestacao-contas" | "visto" | "fiscalizacao" | "multas" | "novo-processo-multa" | "usuarios" | "relatorios" | "documentos" | "configuracoes" | "comunicacoes-internas" | "expedientes" | "novo-expediente" | "detalhe-expediente" | "novo-prestacao" | "detalhe-prestacao" | "novo-visto" | "detalhe-visto" | "novo-fiscalizacao" | "detalhe-fiscalizacao" | "detalhe-multa" | "expediente-processual" | "tramitacao-visto" | "cumprimento-despachos" | "saida-expediente-visto" | "interposicao-recurso" | "pedido-reducao-emolumentos" | "conclusao-autos-cgsfp" | "analise-decisao-juiz" | "promocao-mp" | "analise-decisao-final-juiz" | "cumprimento-despacho-adfjr" | "expediente-prestacao" | "tramitacao-prestacao" | "cumprimento-despachos-prestacao" | "saida-expediente-prestacao" | "prestacao-soberania" | "expediente-fiscalizacao" | "tramitacao-fiscalizacao" | "parecer-trimestral" | "saida-expediente-fiscalizacao" | "cobranca-emolumentos" | "nova-guia-cobranca" | "despacho-promocao" | "novo-despacho-promocao" | "cumprimento-despachos-geral" | "cumprimento-despacho-detail" | "oficios-remessa" | "novo-oficio-remessa" | "expedientes-saida" | "novo-expediente-saida" | "recurso-ordinario" | "recurso-ordinario-registo" | "recurso-ordinario-plenario" | "recurso-ordinario-projeto" | "recurso-ordinario-vista" | "recurso-ordinario-resolucao" | "recurso-ordinario-notificacao" | "recurso-inconstitucionalidade" | "recurso-inconstitucionalidade-apresentacao" | "recurso-inconstitucionalidade-analise" | "recursos-ativos" | "desencadear-multa" | "requerimento-inicial-multa" | "notificacao-demandado" | "pagamento-voluntario-multa" | "pagamento-prestacoes" | "contestacao-multa" | "constituicao-advogado" | "confianca-processo" | "audiencia-julgamento-multa" | "acordao-multa" | "notificacao-acordao" | "pedido-aclaracao" | "cobranca-coerciva";
+type View = "dashboard" | "portal-intranet" | "meu-perfil" | "assiduidade" | "ferias" | "remuneracoes" | "documentos-oficiais" | "gestao-noticias" | "gestao-rh" | "rh-cadastro-funcionarios" | "rh-gestao-contratos" | "rh-assiduidade-pontualidade" | "rh-gestao-ferias-licencas" | "rh-avaliacao-desempenho" | "rh-formacao-desenvolvimento" | "rh-gestao-remuneracoes" | "rh-gestao-documental-rh" | "rh-gestao-saidas-aposentadorias" | "rh-relatorios-estatisticas-rh" | "processes" | "process-detail" | "prestacao-contas" | "visto" | "fiscalizacao" | "multas" | "novo-processo-multa" | "usuarios" | "relatorios" | "documentos" | "configuracoes" | "comunicacoes-internas" | "expedientes" | "novo-expediente" | "detalhe-expediente" | "novo-prestacao" | "detalhe-prestacao" | "novo-visto" | "detalhe-visto" | "novo-fiscalizacao" | "detalhe-fiscalizacao" | "detalhe-multa" | "expediente-processual" | "tramitacao-visto" | "cumprimento-despachos" | "saida-expediente-visto" | "interposicao-recurso" | "pedido-reducao-emolumentos" | "conclusao-autos-cgsfp" | "analise-decisao-juiz" | "promocao-mp" | "analise-decisao-final-juiz" | "cumprimento-despacho-adfjr" | "expediente-prestacao" | "tramitacao-prestacao" | "cumprimento-despachos-prestacao" | "saida-expediente-prestacao" | "prestacao-soberania" | "expediente-fiscalizacao" | "tramitacao-fiscalizacao" | "parecer-trimestral" | "saida-expediente-fiscalizacao" | "cobranca-emolumentos" | "nova-guia-cobranca" | "despacho-promocao" | "novo-despacho-promocao" | "cumprimento-despachos-geral" | "cumprimento-despacho-detail" | "oficios-remessa" | "novo-oficio-remessa" | "expedientes-saida" | "novo-expediente-saida" | "recurso-ordinario" | "recurso-ordinario-registo" | "recurso-ordinario-plenario" | "recurso-ordinario-projeto" | "recurso-ordinario-vista" | "recurso-ordinario-resolucao" | "recurso-ordinario-notificacao" | "recurso-inconstitucionalidade" | "recurso-inconstitucionalidade-apresentacao" | "recurso-inconstitucionalidade-analise" | "recursos-ativos" | "desencadear-multa" | "requerimento-inicial-multa" | "notificacao-demandado" | "pagamento-voluntario-multa" | "pagamento-prestacoes" | "contestacao-multa" | "constituicao-advogado" | "confianca-processo" | "audiencia-julgamento-multa" | "acordao-multa" | "notificacao-acordao" | "pedido-aclaracao" | "cobranca-coerciva";
 
 const Index = () => {
   const [currentView, setCurrentView] = useState<View>("dashboard");
@@ -126,7 +136,17 @@ const Index = () => {
             {currentView === "remuneracoes" && <Remuneracoes onBack={() => handleNavigate("portal-intranet")} />}
             {currentView === "documentos-oficiais" && <DocumentosOficiais onBack={() => handleNavigate("portal-intranet")} />}
             {currentView === "gestao-noticias" && <GestaoNoticias onBack={() => handleNavigate("portal-intranet")} />}
-            {currentView === "gestao-rh" && <GestaoRH onBack={() => handleNavigate("portal-intranet")} />}
+            {currentView === "gestao-rh" && <GestaoRH onBack={() => handleNavigate("portal-intranet")} onNavigate={handleNavigate} />}
+            {currentView === "rh-cadastro-funcionarios" && <CadastroFuncionarios onBack={() => handleNavigate("gestao-rh")} />}
+            {currentView === "rh-gestao-contratos" && <GestaoContratos onBack={() => handleNavigate("gestao-rh")} />}
+            {currentView === "rh-assiduidade-pontualidade" && <AssiduidadePontualidade onBack={() => handleNavigate("gestao-rh")} />}
+            {currentView === "rh-gestao-ferias-licencas" && <GestaoFeriasLicencas onBack={() => handleNavigate("gestao-rh")} />}
+            {currentView === "rh-avaliacao-desempenho" && <AvaliacaoDesempenho onBack={() => handleNavigate("gestao-rh")} />}
+            {currentView === "rh-formacao-desenvolvimento" && <FormacaoDesenvolvimento onBack={() => handleNavigate("gestao-rh")} />}
+            {currentView === "rh-gestao-remuneracoes" && <GestaoRemuneracoesBeneficios onBack={() => handleNavigate("gestao-rh")} />}
+            {currentView === "rh-gestao-documental-rh" && <GestaoDocumentalRH onBack={() => handleNavigate("gestao-rh")} />}
+            {currentView === "rh-gestao-saidas-aposentadorias" && <GestaoSaidasAposentadorias onBack={() => handleNavigate("gestao-rh")} />}
+            {currentView === "rh-relatorios-estatisticas-rh" && <RelatoriosEstatisticasRH onBack={() => handleNavigate("gestao-rh")} />}
             {currentView === "processes" && <ProcessList onViewProcess={handleViewProcess} />}
             {currentView === "process-detail" && selectedProcessId && (
               <ProcessDetail processId={selectedProcessId} onBack={handleBackToList} />
