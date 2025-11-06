@@ -28,6 +28,7 @@ const menuGroups = [
         icon: LayoutDashboard,
         submenu: [
           { id: "portal-intranet", label: "Meu Perfil" },
+          { id: "aprovacao-ferias-chefia", label: "Aprovação de Férias (Chefia)" },
           { id: "gestao-noticias", label: "Gestão de Notícias" },
           { id: "gestao-rh", label: "Gestão RH (Admin)" },
         ]

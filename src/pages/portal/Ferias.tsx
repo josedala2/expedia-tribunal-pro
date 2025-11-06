@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 import { ArrowLeft, Calendar as CalendarIcon, Plus, CheckCircle, XCircle, Clock } from "lucide-react";
 import { format, differenceInDays } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -156,6 +157,17 @@ export default function Ferias({ onBack }: FeriasProps) {
       case 'rejeitado': return 'destructive';
       case 'cancelado': return 'outline';
       default: return 'outline';
+    }
+  };
+
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case 'aprovado_rh': return 'Aprovado';
+      case 'aprovado_chefia': return 'Aguardando RH';
+      case 'pendente': return 'Aguardando Chefia';
+      case 'rejeitado': return 'Rejeitado';
+      case 'cancelado': return 'Cancelado';
+      default: return status;
     }
   };
 
@@ -353,8 +365,8 @@ export default function Ferias({ onBack }: FeriasProps) {
                     <TableHead>Dias</TableHead>
                     <TableHead>Tipo</TableHead>
                     <TableHead>Status</TableHead>
-                    <TableHead>Solicitado em</TableHead>
-                    <TableHead>Aprovações</TableHead>
+                    <TableHead>Workflow</TableHead>
+                    <TableHead>Data Solicitação</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -371,7 +383,9 @@ export default function Ferias({ onBack }: FeriasProps) {
                         <TableCell className="font-medium">
                           {format(new Date(feria.data_inicio), 'dd/MM/yyyy')} - {format(new Date(feria.data_fim), 'dd/MM/yyyy')}
                         </TableCell>
-                        <TableCell>{feria.dias_solicitados} dias</TableCell>
+                        <TableCell>
+                          <Badge variant="secondary">{feria.dias_solicitados} dias</Badge>
+                        </TableCell>
                         <TableCell>
                           <Badge variant="outline">{feria.tipo}</Badge>
                         </TableCell>
@@ -379,25 +393,50 @@ export default function Ferias({ onBack }: FeriasProps) {
                           <div className="flex items-center gap-2">
                             {getStatusIcon(feria.status)}
                             <Badge variant={getStatusColor(feria.status)}>
-                              {feria.status.replace('_', ' ')}
+                              {getStatusLabel(feria.status)}
                             </Badge>
                           </div>
                         </TableCell>
                         <TableCell>
-                          {format(new Date(feria.solicitado_em), 'dd/MM/yyyy HH:mm')}
+                          <div className="flex items-center gap-1">
+                            <div className="flex items-center gap-1">
+                              <CheckCircle 
+                                className={cn(
+                                  "h-4 w-4",
+                                  feria.status === 'pendente' ? "text-muted-foreground" : "text-green-500"
+                                )} 
+                              />
+                              <span className="text-xs">Solicitado</span>
+                            </div>
+                            <span className="text-muted-foreground">→</span>
+                            <div className="flex items-center gap-1">
+                              <CheckCircle 
+                                className={cn(
+                                  "h-4 w-4",
+                                  feria.status === 'pendente' ? "text-muted-foreground" : 
+                                  feria.status === 'aprovado_chefia' || feria.status === 'aprovado_rh' ? "text-green-500" : "text-muted-foreground"
+                                )} 
+                              />
+                              <span className="text-xs">Chefia</span>
+                            </div>
+                            <span className="text-muted-foreground">→</span>
+                            <div className="flex items-center gap-1">
+                              <CheckCircle 
+                                className={cn(
+                                  "h-4 w-4",
+                                  feria.status === 'aprovado_rh' ? "text-green-500" : "text-muted-foreground"
+                                )} 
+                              />
+                              <span className="text-xs">RH</span>
+                            </div>
+                          </div>
                         </TableCell>
                         <TableCell>
-                          <div className="space-y-1">
-                            {feria.aprovado_chefia_em && (
-                              <div className="text-xs text-muted-foreground">
-                                Chefia: {format(new Date(feria.aprovado_chefia_em), 'dd/MM/yyyy')}
-                              </div>
-                            )}
-                            {feria.aprovado_rh_em && (
-                              <div className="text-xs text-muted-foreground">
-                                RH: {format(new Date(feria.aprovado_rh_em), 'dd/MM/yyyy')}
-                              </div>
-                            )}
+                          <div>
+                            {format(new Date(feria.solicitado_em), 'dd/MM/yyyy')}
+                            <p className="text-xs text-muted-foreground">
+                              {format(new Date(feria.solicitado_em), 'HH:mm')}
+                            </p>
                           </div>
                         </TableCell>
                       </TableRow>

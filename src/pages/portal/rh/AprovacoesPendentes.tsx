@@ -33,7 +33,7 @@ export default function GestaoRH({ onBack }: GestaoRHProps) {
     try {
       setLoading(true);
       
-      // Carregar férias pendentes
+      // Carregar férias aprovadas pela chefia, aguardando aprovação RH
       const { data: feriasData } = await supabase
         .from('ferias')
         .select(`
@@ -41,11 +41,13 @@ export default function GestaoRH({ onBack }: GestaoRHProps) {
           funcionarios:funcionario_id (
             nome_completo,
             numero_funcionario,
-            unidade_organica
+            unidade_organica,
+            departamento,
+            categoria
           )
         `)
-        .eq('status', 'pendente')
-        .order('solicitado_em', { ascending: false });
+        .eq('status', 'aprovado_chefia')
+        .order('aprovado_chefia_em', { ascending: false });
       
       setFeriasPendentes(feriasData || []);
 
@@ -71,50 +73,44 @@ export default function GestaoRH({ onBack }: GestaoRHProps) {
     }
   };
 
-  const aprovarFerias = async (id: string, tipo: 'chefia' | 'rh') => {
+  const aprovarFeriasRH = async (id: string) => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       
-      const updates: any = {};
-      if (tipo === 'chefia') {
-        updates.aprovado_chefia_por = user?.id;
-        updates.aprovado_chefia_em = new Date().toISOString();
-        updates.status = 'aprovado_chefia';
-      } else {
-        updates.aprovado_rh_por = user?.id;
-        updates.aprovado_rh_em = new Date().toISOString();
-        updates.status = 'aprovado_rh';
-        
-        // Atualizar saldo ao aprovar pelo RH
-        const ferias = feriasPendentes.find(f => f.id === id);
-        if (ferias) {
-          const { data: saldo } = await supabase
-            .from('saldo_ferias')
-            .select('*')
-            .eq('funcionario_id', ferias.funcionario_id)
-            .eq('ano', ferias.ano)
-            .single();
-
-          if (saldo) {
-            await supabase
-              .from('saldo_ferias')
-              .update({
-                dias_gozados: saldo.dias_gozados + ferias.dias_solicitados,
-                dias_pendentes: saldo.dias_pendentes - ferias.dias_solicitados
-              })
-              .eq('id', saldo.id);
-          }
-        }
-      }
-
+      // Atualizar status para aprovado_rh
       const { error } = await supabase
         .from('ferias')
-        .update(updates)
+        .update({
+          aprovado_rh_por: user?.id,
+          aprovado_rh_em: new Date().toISOString(),
+          status: 'aprovado_rh'
+        })
         .eq('id', id);
 
       if (error) throw error;
 
-      toast.success(`Férias aprovadas (${tipo})`);
+      // Atualizar saldo ao aprovar pelo RH
+      const ferias = feriasPendentes.find(f => f.id === id);
+      if (ferias) {
+        const { data: saldo } = await supabase
+          .from('saldo_ferias')
+          .select('*')
+          .eq('funcionario_id', ferias.funcionario_id)
+          .eq('ano', ferias.ano)
+          .single();
+
+        if (saldo) {
+          await supabase
+            .from('saldo_ferias')
+            .update({
+              dias_gozados: saldo.dias_gozados + ferias.dias_solicitados,
+              dias_pendentes: saldo.dias_pendentes - ferias.dias_solicitados
+            })
+            .eq('id', saldo.id);
+        }
+      }
+
+      toast.success('Férias aprovadas pelo RH. Funcionário será notificado.');
       carregarDados();
     } catch (error) {
       console.error('Erro ao aprovar férias:', error);
@@ -206,8 +202,8 @@ export default function GestaoRH({ onBack }: GestaoRHProps) {
               <ArrowLeft className="h-5 w-5" />
             </Button>
             <div>
-              <h1 className="text-2xl font-bold">Gestão RH</h1>
-              <p className="text-sm text-muted-foreground">Aprovações e validações de recursos humanos</p>
+              <h1 className="text-2xl font-bold">Aprovação Final - RH</h1>
+              <p className="text-sm text-muted-foreground">Aprovar férias já validadas pela chefia</p>
             </div>
           </div>
         </div>
@@ -229,8 +225,8 @@ export default function GestaoRH({ onBack }: GestaoRHProps) {
           <TabsContent value="ferias">
             <Card>
               <CardHeader>
-                <CardTitle>Solicitações de Férias</CardTitle>
-                <CardDescription>Aprovar ou rejeitar pedidos de férias</CardDescription>
+                <CardTitle>Férias Aprovadas pela Chefia</CardTitle>
+                <CardDescription>Aprovar finalmente ou rejeitar pedidos já validados</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="overflow-x-auto">
@@ -238,10 +234,10 @@ export default function GestaoRH({ onBack }: GestaoRHProps) {
                     <TableHeader>
                       <TableRow>
                         <TableHead>Funcionário</TableHead>
-                        <TableHead>Unidade</TableHead>
+                        <TableHead>Unidade/Categoria</TableHead>
                         <TableHead>Período</TableHead>
                         <TableHead>Dias</TableHead>
-                        <TableHead>Solicitado em</TableHead>
+                        <TableHead>Aprovado Chefia</TableHead>
                         <TableHead>Ações</TableHead>
                       </TableRow>
                     </TableHeader>
@@ -264,33 +260,39 @@ export default function GestaoRH({ onBack }: GestaoRHProps) {
                                 </p>
                               </div>
                             </TableCell>
-                            <TableCell>{ferias.funcionarios?.unidade_organica || 'N/A'}</TableCell>
+                            <TableCell>
+                              <div className="text-sm">
+                                <p className="font-medium">{ferias.funcionarios?.unidade_organica}</p>
+                                <p className="text-xs text-muted-foreground">{ferias.funcionarios?.categoria}</p>
+                              </div>
+                            </TableCell>
                             <TableCell>
                               {format(new Date(ferias.data_inicio), 'dd/MM')} - {format(new Date(ferias.data_fim), 'dd/MM/yyyy')}
                             </TableCell>
-                            <TableCell>{ferias.dias_solicitados} dias</TableCell>
                             <TableCell>
-                              {format(new Date(ferias.solicitado_em), 'dd/MM/yyyy HH:mm')}
+                              <Badge variant="secondary">{ferias.dias_solicitados} dias</Badge>
+                            </TableCell>
+                            <TableCell>
+                              <div className="text-sm">
+                                <Badge variant="outline" className="gap-1">
+                                  <CheckCircle className="h-3 w-3 text-green-500" />
+                                  Aprovado
+                                </Badge>
+                                <p className="text-xs text-muted-foreground mt-1">
+                                  {format(new Date(ferias.aprovado_chefia_em), 'dd/MM/yyyy HH:mm')}
+                                </p>
+                              </div>
                             </TableCell>
                             <TableCell>
                               <div className="flex items-center gap-2">
                                 <Button
                                   variant="default"
                                   size="sm"
-                                  onClick={() => aprovarFerias(ferias.id, 'chefia')}
+                                  onClick={() => aprovarFeriasRH(ferias.id)}
                                   className="gap-1"
                                 >
                                   <CheckCircle className="h-4 w-4" />
-                                  Chefia
-                                </Button>
-                                <Button
-                                  variant="secondary"
-                                  size="sm"
-                                  onClick={() => aprovarFerias(ferias.id, 'rh')}
-                                  className="gap-1"
-                                >
-                                  <CheckCircle className="h-4 w-4" />
-                                  RH
+                                  Aprovar RH
                                 </Button>
                                 <Dialog open={dialogRejeitar && itemSelecionado?.id === ferias.id} onOpenChange={(open) => {
                                   setDialogRejeitar(open);
