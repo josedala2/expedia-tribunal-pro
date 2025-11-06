@@ -103,6 +103,50 @@ export type Database = {
         }
         Relationships: []
       }
+      documentos_pensionista: {
+        Row: {
+          criado_em: string
+          criado_por: string | null
+          data_validade: string | null
+          descricao: string | null
+          id: string
+          pensionista_id: string
+          tipo_documento: string
+          titulo: string
+          url_arquivo: string | null
+        }
+        Insert: {
+          criado_em?: string
+          criado_por?: string | null
+          data_validade?: string | null
+          descricao?: string | null
+          id?: string
+          pensionista_id: string
+          tipo_documento: string
+          titulo: string
+          url_arquivo?: string | null
+        }
+        Update: {
+          criado_em?: string
+          criado_por?: string | null
+          data_validade?: string | null
+          descricao?: string | null
+          id?: string
+          pensionista_id?: string
+          tipo_documento?: string
+          titulo?: string
+          url_arquivo?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "documentos_pensionista_pensionista_id_fkey"
+            columns: ["pensionista_id"]
+            isOneToOne: false
+            referencedRelation: "pensionistas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       expedientes: {
         Row: {
           aceito_destinatario: boolean | null
@@ -377,6 +421,53 @@ export type Database = {
           },
         ]
       }
+      historico_funcional_pensionista: {
+        Row: {
+          cargo: string
+          categoria: string | null
+          criado_em: string
+          data_fim: string | null
+          data_inicio: string
+          departamento: string | null
+          id: string
+          observacoes: string | null
+          pensionista_id: string
+          unidade_organica: string | null
+        }
+        Insert: {
+          cargo: string
+          categoria?: string | null
+          criado_em?: string
+          data_fim?: string | null
+          data_inicio: string
+          departamento?: string | null
+          id?: string
+          observacoes?: string | null
+          pensionista_id: string
+          unidade_organica?: string | null
+        }
+        Update: {
+          cargo?: string
+          categoria?: string | null
+          criado_em?: string
+          data_fim?: string | null
+          data_inicio?: string
+          departamento?: string | null
+          id?: string
+          observacoes?: string | null
+          pensionista_id?: string
+          unidade_organica?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "historico_funcional_pensionista_pensionista_id_fkey"
+            columns: ["pensionista_id"]
+            isOneToOne: false
+            referencedRelation: "pensionistas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       logs_auditoria: {
         Row: {
           acao: string
@@ -523,6 +614,166 @@ export type Database = {
         }
         Relationships: []
       }
+      pagamentos_pensao: {
+        Row: {
+          ano: number
+          criado_em: string
+          data_pagamento: string | null
+          descontos: number | null
+          id: string
+          mes: number
+          observacoes: string | null
+          pensionista_id: string
+          processado: boolean | null
+          processado_em: string | null
+          processado_por: string | null
+          status: string
+          subsidios: number | null
+          valor_base: number
+          valor_liquido: number
+        }
+        Insert: {
+          ano: number
+          criado_em?: string
+          data_pagamento?: string | null
+          descontos?: number | null
+          id?: string
+          mes: number
+          observacoes?: string | null
+          pensionista_id: string
+          processado?: boolean | null
+          processado_em?: string | null
+          processado_por?: string | null
+          status?: string
+          subsidios?: number | null
+          valor_base: number
+          valor_liquido: number
+        }
+        Update: {
+          ano?: number
+          criado_em?: string
+          data_pagamento?: string | null
+          descontos?: number | null
+          id?: string
+          mes?: number
+          observacoes?: string | null
+          pensionista_id?: string
+          processado?: boolean | null
+          processado_em?: string | null
+          processado_por?: string | null
+          status?: string
+          subsidios?: number | null
+          valor_base?: number
+          valor_liquido?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pagamentos_pensao_pensionista_id_fkey"
+            columns: ["pensionista_id"]
+            isOneToOne: false
+            referencedRelation: "pensionistas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pensionistas: {
+        Row: {
+          atualizado_em: string
+          banco: string | null
+          bi: string | null
+          contacto_email: string | null
+          contacto_telefone: string | null
+          criado_em: string
+          criado_por: string | null
+          data_aposentadoria: string
+          data_nascimento: string | null
+          data_ultima_prova_vida: string | null
+          estado_civil: string | null
+          funcionario_id: string | null
+          genero: string | null
+          iban: string | null
+          id: string
+          morada: string | null
+          motivo_aposentadoria: string | null
+          nif: string | null
+          nome_completo: string
+          numero_pensionista: string
+          observacoes: string | null
+          proxima_prova_vida: string | null
+          status: string
+          tempo_servico_anos: number | null
+          tempo_servico_meses: number | null
+          tipo_aposentadoria: string
+          valor_pensao: number | null
+        }
+        Insert: {
+          atualizado_em?: string
+          banco?: string | null
+          bi?: string | null
+          contacto_email?: string | null
+          contacto_telefone?: string | null
+          criado_em?: string
+          criado_por?: string | null
+          data_aposentadoria: string
+          data_nascimento?: string | null
+          data_ultima_prova_vida?: string | null
+          estado_civil?: string | null
+          funcionario_id?: string | null
+          genero?: string | null
+          iban?: string | null
+          id?: string
+          morada?: string | null
+          motivo_aposentadoria?: string | null
+          nif?: string | null
+          nome_completo: string
+          numero_pensionista: string
+          observacoes?: string | null
+          proxima_prova_vida?: string | null
+          status?: string
+          tempo_servico_anos?: number | null
+          tempo_servico_meses?: number | null
+          tipo_aposentadoria: string
+          valor_pensao?: number | null
+        }
+        Update: {
+          atualizado_em?: string
+          banco?: string | null
+          bi?: string | null
+          contacto_email?: string | null
+          contacto_telefone?: string | null
+          criado_em?: string
+          criado_por?: string | null
+          data_aposentadoria?: string
+          data_nascimento?: string | null
+          data_ultima_prova_vida?: string | null
+          estado_civil?: string | null
+          funcionario_id?: string | null
+          genero?: string | null
+          iban?: string | null
+          id?: string
+          morada?: string | null
+          motivo_aposentadoria?: string | null
+          nif?: string | null
+          nome_completo?: string
+          numero_pensionista?: string
+          observacoes?: string | null
+          proxima_prova_vida?: string | null
+          status?: string
+          tempo_servico_anos?: number | null
+          tempo_servico_meses?: number | null
+          tipo_aposentadoria?: string
+          valor_pensao?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pensionistas_funcionario_id_fkey"
+            columns: ["funcionario_id"]
+            isOneToOne: false
+            referencedRelation: "funcionarios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string | null
@@ -555,6 +806,56 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      provas_vida: {
+        Row: {
+          criado_em: string
+          criado_por: string | null
+          data_verificacao: string
+          documento_url: string | null
+          id: string
+          local_verificacao: string | null
+          observacoes: string | null
+          pensionista_id: string
+          proxima_verificacao: string
+          tipo_verificacao: string
+          verificado_por: string | null
+        }
+        Insert: {
+          criado_em?: string
+          criado_por?: string | null
+          data_verificacao: string
+          documento_url?: string | null
+          id?: string
+          local_verificacao?: string | null
+          observacoes?: string | null
+          pensionista_id: string
+          proxima_verificacao: string
+          tipo_verificacao: string
+          verificado_por?: string | null
+        }
+        Update: {
+          criado_em?: string
+          criado_por?: string | null
+          data_verificacao?: string
+          documento_url?: string | null
+          id?: string
+          local_verificacao?: string | null
+          observacoes?: string | null
+          pensionista_id?: string
+          proxima_verificacao?: string
+          tipo_verificacao?: string
+          verificado_por?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "provas_vida_pensionista_id_fkey"
+            columns: ["pensionista_id"]
+            isOneToOne: false
+            referencedRelation: "pensionistas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       registos_ponto: {
         Row: {

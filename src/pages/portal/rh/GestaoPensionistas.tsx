@@ -2,13 +2,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, LogOut, Plus, Users, DollarSign, CheckCircle, FolderOpen, BarChart3, MessageSquare, Shield } from "lucide-react";
 import { useState } from "react";
+import CadastroAposentados from "./pensionistas/CadastroAposentados";
 
 interface GestaoPensionistasProps {
   onBack: () => void;
 }
 
 export default function GestaoPensionistas({ onBack }: GestaoPensionistasProps) {
-  const [selectedModule, setSelectedModule] = useState<string | null>(null);
+  const [selectedModule, setSelectedModule] = useState<string | null>("cadastro");
 
   const modules = [
     {
@@ -76,6 +77,10 @@ export default function GestaoPensionistas({ onBack }: GestaoPensionistasProps) 
     }
   ];
 
+  if (selectedModule === "cadastro") {
+    return <CadastroAposentados onBack={() => setSelectedModule(null)} />;
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <header className="bg-card border-b sticky top-0 z-10 shadow-sm">
@@ -93,10 +98,6 @@ export default function GestaoPensionistas({ onBack }: GestaoPensionistasProps) 
                 <p className="text-sm text-muted-foreground">Gerir informações e processos de pensionistas e reformados</p>
               </div>
             </div>
-            <Button size="sm" className="gap-2">
-              <Plus className="h-4 w-4" />
-              Registar Pensionista
-            </Button>
           </div>
         </div>
       </header>
