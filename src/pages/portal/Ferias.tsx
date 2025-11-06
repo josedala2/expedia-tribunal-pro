@@ -28,6 +28,7 @@ export default function Ferias({ onBack }: FeriasProps) {
   const [dataInicio, setDataInicio] = useState("");
   const [dataFim, setDataFim] = useState("");
   const [tipoFerias, setTipoFerias] = useState("anuais");
+  const [tipoLicenca, setTipoLicenca] = useState("");
 
   useEffect(() => {
     carregarDados();
@@ -89,6 +90,11 @@ export default function Ferias({ onBack }: FeriasProps) {
       return;
     }
 
+    if (tipoFerias === 'licenca' && !tipoLicenca) {
+      toast.error('Selecione o tipo de licença');
+      return;
+    }
+
     const dias = calcularDias();
     
     if (dias <= 0) {
@@ -102,6 +108,8 @@ export default function Ferias({ onBack }: FeriasProps) {
     }
 
     try {
+      const observacoesLicenca = tipoFerias === 'licenca' ? `Tipo: ${tipoLicenca}` : '';
+      
       const { error } = await supabase
         .from('ferias')
         .insert({
@@ -111,7 +119,8 @@ export default function Ferias({ onBack }: FeriasProps) {
           data_fim: dataFim,
           dias_solicitados: dias,
           tipo: tipoFerias,
-          status: 'pendente'
+          status: 'pendente',
+          observacoes: observacoesLicenca
         });
 
       if (error) throw error;
@@ -126,11 +135,12 @@ export default function Ferias({ onBack }: FeriasProps) {
           .eq('id', saldoFerias.id);
       }
 
-      toast.success('Férias solicitadas com sucesso');
+      toast.success('Férias/Licença solicitada com sucesso');
       setDialogNovo(false);
       setDataInicio("");
       setDataFim("");
       setTipoFerias("anuais");
+      setTipoLicenca("");
       carregarDados();
     } catch (error) {
       console.error('Erro ao solicitar férias:', error);
@@ -218,7 +228,10 @@ export default function Ferias({ onBack }: FeriasProps) {
                   </div>
                   <div>
                     <Label>Tipo de Férias</Label>
-                    <Select value={tipoFerias} onValueChange={setTipoFerias}>
+                    <Select value={tipoFerias} onValueChange={(value) => {
+                      setTipoFerias(value);
+                      if (value !== 'licenca') setTipoLicenca("");
+                    }}>
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
@@ -229,6 +242,30 @@ export default function Ferias({ onBack }: FeriasProps) {
                       </SelectContent>
                     </Select>
                   </div>
+                  
+                  {tipoFerias === 'licenca' && (
+                    <div>
+                      <Label>Tipo de Licença</Label>
+                      <Select value={tipoLicenca} onValueChange={setTipoLicenca}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione o tipo de licença" />
+                        </SelectTrigger>
+                        <SelectContent className="max-h-[300px]">
+                          <SelectItem value="doenca">Licença por Doença (art.º 90.º)</SelectItem>
+                          <SelectItem value="parental">Licença Parental</SelectItem>
+                          <SelectItem value="tutela_adocao">Licença por Tutela e Adoção</SelectItem>
+                          <SelectItem value="risco_gravidez">Licença em Risco Clínico durante Gravidez</SelectItem>
+                          <SelectItem value="interrupcao_gravidez">Licença por Interrupção da Gravidez</SelectItem>
+                          <SelectItem value="casamento">Licença de Casamento (10 dias úteis)</SelectItem>
+                          <SelectItem value="bodas_prata">Licença de Bodas de Prata</SelectItem>
+                          <SelectItem value="bodas_ouro">Licença de Bodas de Ouro</SelectItem>
+                          <SelectItem value="luto">Licença por Luto</SelectItem>
+                          <SelectItem value="limitada">Licença Limitada (até 6 meses, prorrogável até 1 ano)</SelectItem>
+                          <SelectItem value="ilimitada">Licença Ilimitada (1 a 10 anos)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
                   {dataInicio && dataFim && (
                     <div className="p-4 bg-primary/10 rounded-lg">
                       <p className="text-sm">
