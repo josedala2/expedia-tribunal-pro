@@ -105,6 +105,8 @@ export default function CadastroAposentados({ onBack }: CadastroAposentadosProps
   const [isHistoricoDialogOpen, setIsHistoricoDialogOpen] = useState(false);
   const [contagemDialogOpen, setContagemDialogOpen] = useState(false);
   const [selectedPensionistaHistorico, setSelectedPensionistaHistorico] = useState<any>(null);
+  const [isSelecionarPensionistaOpen, setIsSelecionarPensionistaOpen] = useState(false);
+  const [selectedPensionistaId, setSelectedPensionistaId] = useState<string>("");
 
   const form = useForm<PensionistaFormData>({
     resolver: zodResolver(pensionistaSchema),
@@ -376,9 +378,6 @@ export default function CadastroAposentados({ onBack }: CadastroAposentadosProps
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-muted-foreground mb-4">
-            Selecione um pensionista na tabela abaixo e clique no botão de relógio para visualizar o cálculo detalhado do tempo de serviço, baseado no histórico funcional registado.
-          </p>
           <div className="flex gap-4 items-center">
             <div className="flex-1 grid grid-cols-3 gap-4">
               <div className="text-center p-3 bg-background rounded-lg">
@@ -396,6 +395,14 @@ export default function CadastroAposentados({ onBack }: CadastroAposentadosProps
                 <p className="text-xs text-muted-foreground">Requisito Mínimo</p>
               </div>
             </div>
+            <Button 
+              size="lg" 
+              onClick={() => setIsSelecionarPensionistaOpen(true)}
+              className="shrink-0"
+            >
+              <Clock className="h-4 w-4 mr-2" />
+              Calcular Tempo de Serviço
+            </Button>
           </div>
         </CardContent>
       </Card>
@@ -445,22 +452,6 @@ export default function CadastroAposentados({ onBack }: CadastroAposentadosProps
                     <TableCell>{getStatusBadge(pensionista.status)}</TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          onClick={async () => {
-                            const { data } = await supabase
-                              .from("pensionistas")
-                              .select("*, historico_funcional_pensionista(*)")
-                              .eq("id", pensionista.id)
-                              .single();
-                            setSelectedPensionistaHistorico(data);
-                            setContagemDialogOpen(true);
-                          }}
-                          title="Contagem de Tempo de Serviço"
-                        >
-                          <Clock className="h-4 w-4" />
-                        </Button>
                         <Button variant="ghost" size="sm" onClick={() => handleEdit(pensionista)}>
                           <Edit className="h-4 w-4" />
                         </Button>
@@ -1090,6 +1081,113 @@ export default function CadastroAposentados({ onBack }: CadastroAposentadosProps
               </DialogFooter>
             </form>
           </Form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog de Seleção de Pensionista para Contagem */}
+      <Dialog open={isSelecionarPensionistaOpen} onOpenChange={setIsSelecionarPensionistaOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Clock className="h-5 w-5" />
+              Selecionar Pensionista
+            </DialogTitle>
+            <DialogDescription>
+              Escolha um pensionista para calcular o tempo de serviço
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Pesquisar por nome..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-9"
+              />
+            </div>
+
+            <div className="border rounded-lg max-h-[400px] overflow-y-auto">
+              {filteredPensionistas.length === 0 ? (
+                <div className="p-8 text-center text-muted-foreground">
+                  Nenhum pensionista encontrado
+                </div>
+              ) : (
+                <div className="divide-y">
+                  {filteredPensionistas.map((pensionista) => (
+                    <div
+                      key={pensionista.id}
+                      className={cn(
+                        "p-4 cursor-pointer hover:bg-accent transition-colors",
+                        selectedPensionistaId === pensionista.id && "bg-accent"
+                      )}
+                      onClick={() => setSelectedPensionistaId(pensionista.id)}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="font-medium">{pensionista.nome_completo}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {pensionista.numero_pensionista} • {pensionista.tipo_aposentadoria}
+                          </p>
+                        </div>
+                        {getStatusBadge(pensionista.status)}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setIsSelecionarPensionistaOpen(false);
+                setSelectedPensionistaId("");
+              }}
+            >
+              Cancelar
+            </Button>
+            <Button
+              onClick={async () => {
+                if (!selectedPensionistaId) {
+                  toast({
+                    title: "Selecione um pensionista",
+                    description: "Por favor, selecione um pensionista da lista",
+                    variant: "destructive",
+                  });
+                  return;
+                }
+
+                try {
+                  const { data, error } = await supabase
+                    .from("pensionistas")
+                    .select("*, historico_funcional_pensionista(*)")
+                    .eq("id", selectedPensionistaId)
+                    .single();
+
+                  if (error) throw error;
+
+                  setSelectedPensionistaHistorico(data);
+                  setIsSelecionarPensionistaOpen(false);
+                  setContagemDialogOpen(true);
+                  setSelectedPensionistaId("");
+                } catch (error: any) {
+                  toast({
+                    title: "Erro ao carregar dados",
+                    description: error.message,
+                    variant: "destructive",
+                  });
+                }
+              }}
+              disabled={!selectedPensionistaId}
+            >
+              <Clock className="h-4 w-4 mr-2" />
+              Ver Contagem
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
 
