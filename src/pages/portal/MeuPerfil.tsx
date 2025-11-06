@@ -8,12 +8,13 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { ArrowLeft, User, Building, CreditCard, Users as UsersIcon, FileText, Edit, Plus, Trash2, GraduationCap, BarChart3, FileCheck } from "lucide-react";
+import { ArrowLeft, User, Building, CreditCard, Users as UsersIcon, FileText, Edit, Plus, Trash2, GraduationCap, BarChart3, FileCheck, FolderOpen } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import FormacaoAvaliacao from "./FormacaoAvaliacao";
 import RelatoriosPessoais from "./RelatoriosPessoais";
 import Declaracoes from "./Declaracoes";
+import SolicitacaoDocumentos from "./SolicitacaoDocumentos";
 
 interface MeuPerfilProps {
   onBack: () => void;
@@ -191,7 +192,7 @@ export default function MeuPerfil({ onBack }: MeuPerfilProps) {
 
       <main className="container mx-auto px-4 py-6">
         <Tabs defaultValue="pessoal" className="w-full">
-          <TabsList className="grid w-full grid-cols-7 mb-6">
+          <TabsList className="grid w-full grid-cols-8 mb-6">
             <TabsTrigger value="pessoal">
               <User className="h-4 w-4 mr-2" />
               Pessoal
@@ -215,6 +216,10 @@ export default function MeuPerfil({ onBack }: MeuPerfilProps) {
             <TabsTrigger value="relatorios">
               <BarChart3 className="h-4 w-4 mr-2" />
               Relatórios
+            </TabsTrigger>
+            <TabsTrigger value="documentos">
+              <FolderOpen className="h-4 w-4 mr-2" />
+              Documentos
             </TabsTrigger>
             <TabsTrigger value="declaracoes">
               <FileCheck className="h-4 w-4 mr-2" />
@@ -510,6 +515,10 @@ export default function MeuPerfil({ onBack }: MeuPerfilProps) {
 
           <TabsContent value="relatorios">
             <RelatoriosPessoais />
+          </TabsContent>
+
+          <TabsContent value="documentos">
+            <SolicitacaoDocumentos />
           </TabsContent>
 
           <TabsContent value="declaracoes">
