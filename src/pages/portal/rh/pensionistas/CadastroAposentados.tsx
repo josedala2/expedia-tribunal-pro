@@ -12,13 +12,14 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Plus, Search, Edit, Trash2, CalendarIcon, Eye } from "lucide-react";
+import { Plus, Search, Edit, Trash2, CalendarIcon, Eye, Clock } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import ContagemTempoServico from "@/components/pensionistas/ContagemTempoServico";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 
 interface CadastroAposentadosProps {
@@ -102,6 +103,8 @@ export default function CadastroAposentados({ onBack }: CadastroAposentadosProps
   const [editingPensionista, setEditingPensionista] = useState<Pensionista | null>(null);
   const [historicoItems, setHistoricoItems] = useState<HistoricoFuncional[]>([]);
   const [isHistoricoDialogOpen, setIsHistoricoDialogOpen] = useState(false);
+  const [contagemDialogOpen, setContagemDialogOpen] = useState(false);
+  const [selectedPensionistaHistorico, setSelectedPensionistaHistorico] = useState<any>(null);
 
   const form = useForm<PensionistaFormData>({
     resolver: zodResolver(pensionistaSchema),
@@ -406,6 +409,22 @@ export default function CadastroAposentados({ onBack }: CadastroAposentadosProps
                     <TableCell>{getStatusBadge(pensionista.status)}</TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          onClick={async () => {
+                            const { data } = await supabase
+                              .from("pensionistas")
+                              .select("*, historico_funcional_pensionista(*)")
+                              .eq("id", pensionista.id)
+                              .single();
+                            setSelectedPensionistaHistorico(data);
+                            setContagemDialogOpen(true);
+                          }}
+                          title="Contagem de Tempo de Serviço"
+                        >
+                          <Clock className="h-4 w-4" />
+                        </Button>
                         <Button variant="ghost" size="sm" onClick={() => handleEdit(pensionista)}>
                           <Edit className="h-4 w-4" />
                         </Button>
@@ -1037,6 +1056,15 @@ export default function CadastroAposentados({ onBack }: CadastroAposentadosProps
           </Form>
         </DialogContent>
       </Dialog>
+
+      {selectedPensionistaHistorico && (
+        <ContagemTempoServico
+          open={contagemDialogOpen}
+          onOpenChange={setContagemDialogOpen}
+          historicoFuncional={selectedPensionistaHistorico.historico_funcional_pensionista || []}
+          pensionistaNome={selectedPensionistaHistorico.nome_completo}
+        />
+      )}
     </div>
   );
 }
