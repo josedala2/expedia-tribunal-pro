@@ -2,11 +2,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, LogOut, Plus } from "lucide-react";
 
-interface GestaoSaidasAposentadoriasProps {
+interface GestaoPensionistasProps {
   onBack: () => void;
 }
 
-export default function GestaoSaidasAposentadorias({ onBack }: GestaoSaidasAposentadoriasProps) {
+export default function GestaoPensionistas({ onBack }: GestaoPensionistasProps) {
   return (
     <div className="min-h-screen bg-background">
       <header className="bg-card border-b sticky top-0 z-10 shadow-sm">
@@ -19,14 +19,14 @@ export default function GestaoSaidasAposentadorias({ onBack }: GestaoSaidasApose
               <div>
                 <h1 className="text-2xl font-bold flex items-center gap-2">
                   <LogOut className="h-6 w-6" />
-                  Gestão de Saídas e Aposentadorias
+                  Gestão de Pensionistas / Reformados
                 </h1>
-                <p className="text-sm text-muted-foreground">Movimentações finais do ciclo do funcionário</p>
+                <p className="text-sm text-muted-foreground">Gerir informações e processos de pensionistas e reformados</p>
               </div>
             </div>
             <Button size="sm" className="gap-2">
               <Plus className="h-4 w-4" />
-              Registar Saída
+              Registar Pensionista
             </Button>
           </div>
         </div>
@@ -35,8 +35,8 @@ export default function GestaoSaidasAposentadorias({ onBack }: GestaoSaidasApose
       <main className="container mx-auto px-4 py-6">
         <Card>
           <CardHeader>
-            <CardTitle>Saídas e Aposentadorias</CardTitle>
-            <CardDescription>Registos de desligamento e aposentadoria</CardDescription>
+            <CardTitle>Pensionistas e Reformados</CardTitle>
+            <CardDescription>Registos de pensionistas e reformados da instituição</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="text-center py-12">

@@ -85,10 +85,10 @@ export default function GestaoRH({ onBack, onNavigate }: GestaoRHProps) {
       borderColor: "border-cyan-500/20"
     },
     {
-      id: "gestao-saidas-aposentadorias",
+      id: "gestao-pensionistas",
       icon: LogOut,
-      title: "Gestão de Saídas e Aposentadorias",
-      description: "Tratar das movimentações finais do ciclo do funcionário",
+      title: "Gestão de Pensionistas / Reformados",
+      description: "Gerir informações e processos de pensionistas e reformados",
       color: "text-red-600",
       bgColor: "bg-red-500/10",
       borderColor: "border-red-500/20"
