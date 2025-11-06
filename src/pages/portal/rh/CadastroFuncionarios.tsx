@@ -22,6 +22,9 @@ export default function CadastroFuncionarios({ onBack }: CadastroFuncionariosPro
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("todos");
+  const [departamentoFilter, setDepartamentoFilter] = useState("todos");
+  const [categoriaFilter, setCategoriaFilter] = useState("todos");
+  const [vinculoFilter, setVinculoFilter] = useState("todos");
   const [dialogNovo, setDialogNovo] = useState(false);
   const [funcionarioSelecionado, setFuncionarioSelecionado] = useState<any>(null);
 
@@ -47,7 +50,7 @@ export default function CadastroFuncionarios({ onBack }: CadastroFuncionariosPro
 
   useEffect(() => {
     carregarFuncionarios();
-  }, [statusFilter]);
+  }, [statusFilter, departamentoFilter, categoriaFilter, vinculoFilter]);
 
   const carregarFuncionarios = async () => {
     try {
@@ -137,11 +140,67 @@ export default function CadastroFuncionarios({ onBack }: CadastroFuncionariosPro
     }
   };
 
-  const funcionariosFiltrados = funcionarios.filter(func =>
-    func.nome_completo?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    func.numero_funcionario?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    func.bi?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const exportarCSV = () => {
+    try {
+      const headers = [
+        'Nº Funcionário', 'Nome Completo', 'BI', 'NIF', 'Data Nascimento', 'Género', 
+        'Estado Civil', 'Telefone', 'Email', 'Morada', 'Categoria', 'Carreira', 
+        'Função', 'Unidade Orgânica', 'Departamento', 'Tipo Vínculo', 'Data Admissão', 'Situação'
+      ];
+      
+      const csvData = funcionariosFiltrados.map(func => [
+        func.numero_funcionario || '',
+        func.nome_completo || '',
+        func.bi || '',
+        func.nif || '',
+        func.data_nascimento || '',
+        func.genero || '',
+        func.estado_civil || '',
+        func.contacto_telefone || '',
+        func.contacto_email || '',
+        func.morada || '',
+        func.categoria || '',
+        func.carreira || '',
+        func.funcao_atual || '',
+        func.unidade_organica || '',
+        func.departamento || '',
+        func.tipo_vinculo || '',
+        func.data_admissao || '',
+        func.situacao || ''
+      ]);
+      
+      const csv = [
+        headers.join(','),
+        ...csvData.map(row => row.map(cell => `"${cell}"`).join(','))
+      ].join('\n');
+      
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `funcionarios_${format(new Date(), 'yyyy-MM-dd')}.csv`;
+      link.click();
+      
+      toast.success('Dados exportados com sucesso!');
+    } catch (error) {
+      console.error('Erro ao exportar:', error);
+      toast.error('Erro ao exportar dados');
+    }
+  };
+
+  const departamentosUnicos = Array.from(new Set(funcionarios.map(f => f.departamento).filter(Boolean)));
+  const categoriasUnicas = Array.from(new Set(funcionarios.map(f => f.categoria).filter(Boolean)));
+
+  const funcionariosFiltrados = funcionarios.filter(func => {
+    const matchSearch = func.nome_completo?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      func.numero_funcionario?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      func.bi?.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchDepartamento = departamentoFilter === "todos" || func.departamento === departamentoFilter;
+    const matchCategoria = categoriaFilter === "todos" || func.categoria === categoriaFilter;
+    const matchVinculo = vinculoFilter === "todos" || func.tipo_vinculo === vinculoFilter;
+    
+    return matchSearch && matchDepartamento && matchCategoria && matchVinculo;
+  });
 
   if (loading) {
     return (
@@ -173,9 +232,9 @@ export default function CadastroFuncionarios({ onBack }: CadastroFuncionariosPro
                 <FileUp className="h-4 w-4" />
                 Importar
               </Button>
-              <Button variant="outline" size="sm" className="gap-2">
+              <Button variant="outline" size="sm" className="gap-2" onClick={exportarCSV}>
                 <FileDown className="h-4 w-4" />
-                Exportar
+                Exportar CSV
               </Button>
               <Dialog open={dialogNovo} onOpenChange={setDialogNovo}>
                 <DialogTrigger asChild>
@@ -411,30 +470,89 @@ export default function CadastroFuncionarios({ onBack }: CadastroFuncionariosPro
 
         <Card>
           <CardHeader>
-            <div className="flex items-center justify-between gap-4 flex-wrap">
-              <div className="flex-1 min-w-[200px]">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Pesquisar por nome, número ou BI..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-9"
-                  />
+            <CardTitle>Lista de Funcionários</CardTitle>
+            <CardDescription>
+              Mostrando {funcionariosFiltrados.length} de {funcionarios.length} funcionários
+            </CardDescription>
+            <div className="flex flex-col gap-4 mt-4">
+              <div className="flex items-center gap-4 flex-wrap">
+                <div className="flex-1 min-w-[200px]">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      placeholder="Pesquisar por nome, número ou BI..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="pl-9"
+                    />
+                  </div>
                 </div>
+                <Select value={statusFilter} onValueChange={setStatusFilter}>
+                  <SelectTrigger className="w-[160px]">
+                    <SelectValue placeholder="Situação" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="todos">Todas Situações</SelectItem>
+                    <SelectItem value="ativo">Ativos</SelectItem>
+                    <SelectItem value="inativo">Inativos</SelectItem>
+                    <SelectItem value="suspenso">Suspensos</SelectItem>
+                    <SelectItem value="licenca">Em Licença</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="todos">Todos</SelectItem>
-                  <SelectItem value="ativo">Ativos</SelectItem>
-                  <SelectItem value="inativo">Inativos</SelectItem>
-                  <SelectItem value="suspensao">Em Suspensão</SelectItem>
-                  <SelectItem value="licenca">Em Licença</SelectItem>
-                </SelectContent>
-              </Select>
+              
+              <div className="flex items-center gap-4 flex-wrap">
+                <Select value={departamentoFilter} onValueChange={setDepartamentoFilter}>
+                  <SelectTrigger className="w-[200px]">
+                    <SelectValue placeholder="Departamento" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="todos">Todos Departamentos</SelectItem>
+                    {departamentosUnicos.map(dep => (
+                      <SelectItem key={dep} value={dep}>{dep}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                
+                <Select value={categoriaFilter} onValueChange={setCategoriaFilter}>
+                  <SelectTrigger className="w-[200px]">
+                    <SelectValue placeholder="Categoria" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="todos">Todas Categorias</SelectItem>
+                    {categoriasUnicas.map(cat => (
+                      <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                
+                <Select value={vinculoFilter} onValueChange={setVinculoFilter}>
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Tipo de Vínculo" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="todos">Todos Vínculos</SelectItem>
+                    <SelectItem value="efetivo">Efetivo</SelectItem>
+                    <SelectItem value="contrato">Contrato</SelectItem>
+                    <SelectItem value="comissao">Comissão</SelectItem>
+                  </SelectContent>
+                </Select>
+                
+                {(departamentoFilter !== "todos" || categoriaFilter !== "todos" || vinculoFilter !== "todos" || searchTerm) && (
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={() => {
+                      setDepartamentoFilter("todos");
+                      setCategoriaFilter("todos");
+                      setVinculoFilter("todos");
+                      setSearchTerm("");
+                    }}
+                  >
+                    Limpar Filtros
+                  </Button>
+                )}
+              </div>
             </div>
           </CardHeader>
           <CardContent>
@@ -444,9 +562,10 @@ export default function CadastroFuncionarios({ onBack }: CadastroFuncionariosPro
                   <TableRow>
                     <TableHead>Nº Funcionário</TableHead>
                     <TableHead>Nome Completo</TableHead>
-                    <TableHead>BI</TableHead>
                     <TableHead>Cargo</TableHead>
-                    <TableHead>Unidade Orgânica</TableHead>
+                    <TableHead>Departamento</TableHead>
+                    <TableHead>Categoria</TableHead>
+                    <TableHead>Vínculo</TableHead>
                     <TableHead>Situação</TableHead>
                     <TableHead className="text-right">Ações</TableHead>
                   </TableRow>
@@ -454,10 +573,16 @@ export default function CadastroFuncionarios({ onBack }: CadastroFuncionariosPro
                 <TableBody>
                   {funcionariosFiltrados.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={7} className="text-center py-8">
+                      <TableCell colSpan={8} className="text-center py-8">
                         <Users className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
-                        <p className="text-muted-foreground">
-                          {searchTerm ? 'Nenhum funcionário encontrado' : 'Nenhum funcionário cadastrado'}
+                        <p className="text-muted-foreground font-medium">
+                          {searchTerm || departamentoFilter !== "todos" || categoriaFilter !== "todos" || vinculoFilter !== "todos" 
+                            ? 'Nenhum funcionário encontrado com os filtros aplicados' 
+                            : 'Nenhum funcionário cadastrado'}
+                        </p>
+                        <p className="text-sm text-muted-foreground mt-2">
+                          {(searchTerm || departamentoFilter !== "todos" || categoriaFilter !== "todos" || vinculoFilter !== "todos") 
+                            && 'Tente ajustar os filtros de pesquisa'}
                         </p>
                       </TableCell>
                     </TableRow>
@@ -465,12 +590,23 @@ export default function CadastroFuncionarios({ onBack }: CadastroFuncionariosPro
                     funcionariosFiltrados.map((func) => (
                       <TableRow key={func.id}>
                         <TableCell className="font-medium">{func.numero_funcionario}</TableCell>
-                        <TableCell>{func.nome_completo}</TableCell>
-                        <TableCell>{func.bi || '-'}</TableCell>
+                        <TableCell className="font-medium">{func.nome_completo}</TableCell>
                         <TableCell>{func.funcao_atual || '-'}</TableCell>
-                        <TableCell>{func.unidade_organica || '-'}</TableCell>
+                        <TableCell>{func.departamento || '-'}</TableCell>
                         <TableCell>
-                          <Badge variant={func.situacao === 'ativo' ? 'default' : 'secondary'}>
+                          <Badge variant="outline">{func.categoria || '-'}</Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="outline">{func.tipo_vinculo || '-'}</Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Badge 
+                            variant={
+                              func.situacao === 'ativo' ? 'default' : 
+                              func.situacao === 'licenca' ? 'secondary' : 
+                              'destructive'
+                            }
+                          >
                             {func.situacao}
                           </Badge>
                         </TableCell>
@@ -482,14 +618,16 @@ export default function CadastroFuncionarios({ onBack }: CadastroFuncionariosPro
                             <Button variant="ghost" size="sm" title="Editar">
                               <Edit className="h-4 w-4" />
                             </Button>
-                            <Button 
-                              variant="ghost" 
-                              size="sm" 
-                              title="Arquivar"
-                              onClick={() => arquivarFuncionario(func.id)}
-                            >
-                              <Archive className="h-4 w-4" />
-                            </Button>
+                            {func.situacao === 'ativo' && (
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                title="Arquivar"
+                                onClick={() => arquivarFuncionario(func.id)}
+                              >
+                                <Archive className="h-4 w-4" />
+                              </Button>
+                            )}
                           </div>
                         </TableCell>
                       </TableRow>
