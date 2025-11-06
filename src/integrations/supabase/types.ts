@@ -1031,6 +1031,65 @@ export type Database = {
           },
         ]
       }
+      solicitacoes_declaracoes: {
+        Row: {
+          aprovado_em: string | null
+          aprovado_por: string | null
+          atualizado_em: string
+          criado_em: string
+          documento_url: string | null
+          funcionario_id: string
+          id: string
+          motivo_rejeicao: string | null
+          observacoes: string | null
+          processado_em: string | null
+          solicitado_em: string
+          solicitado_por: string | null
+          status: string
+          tipo_declaracao: string
+        }
+        Insert: {
+          aprovado_em?: string | null
+          aprovado_por?: string | null
+          atualizado_em?: string
+          criado_em?: string
+          documento_url?: string | null
+          funcionario_id: string
+          id?: string
+          motivo_rejeicao?: string | null
+          observacoes?: string | null
+          processado_em?: string | null
+          solicitado_em?: string
+          solicitado_por?: string | null
+          status?: string
+          tipo_declaracao: string
+        }
+        Update: {
+          aprovado_em?: string | null
+          aprovado_por?: string | null
+          atualizado_em?: string
+          criado_em?: string
+          documento_url?: string | null
+          funcionario_id?: string
+          id?: string
+          motivo_rejeicao?: string | null
+          observacoes?: string | null
+          processado_em?: string | null
+          solicitado_em?: string
+          solicitado_por?: string | null
+          status?: string
+          tipo_declaracao?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "solicitacoes_declaracoes_funcionario_id_fkey"
+            columns: ["funcionario_id"]
+            isOneToOne: false
+            referencedRelation: "funcionarios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string | null
