@@ -11,7 +11,8 @@ import {
   DollarSign, 
   FolderOpen, 
   LogOut,
-  BarChart3
+  BarChart3,
+  Bell
 } from "lucide-react";
 
 interface GestaoRHProps {
@@ -101,6 +102,15 @@ export default function GestaoRH({ onBack, onNavigate }: GestaoRHProps) {
       color: "text-amber-600",
       bgColor: "bg-amber-500/10",
       borderColor: "border-amber-500/20"
+    },
+    {
+      id: "solicitacoes-declaracoes",
+      icon: Bell,
+      title: "Solicitações de Declarações",
+      description: "Gerir solicitações de declarações dos funcionários",
+      color: "text-pink-600",
+      bgColor: "bg-pink-500/10",
+      borderColor: "border-pink-500/20"
     }
   ];
 

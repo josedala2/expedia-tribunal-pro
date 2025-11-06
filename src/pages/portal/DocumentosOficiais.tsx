@@ -35,18 +35,16 @@ export default function DocumentosOficiais({ onBack }: DocumentosOficiaisProps) 
 
   // Estados para solicitação de declaração
   const [dialogDeclaracao, setDialogDeclaracao] = useState(false);
-  const [etapaDeclaracao, setEtapaDeclaracao] = useState(1);
-  const [funcionarioSelecionado, setFuncionarioSelecionado] = useState("");
   const [tipoDeclaracao, setTipoDeclaracao] = useState("");
+  const [destinatario, setDestinatario] = useState("");
   const [observacoesDeclaracao, setObservacoesDeclaracao] = useState("");
-  const [funcionarios, setFuncionarios] = useState<any[]>([]);
-  const [buscaFuncionario, setBuscaFuncionario] = useState("");
-  const [carregandoFuncionarios, setCarregandoFuncionarios] = useState(false);
   const [salvandoDeclaracao, setSalvandoDeclaracao] = useState(false);
+  const [funcionarioLogado, setFuncionarioLogado] = useState<any>(null);
 
   useEffect(() => {
     carregarDocumentos();
     verificarAdmin();
+    carregarFuncionarioLogado();
   }, [categoriaFiltro]);
 
   const verificarAdmin = async () => {
@@ -58,6 +56,23 @@ export default function DocumentosOficiais({ onBack }: DocumentosOficiaisProps) 
         .eq('user_id', user.id);
       
       setIsAdmin(roles?.some(r => r.role === 'admin') || false);
+    }
+  };
+
+  const carregarFuncionarioLogado = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: funcionario } = await supabase
+          .from('funcionarios')
+          .select('*')
+          .eq('user_id', user.id)
+          .single();
+        
+        setFuncionarioLogado(funcionario);
+      }
+    } catch (error) {
+      console.error('Erro ao carregar funcionário:', error);
     }
   };
 
@@ -196,53 +211,19 @@ export default function DocumentosOficiais({ onBack }: DocumentosOficiaisProps) 
     }
   ];
 
-  const carregarFuncionarios = async () => {
-    setCarregandoFuncionarios(true);
-    try {
-      const { data, error } = await supabase
-        .from('funcionarios')
-        .select('id, numero_funcionario, nome_completo, departamento')
-        .eq('situacao', 'ativo')
-        .order('nome_completo');
-
-      if (error) throw error;
-      setFuncionarios(data || []);
-    } catch (error) {
-      console.error('Erro ao carregar funcionários:', error);
-      toast.error('Erro ao carregar lista de funcionários');
-    } finally {
-      setCarregandoFuncionarios(false);
-    }
-  };
-
-  const funcionariosFiltrados = funcionarios.filter(f => 
-    f.nome_completo.toLowerCase().includes(buscaFuncionario.toLowerCase()) ||
-    f.numero_funcionario.toLowerCase().includes(buscaFuncionario.toLowerCase())
-  );
-
-  const funcionarioSelecionadoObj = funcionarios.find(f => f.id === funcionarioSelecionado);
   const declaracaoSelecionadaObj = tiposDeclaracoes.find(t => t.id === tipoDeclaracao);
 
-  const avancarParaDeclaracao = () => {
-    if (!funcionarioSelecionado) {
-      toast.error("Selecione um funcionário");
-      return;
-    }
-    setEtapaDeclaracao(2);
-  };
-
-  const voltarParaFuncionario = () => {
-    setEtapaDeclaracao(1);
-    setTipoDeclaracao("");
-  };
-
   const solicitarDeclaracao = async () => {
-    if (!funcionarioSelecionado) {
-      toast.error("Selecione um funcionário");
-      return;
-    }
     if (!tipoDeclaracao) {
       toast.error("Selecione um tipo de declaração");
+      return;
+    }
+    if (!destinatario.trim()) {
+      toast.error("Informe o destinatário/finalidade");
+      return;
+    }
+    if (!funcionarioLogado) {
+      toast.error("Funcionário não encontrado");
       return;
     }
 
@@ -255,18 +236,20 @@ export default function DocumentosOficiais({ onBack }: DocumentosOficiaisProps) 
         return;
       }
 
+      const observacoesCompletas = `Destinatário/Finalidade: ${destinatario}\n${observacoesDeclaracao ? '\nObservações: ' + observacoesDeclaracao : ''}`;
+
       const { error } = await supabase
         .from('solicitacoes_declaracoes')
         .insert({
-          funcionario_id: funcionarioSelecionado,
+          funcionario_id: funcionarioLogado.id,
           tipo_declaracao: tipoDeclaracao,
-          observacoes: observacoesDeclaracao || null,
+          observacoes: observacoesCompletas,
           solicitado_por: user.id
         });
 
       if (error) throw error;
 
-      toast.success("Solicitação enviada com sucesso!");
+      toast.success("Solicitação enviada com sucesso! O RH será notificado.");
       fecharDialogDeclaracao();
     } catch (error) {
       console.error('Erro ao solicitar declaração:', error);
@@ -278,18 +261,10 @@ export default function DocumentosOficiais({ onBack }: DocumentosOficiaisProps) 
 
   const fecharDialogDeclaracao = () => {
     setDialogDeclaracao(false);
-    setEtapaDeclaracao(1);
-    setFuncionarioSelecionado("");
     setTipoDeclaracao("");
+    setDestinatario("");
     setObservacoesDeclaracao("");
-    setBuscaFuncionario("");
   };
-
-  useEffect(() => {
-    if (dialogDeclaracao && etapaDeclaracao === 1) {
-      carregarFuncionarios();
-    }
-  }, [dialogDeclaracao, etapaDeclaracao]);
 
   const documentosFiltrados = documentos.filter(doc => 
     doc.titulo.toLowerCase().includes(busca.toLowerCase()) ||
@@ -539,153 +514,91 @@ export default function DocumentosOficiais({ onBack }: DocumentosOficiaisProps) 
 
       {/* Dialog de Solicitação de Declaração */}
       <Dialog open={dialogDeclaracao} onOpenChange={setDialogDeclaracao}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle>
-              {etapaDeclaracao === 1 ? "Selecionar Funcionário" : "Selecionar Tipo de Declaração"}
-            </DialogTitle>
+            <DialogTitle>Solicitar Declaração</DialogTitle>
             <DialogDescription>
-              {etapaDeclaracao === 1 
-                ? "Escolha o funcionário para o qual deseja solicitar a declaração"
-                : "Escolha o tipo de declaração que deseja solicitar"}
+              Preencha as informações para solicitar sua declaração
             </DialogDescription>
           </DialogHeader>
 
-          {etapaDeclaracao === 1 ? (
-            <div className="space-y-4 py-4">
-              <div className="space-y-2">
-                <Label>Buscar Funcionário</Label>
-                <div className="relative">
-                  <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Digite o nome ou número do funcionário..."
-                    value={buscaFuncionario}
-                    onChange={(e) => setBuscaFuncionario(e.target.value)}
-                    className="pl-9"
-                  />
+          <div className="space-y-4 py-4">
+            {funcionarioLogado && (
+              <Card className="bg-muted/50">
+                <div className="p-4">
+                  <p className="text-sm text-muted-foreground mb-1">Solicitante</p>
+                  <p className="font-medium">{funcionarioLogado.nome_completo}</p>
+                  <p className="text-sm text-muted-foreground">
+                    Nº {funcionarioLogado.numero_funcionario} • {funcionarioLogado.departamento || "N/A"}
+                  </p>
                 </div>
-              </div>
+              </Card>
+            )}
 
-              {carregandoFuncionarios ? (
-                <div className="flex justify-center py-8">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-                </div>
-              ) : (
-                <div className="space-y-2 max-h-96 overflow-y-auto">
-                  {funcionariosFiltrados.length === 0 ? (
-                    <p className="text-center text-muted-foreground py-8">
-                      Nenhum funcionário encontrado
-                    </p>
-                  ) : (
-                    funcionariosFiltrados.map((func) => (
-                      <Card
-                        key={func.id}
-                        className={`cursor-pointer transition-colors hover:border-primary ${
-                          funcionarioSelecionado === func.id ? "border-primary bg-primary/5" : ""
-                        }`}
-                        onClick={() => setFuncionarioSelecionado(func.id)}
-                      >
-                        <div className="p-4">
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <p className="font-medium">{func.nome_completo}</p>
-                              <p className="text-sm text-muted-foreground">
-                                Nº {func.numero_funcionario} • {func.departamento || "N/A"}
-                              </p>
-                            </div>
-                            {funcionarioSelecionado === func.id && (
-                              <CheckCircle className="h-5 w-5 text-primary" />
-                            )}
-                          </div>
-                        </div>
-                      </Card>
-                    ))
-                  )}
-                </div>
-              )}
+            <div className="space-y-2">
+              <Label>Tipo de Declaração*</Label>
+              <Select value={tipoDeclaracao} onValueChange={setTipoDeclaracao}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione o tipo de declaração" />
+                </SelectTrigger>
+                <SelectContent>
+                  {tiposDeclaracoes.map((tipo) => (
+                    <SelectItem key={tipo.id} value={tipo.id}>
+                      {tipo.titulo}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
-          ) : (
-            <div className="space-y-4 py-4">
-              {funcionarioSelecionadoObj && (
-                <Card className="bg-muted/50">
-                  <div className="p-4">
-                    <p className="text-sm text-muted-foreground mb-1">Funcionário Selecionado</p>
-                    <p className="font-medium">{funcionarioSelecionadoObj.nome_completo}</p>
-                    <p className="text-sm text-muted-foreground">
-                      Nº {funcionarioSelecionadoObj.numero_funcionario}
+
+            {declaracaoSelecionadaObj && (
+              <div className="space-y-2 p-3 bg-muted/50 rounded-lg">
+                <p className="text-sm font-medium">{declaracaoSelecionadaObj.descricao}</p>
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Clock className="h-4 w-4" />
+                  <span>Prazo: {declaracaoSelecionadaObj.prazo}</span>
+                </div>
+                {declaracaoSelecionadaObj.requerAprovacao && (
+                  <div className="flex items-start gap-2 pt-2">
+                    <AlertCircle className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                    <p className="text-xs text-muted-foreground">
+                      Requer aprovação do departamento de RH
                     </p>
                   </div>
-                </Card>
-              )}
-
-              <div className="space-y-2">
-                <Label>Tipo de Declaração</Label>
-                <Select value={tipoDeclaracao} onValueChange={setTipoDeclaracao}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione o tipo de declaração" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {tiposDeclaracoes.map((tipo) => (
-                      <SelectItem key={tipo.id} value={tipo.id}>
-                        {tipo.titulo}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                )}
               </div>
+            )}
 
-              {declaracaoSelecionadaObj && (
-                <>
-                  <div className="space-y-2 p-3 bg-muted/50 rounded-lg">
-                    <p className="text-sm font-medium">{declaracaoSelecionadaObj.descricao}</p>
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Clock className="h-4 w-4" />
-                      <span>Prazo: {declaracaoSelecionadaObj.prazo}</span>
-                    </div>
-                    {declaracaoSelecionadaObj.requerAprovacao && (
-                      <div className="flex items-start gap-2 pt-2">
-                        <AlertCircle className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                        <p className="text-xs text-muted-foreground">
-                          Requer aprovação do departamento de RH
-                        </p>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label>Observações (opcional)</Label>
-                    <Textarea
-                      placeholder="Adicione informações adicionais sobre a solicitação..."
-                      value={observacoesDeclaracao}
-                      onChange={(e) => setObservacoesDeclaracao(e.target.value)}
-                      rows={4}
-                    />
-                  </div>
-                </>
-              )}
+            <div className="space-y-2">
+              <Label>Destinatário/Finalidade*</Label>
+              <Input
+                placeholder="Ex: Banco XYZ, Embaixada de Portugal, etc."
+                value={destinatario}
+                onChange={(e) => setDestinatario(e.target.value)}
+              />
+              <p className="text-xs text-muted-foreground">
+                Informe para quem ou para que a declaração será utilizada
+              </p>
             </div>
-          )}
+
+            <div className="space-y-2">
+              <Label>Observações Adicionais (opcional)</Label>
+              <Textarea
+                placeholder="Adicione informações adicionais sobre a solicitação..."
+                value={observacoesDeclaracao}
+                onChange={(e) => setObservacoesDeclaracao(e.target.value)}
+                rows={3}
+              />
+            </div>
+          </div>
 
           <DialogFooter>
-            {etapaDeclaracao === 1 ? (
-              <>
-                <Button variant="outline" onClick={fecharDialogDeclaracao}>
-                  Cancelar
-                </Button>
-                <Button onClick={avancarParaDeclaracao}>
-                  Continuar
-                </Button>
-              </>
-            ) : (
-              <>
-                <Button variant="outline" onClick={voltarParaFuncionario}>
-                  Voltar
-                </Button>
-                <Button onClick={solicitarDeclaracao} disabled={salvandoDeclaracao}>
-                  {salvandoDeclaracao ? "Enviando..." : "Confirmar Solicitação"}
-                </Button>
-              </>
-            )}
+            <Button variant="outline" onClick={fecharDialogDeclaracao}>
+              Cancelar
+            </Button>
+            <Button onClick={solicitarDeclaracao} disabled={salvandoDeclaracao}>
+              {salvandoDeclaracao ? "Enviando..." : "Enviar Solicitação"}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
