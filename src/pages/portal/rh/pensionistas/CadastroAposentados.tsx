@@ -364,6 +364,42 @@ export default function CadastroAposentados({ onBack }: CadastroAposentadosProps
         </Button>
       </div>
 
+      {/* Card de Ações Rápidas */}
+      <Card className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950 dark:to-purple-950 border-2">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Clock className="h-5 w-5" />
+            Contagem de Tempo de Serviço
+          </CardTitle>
+          <CardDescription>
+            Calcule o tempo de serviço e verifique requisitos mínimos para aposentação
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground mb-4">
+            Selecione um pensionista na tabela abaixo e clique no botão de relógio para visualizar o cálculo detalhado do tempo de serviço, baseado no histórico funcional registado.
+          </p>
+          <div className="flex gap-4 items-center">
+            <div className="flex-1 grid grid-cols-3 gap-4">
+              <div className="text-center p-3 bg-background rounded-lg">
+                <p className="text-2xl font-bold">{pensionistas.length}</p>
+                <p className="text-xs text-muted-foreground">Total Pensionistas</p>
+              </div>
+              <div className="text-center p-3 bg-background rounded-lg">
+                <p className="text-2xl font-bold">
+                  {pensionistas.filter(p => p.status === 'ativo').length}
+                </p>
+                <p className="text-xs text-muted-foreground">Ativos</p>
+              </div>
+              <div className="text-center p-3 bg-background rounded-lg">
+                <p className="text-2xl font-bold">15 anos</p>
+                <p className="text-xs text-muted-foreground">Requisito Mínimo</p>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Tabela */}
       <Card>
         <CardHeader>
