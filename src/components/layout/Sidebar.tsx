@@ -28,9 +28,26 @@ const menuGroups = [
         icon: LayoutDashboard,
         submenu: [
           { id: "portal-intranet", label: "Meu Perfil" },
-          { id: "aprovacao-ferias-chefia", label: "Aprovação de Férias (Chefia)" },
           { id: "gestao-noticias", label: "Gestão de Notícias" },
-          { id: "gestao-rh", label: "Gestão RH (Admin)" },
+        ]
+      },
+      { 
+        id: "gestao-rh", 
+        label: "Gestão RH (Admin)", 
+        icon: Users,
+        submenu: [
+          { id: "gestao-rh", label: "Menu Principal RH" },
+          { id: "rh-cadastro-funcionarios", label: "Cadastro de Funcionários" },
+          { id: "rh-gestao-contratos", label: "Gestão de Contratos" },
+          { id: "rh-assiduidade-pontualidade", label: "Assiduidade e Pontualidade" },
+          { id: "rh-gestao-ferias-licencas", label: "Gestão de Férias e Licenças" },
+          { id: "aprovacao-ferias-chefia", label: "Aprovação de Férias (Chefia)" },
+          { id: "rh-formacao-desenvolvimento", label: "Formação e Desenvolvimento" },
+          { id: "rh-gestao-remuneracoes", label: "Remunerações e Benefícios" },
+          { id: "rh-gestao-documental-rh", label: "Gestão Documental" },
+          { id: "rh-gestao-pensionistas", label: "Gestão de Pensionistas" },
+          { id: "rh-relatorios-estatisticas-rh", label: "Relatórios e Estatísticas" },
+          { id: "rh-solicitacoes-declaracoes", label: "Solicitações de Declarações" },
         ]
       },
     ]
@@ -165,7 +182,7 @@ const menuGroups = [
 
 export const Sidebar = ({ isOpen, currentView, onNavigate }: SidebarProps) => {
   const [expandedGroups, setExpandedGroups] = useState<string[]>(["dashboard-group", "portal-intranet-group", "expedientes-group", "prestacao-contas-group", "visto-group", "fiscalizacao-group", "multas-group"]);
-  const [expandedMenus, setExpandedMenus] = useState<string[]>(["portal-intranet", "prestacao-contas", "visto", "fiscalizacao", "recurso-ordinario", "recurso-inconstitucionalidade"]);
+  const [expandedMenus, setExpandedMenus] = useState<string[]>(["portal-intranet", "gestao-rh", "prestacao-contas", "visto", "fiscalizacao", "recurso-ordinario", "recurso-inconstitucionalidade"]);
 
   const toggleGroup = (groupId: string) => {
     setExpandedGroups(prev => 
