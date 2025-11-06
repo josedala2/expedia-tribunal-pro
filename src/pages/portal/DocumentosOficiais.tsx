@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { ArrowLeft, FileText, Download, Search, Filter, Plus, Upload } from "lucide-react";
+import { ArrowLeft, FileText, Download, Search, Filter, Plus, Upload, FilePlus, CheckCircle, Clock, AlertCircle } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
@@ -25,13 +25,24 @@ export default function DocumentosOficiais({ onBack }: DocumentosOficiaisProps) 
   const [isAdmin, setIsAdmin] = useState(false);
   const [dialogNovo, setDialogNovo] = useState(false);
   
-  // Form
+  // Form documento
   const [titulo, setTitulo] = useState("");
   const [descricao, setDescricao] = useState("");
   const [categoria, setCategoria] = useState("regulamento");
   const [numeroDoc, setNumeroDoc] = useState("");
   const [dataDoc, setDataDoc] = useState("");
   const [urlArquivo, setUrlArquivo] = useState("");
+
+  // Estados para solicitação de declaração
+  const [dialogDeclaracao, setDialogDeclaracao] = useState(false);
+  const [etapaDeclaracao, setEtapaDeclaracao] = useState(1);
+  const [funcionarioSelecionado, setFuncionarioSelecionado] = useState("");
+  const [tipoDeclaracao, setTipoDeclaracao] = useState("");
+  const [observacoesDeclaracao, setObservacoesDeclaracao] = useState("");
+  const [funcionarios, setFuncionarios] = useState<any[]>([]);
+  const [buscaFuncionario, setBuscaFuncionario] = useState("");
+  const [carregandoFuncionarios, setCarregandoFuncionarios] = useState(false);
+  const [salvandoDeclaracao, setSalvandoDeclaracao] = useState(false);
 
   useEffect(() => {
     carregarDocumentos();
@@ -118,6 +129,168 @@ export default function DocumentosOficiais({ onBack }: DocumentosOficiaisProps) 
     setUrlArquivo("");
   };
 
+  // Tipos de declarações disponíveis
+  const tiposDeclaracoes = [
+    {
+      id: "efeitos_legais",
+      titulo: "Declaração (Efeitos Legais)",
+      descricao: "Para fins legais e administrativos diversos",
+      prazo: "2-3 dias úteis",
+      requerAprovacao: true
+    },
+    {
+      id: "abertura_conta",
+      titulo: "Declaração (Abertura de Conta)",
+      descricao: "Para abertura de conta bancária",
+      prazo: "1-2 dias úteis",
+      requerAprovacao: true
+    },
+    {
+      id: "atualizacao_dados",
+      titulo: "Declaração (Actualização de Dados)",
+      descricao: "Para atualização de dados cadastrais",
+      prazo: "1 dia útil",
+      requerAprovacao: false
+    },
+    {
+      id: "passaporte",
+      titulo: "Declaração (Emissão/Renovação de Passaporte)",
+      descricao: "Para emissão ou renovação de passaporte",
+      prazo: "2-3 dias úteis",
+      requerAprovacao: true
+    },
+    {
+      id: "matricula",
+      titulo: "Declaração (Matrícula)",
+      descricao: "Para matrícula escolar ou académica",
+      prazo: "1-2 dias úteis",
+      requerAprovacao: false
+    },
+    {
+      id: "visto",
+      titulo: "Declaração (Obtenção de Visto)",
+      descricao: "Para solicitação de visto internacional",
+      prazo: "2-3 dias úteis",
+      requerAprovacao: true
+    },
+    {
+      id: "credito_bancario",
+      titulo: "Declaração (Crédito Bancário)",
+      descricao: "Para solicitação de crédito bancário",
+      prazo: "2-3 dias úteis",
+      requerAprovacao: true
+    },
+    {
+      id: "atualizacao_conta",
+      titulo: "Declaração (Actualização de Conta)",
+      descricao: "Para atualização de dados bancários",
+      prazo: "1-2 dias úteis",
+      requerAprovacao: false
+    },
+    {
+      id: "avalista",
+      titulo: "Declaração (Avalista)",
+      descricao: "Para servir como avalista em contratos",
+      prazo: "3-5 dias úteis",
+      requerAprovacao: true
+    }
+  ];
+
+  const carregarFuncionarios = async () => {
+    setCarregandoFuncionarios(true);
+    try {
+      const { data, error } = await supabase
+        .from('funcionarios')
+        .select('id, numero_funcionario, nome_completo, departamento')
+        .eq('situacao', 'ativo')
+        .order('nome_completo');
+
+      if (error) throw error;
+      setFuncionarios(data || []);
+    } catch (error) {
+      console.error('Erro ao carregar funcionários:', error);
+      toast.error('Erro ao carregar lista de funcionários');
+    } finally {
+      setCarregandoFuncionarios(false);
+    }
+  };
+
+  const funcionariosFiltrados = funcionarios.filter(f => 
+    f.nome_completo.toLowerCase().includes(buscaFuncionario.toLowerCase()) ||
+    f.numero_funcionario.toLowerCase().includes(buscaFuncionario.toLowerCase())
+  );
+
+  const funcionarioSelecionadoObj = funcionarios.find(f => f.id === funcionarioSelecionado);
+  const declaracaoSelecionadaObj = tiposDeclaracoes.find(t => t.id === tipoDeclaracao);
+
+  const avancarParaDeclaracao = () => {
+    if (!funcionarioSelecionado) {
+      toast.error("Selecione um funcionário");
+      return;
+    }
+    setEtapaDeclaracao(2);
+  };
+
+  const voltarParaFuncionario = () => {
+    setEtapaDeclaracao(1);
+    setTipoDeclaracao("");
+  };
+
+  const solicitarDeclaracao = async () => {
+    if (!funcionarioSelecionado) {
+      toast.error("Selecione um funcionário");
+      return;
+    }
+    if (!tipoDeclaracao) {
+      toast.error("Selecione um tipo de declaração");
+      return;
+    }
+
+    setSalvandoDeclaracao(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        toast.error("Você precisa estar autenticado");
+        return;
+      }
+
+      const { error } = await supabase
+        .from('solicitacoes_declaracoes')
+        .insert({
+          funcionario_id: funcionarioSelecionado,
+          tipo_declaracao: tipoDeclaracao,
+          observacoes: observacoesDeclaracao || null,
+          solicitado_por: user.id
+        });
+
+      if (error) throw error;
+
+      toast.success("Solicitação enviada com sucesso!");
+      fecharDialogDeclaracao();
+    } catch (error) {
+      console.error('Erro ao solicitar declaração:', error);
+      toast.error('Erro ao enviar solicitação');
+    } finally {
+      setSalvandoDeclaracao(false);
+    }
+  };
+
+  const fecharDialogDeclaracao = () => {
+    setDialogDeclaracao(false);
+    setEtapaDeclaracao(1);
+    setFuncionarioSelecionado("");
+    setTipoDeclaracao("");
+    setObservacoesDeclaracao("");
+    setBuscaFuncionario("");
+  };
+
+  useEffect(() => {
+    if (dialogDeclaracao && etapaDeclaracao === 1) {
+      carregarFuncionarios();
+    }
+  }, [dialogDeclaracao, etapaDeclaracao]);
+
   const documentosFiltrados = documentos.filter(doc => 
     doc.titulo.toLowerCase().includes(busca.toLowerCase()) ||
     doc.numero_documento?.toLowerCase().includes(busca.toLowerCase()) ||
@@ -162,17 +335,26 @@ export default function DocumentosOficiais({ onBack }: DocumentosOficiaisProps) 
               <h1 className="text-2xl font-bold">Documentos Oficiais</h1>
               <p className="text-sm text-muted-foreground">Repositório de documentos institucionais</p>
             </div>
-            {isAdmin && (
-              <Dialog open={dialogNovo} onOpenChange={(open) => {
-                setDialogNovo(open);
-                if (!open) limparForm();
-              }}>
-                <DialogTrigger asChild>
-                  <Button className="gap-2">
-                    <Plus className="h-4 w-4" />
-                    Novo Documento
-                  </Button>
-                </DialogTrigger>
+            <div className="flex gap-2">
+              <Button 
+                variant="outline"
+                className="gap-2"
+                onClick={() => setDialogDeclaracao(true)}
+              >
+                <FilePlus className="h-4 w-4" />
+                Solicitar Declaração
+              </Button>
+              {isAdmin && (
+                <Dialog open={dialogNovo} onOpenChange={(open) => {
+                  setDialogNovo(open);
+                  if (!open) limparForm();
+                }}>
+                  <DialogTrigger asChild>
+                    <Button className="gap-2">
+                      <Plus className="h-4 w-4" />
+                      Novo Documento
+                    </Button>
+                  </DialogTrigger>
                 <DialogContent className="max-w-2xl">
                   <DialogHeader>
                     <DialogTitle>Adicionar Documento Oficial</DialogTitle>
@@ -254,7 +436,8 @@ export default function DocumentosOficiais({ onBack }: DocumentosOficiaisProps) 
                   </DialogFooter>
                 </DialogContent>
               </Dialog>
-            )}
+              )}
+            </div>
           </div>
         </div>
       </header>
@@ -353,6 +536,159 @@ export default function DocumentosOficiais({ onBack }: DocumentosOficiaisProps) 
           </div>
         )}
       </main>
+
+      {/* Dialog de Solicitação de Declaração */}
+      <Dialog open={dialogDeclaracao} onOpenChange={setDialogDeclaracao}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>
+              {etapaDeclaracao === 1 ? "Selecionar Funcionário" : "Selecionar Tipo de Declaração"}
+            </DialogTitle>
+            <DialogDescription>
+              {etapaDeclaracao === 1 
+                ? "Escolha o funcionário para o qual deseja solicitar a declaração"
+                : "Escolha o tipo de declaração que deseja solicitar"}
+            </DialogDescription>
+          </DialogHeader>
+
+          {etapaDeclaracao === 1 ? (
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label>Buscar Funcionário</Label>
+                <div className="relative">
+                  <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Digite o nome ou número do funcionário..."
+                    value={buscaFuncionario}
+                    onChange={(e) => setBuscaFuncionario(e.target.value)}
+                    className="pl-9"
+                  />
+                </div>
+              </div>
+
+              {carregandoFuncionarios ? (
+                <div className="flex justify-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                </div>
+              ) : (
+                <div className="space-y-2 max-h-96 overflow-y-auto">
+                  {funcionariosFiltrados.length === 0 ? (
+                    <p className="text-center text-muted-foreground py-8">
+                      Nenhum funcionário encontrado
+                    </p>
+                  ) : (
+                    funcionariosFiltrados.map((func) => (
+                      <Card
+                        key={func.id}
+                        className={`cursor-pointer transition-colors hover:border-primary ${
+                          funcionarioSelecionado === func.id ? "border-primary bg-primary/5" : ""
+                        }`}
+                        onClick={() => setFuncionarioSelecionado(func.id)}
+                      >
+                        <div className="p-4">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="font-medium">{func.nome_completo}</p>
+                              <p className="text-sm text-muted-foreground">
+                                Nº {func.numero_funcionario} • {func.departamento || "N/A"}
+                              </p>
+                            </div>
+                            {funcionarioSelecionado === func.id && (
+                              <CheckCircle className="h-5 w-5 text-primary" />
+                            )}
+                          </div>
+                        </div>
+                      </Card>
+                    ))
+                  )}
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="space-y-4 py-4">
+              {funcionarioSelecionadoObj && (
+                <Card className="bg-muted/50">
+                  <div className="p-4">
+                    <p className="text-sm text-muted-foreground mb-1">Funcionário Selecionado</p>
+                    <p className="font-medium">{funcionarioSelecionadoObj.nome_completo}</p>
+                    <p className="text-sm text-muted-foreground">
+                      Nº {funcionarioSelecionadoObj.numero_funcionario}
+                    </p>
+                  </div>
+                </Card>
+              )}
+
+              <div className="space-y-2">
+                <Label>Tipo de Declaração</Label>
+                <Select value={tipoDeclaracao} onValueChange={setTipoDeclaracao}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione o tipo de declaração" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {tiposDeclaracoes.map((tipo) => (
+                      <SelectItem key={tipo.id} value={tipo.id}>
+                        {tipo.titulo}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {declaracaoSelecionadaObj && (
+                <>
+                  <div className="space-y-2 p-3 bg-muted/50 rounded-lg">
+                    <p className="text-sm font-medium">{declaracaoSelecionadaObj.descricao}</p>
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Clock className="h-4 w-4" />
+                      <span>Prazo: {declaracaoSelecionadaObj.prazo}</span>
+                    </div>
+                    {declaracaoSelecionadaObj.requerAprovacao && (
+                      <div className="flex items-start gap-2 pt-2">
+                        <AlertCircle className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                        <p className="text-xs text-muted-foreground">
+                          Requer aprovação do departamento de RH
+                        </p>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Observações (opcional)</Label>
+                    <Textarea
+                      placeholder="Adicione informações adicionais sobre a solicitação..."
+                      value={observacoesDeclaracao}
+                      onChange={(e) => setObservacoesDeclaracao(e.target.value)}
+                      rows={4}
+                    />
+                  </div>
+                </>
+              )}
+            </div>
+          )}
+
+          <DialogFooter>
+            {etapaDeclaracao === 1 ? (
+              <>
+                <Button variant="outline" onClick={fecharDialogDeclaracao}>
+                  Cancelar
+                </Button>
+                <Button onClick={avancarParaDeclaracao}>
+                  Continuar
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button variant="outline" onClick={voltarParaFuncionario}>
+                  Voltar
+                </Button>
+                <Button onClick={solicitarDeclaracao} disabled={salvandoDeclaracao}>
+                  {salvandoDeclaracao ? "Enviando..." : "Confirmar Solicitação"}
+                </Button>
+              </>
+            )}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
