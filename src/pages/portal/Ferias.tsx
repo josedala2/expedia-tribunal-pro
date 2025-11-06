@@ -189,7 +189,7 @@ export default function Ferias({ onBack }: FeriasProps) {
               <DialogTrigger asChild>
                 <Button className="gap-2">
                   <Plus className="h-4 w-4" />
-                  Solicitar Férias
+                  Solicitar Férias/Licenças
                 </Button>
               </DialogTrigger>
               <DialogContent>
