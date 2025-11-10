@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { Upload, X, File, Image as ImageIcon, Loader2 } from "lucide-react";
+import { Upload, X, File, Image as ImageIcon, Loader2, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -32,6 +33,7 @@ const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
 export const AnexosUpload = ({ anexos, onAnexosChange, oficioId }: AnexosUploadProps) => {
   const [uploading, setUploading] = useState(false);
+  const [viewingAnexo, setViewingAnexo] = useState<Anexo | null>(null);
 
   const formatFileSize = (bytes: number): string => {
     if (bytes === 0) return "0 Bytes";
@@ -257,20 +259,59 @@ export const AnexosUpload = ({ anexos, onAnexosChange, oficioId }: AnexosUploadP
                       <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
                     )}
                   </div>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => handleRemoveAnexo(anexo.id)}
-                    disabled={anexo.uploading}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
+                  <div className="flex items-center gap-2">
+                    {anexo.url && !anexo.uploading && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => setViewingAnexo(anexo)}
+                        title="Visualizar"
+                      >
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                    )}
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleRemoveAnexo(anexo.id)}
+                      disabled={anexo.uploading}
+                      title="Remover"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
               ))}
             </div>
           </div>
         )}
       </CardContent>
+
+      {/* Visualização de Anexos */}
+      <Dialog open={!!viewingAnexo} onOpenChange={() => setViewingAnexo(null)}>
+        <DialogContent className="max-w-4xl max-h-[90vh]">
+          <DialogHeader>
+            <DialogTitle>{viewingAnexo?.nome}</DialogTitle>
+          </DialogHeader>
+          <div className="flex items-center justify-center overflow-auto max-h-[70vh]">
+            {viewingAnexo?.tipo.startsWith('image/') ? (
+              <img
+                src={viewingAnexo.url}
+                alt={viewingAnexo.nome}
+                className="max-w-full h-auto rounded-lg"
+              />
+            ) : viewingAnexo?.tipo === 'application/pdf' ? (
+              <iframe
+                src={viewingAnexo.url}
+                className="w-full h-[70vh] border-0 rounded-lg"
+                title={viewingAnexo.nome}
+              />
+            ) : (
+              <p className="text-muted-foreground">Visualização não disponível para este tipo de arquivo.</p>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 };
