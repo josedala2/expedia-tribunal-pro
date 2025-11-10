@@ -112,7 +112,9 @@ export const OficiosRemessaPrestacao = ({ onBack, onNavigate }: OficiosRemessaPr
   );
 
   const handleNovoOficio = () => {
-    toast.info("Funcionalidade de novo ofício será implementada");
+    if (onNavigate) {
+      onNavigate("novo-oficio-remessa-prestacao");
+    }
   };
 
   const handleView = (numero: string) => {
