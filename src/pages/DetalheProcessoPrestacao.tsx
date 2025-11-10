@@ -536,7 +536,7 @@ export const DetalheProcessoPrestacao = ({ onBack }: DetalheProcessoPrestacaoPro
 
         {/* Tab de Documentos */}
         <TabsContent value="documentos">
-          <ProcessDocuments />
+          <ProcessDocuments processoNumero={processo.numero} />
         </TabsContent>
 
         {/* Tab de Histórico */}

@@ -869,6 +869,57 @@ export type Database = {
           },
         ]
       }
+      processo_documentos: {
+        Row: {
+          atualizado_em: string
+          criado_em: string
+          descricao: string | null
+          id: string
+          nome_arquivo: string
+          processo_numero: string
+          status: string
+          storage_path: string
+          tamanho_arquivo: number
+          tipo_documento: string
+          tipo_mime: string
+          uploaded_by: string | null
+          validado_em: string | null
+          validado_por: string | null
+        }
+        Insert: {
+          atualizado_em?: string
+          criado_em?: string
+          descricao?: string | null
+          id?: string
+          nome_arquivo: string
+          processo_numero: string
+          status?: string
+          storage_path: string
+          tamanho_arquivo: number
+          tipo_documento: string
+          tipo_mime: string
+          uploaded_by?: string | null
+          validado_em?: string | null
+          validado_por?: string | null
+        }
+        Update: {
+          atualizado_em?: string
+          criado_em?: string
+          descricao?: string | null
+          id?: string
+          nome_arquivo?: string
+          processo_numero?: string
+          status?: string
+          storage_path?: string
+          tamanho_arquivo?: number
+          tipo_documento?: string
+          tipo_mime?: string
+          uploaded_by?: string | null
+          validado_em?: string | null
+          validado_por?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string | null
