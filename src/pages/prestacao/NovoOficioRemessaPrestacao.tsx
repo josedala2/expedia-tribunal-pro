@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ArrowLeft, FileText, Eye } from "lucide-react";
+import { ArrowLeft, FileText, Eye, FileSignature } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -36,6 +36,7 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { DocumentViewer } from "@/components/documents/DocumentViewer";
 import { OficioTemplate } from "@/components/documents/OficioTemplate";
+import { AssinarOficioDialog } from "@/components/oficios/AssinarOficioDialog";
 
 const formSchema = z.object({
   processo: z.string().min(1, { message: "Selecione um processo" }),
@@ -144,6 +145,8 @@ const PROCESSOS_MOCK = [
 export const NovoOficioRemessaPrestacao = ({ onBack, onNavigate }: NovoOficioRemessaPrestacaoProps) => {
   const [showPreview, setShowPreview] = useState(false);
   const [previewData, setPreviewData] = useState<any>(null);
+  const [showAssinaturaDialog, setShowAssinaturaDialog] = useState(false);
+  const [assinatura, setAssinatura] = useState<string | null>(null);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -173,9 +176,19 @@ export const NovoOficioRemessaPrestacao = ({ onBack, onNavigate }: NovoOficioRem
   };
 
   const onSubmit = (data: FormValues) => {
+    if (!assinatura) {
+      toast.error("Por favor, assine o ofício antes de submeter");
+      return;
+    }
     console.log("Form data:", data);
-    toast.success("Ofício criado com sucesso!");
+    console.log("Assinatura:", assinatura);
+    toast.success("Ofício criado e assinado com sucesso!");
     onBack();
+  };
+
+  const handleAssinadoComSucesso = (assinaturaDigital: string) => {
+    setAssinatura(assinaturaDigital);
+    toast.success("Ofício assinado! Pode agora submeter o formulário.");
   };
 
   const handlePreview = () => {
@@ -477,7 +490,15 @@ export const NovoOficioRemessaPrestacao = ({ onBack, onNavigate }: NovoOficioRem
                 <Eye className="h-4 w-4 mr-2" />
                 Pré-visualizar
               </Button>
-              <Button type="submit">
+              <Button 
+                type="button" 
+                variant={assinatura ? "secondary" : "default"}
+                onClick={() => setShowAssinaturaDialog(true)}
+              >
+                <FileSignature className="h-4 w-4 mr-2" />
+                {assinatura ? "Assinado ✓" : "Assinar Ofício"}
+              </Button>
+              <Button type="submit" disabled={!assinatura}>
                 <FileText className="h-4 w-4 mr-2" />
                 Criar Ofício
               </Button>
@@ -507,6 +528,20 @@ export const NovoOficioRemessaPrestacao = ({ onBack, onNavigate }: NovoOficioRem
             logoUrl="/logo-tc.png"
           />
         </DocumentViewer>
+      )}
+
+      {/* Assinatura Digital Dialog */}
+      {previewData && (
+        <AssinarOficioDialog
+          open={showAssinaturaDialog}
+          onOpenChange={setShowAssinaturaDialog}
+          oficio={{
+            numero: previewData.numero,
+            tipo: form.watch("tipoOficio") || "Ofício",
+            destinatario: previewData.destinatario,
+          }}
+          onAssinado={handleAssinadoComSucesso}
+        />
       )}
     </div>
   );
