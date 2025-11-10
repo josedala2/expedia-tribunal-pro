@@ -876,10 +876,13 @@ export type Database = {
           descricao: string | null
           id: string
           nome_arquivo: string
+          ocr_processado: boolean | null
+          ocr_processado_em: string | null
           processo_numero: string
           status: string
           storage_path: string
           tamanho_arquivo: number
+          texto_extraido: string | null
           tipo_documento: string
           tipo_mime: string
           uploaded_by: string | null
@@ -892,10 +895,13 @@ export type Database = {
           descricao?: string | null
           id?: string
           nome_arquivo: string
+          ocr_processado?: boolean | null
+          ocr_processado_em?: string | null
           processo_numero: string
           status?: string
           storage_path: string
           tamanho_arquivo: number
+          texto_extraido?: string | null
           tipo_documento: string
           tipo_mime: string
           uploaded_by?: string | null
@@ -908,10 +914,13 @@ export type Database = {
           descricao?: string | null
           id?: string
           nome_arquivo?: string
+          ocr_processado?: boolean | null
+          ocr_processado_em?: string | null
           processo_numero?: string
           status?: string
           storage_path?: string
           tamanho_arquivo?: number
+          texto_extraido?: string | null
           tipo_documento?: string
           tipo_mime?: string
           uploaded_by?: string | null
@@ -1272,6 +1281,17 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      search_documentos: {
+        Args: { search_query: string }
+        Returns: {
+          id: string
+          nome_arquivo: string
+          processo_numero: string
+          rank: number
+          texto_extraido: string
+          tipo_documento: string
+        }[]
       }
       user_can_access_expediente: {
         Args: { expediente_id: string; user_id: string }
