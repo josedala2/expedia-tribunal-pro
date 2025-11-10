@@ -1,12 +1,14 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { FileText, Download, Eye, Upload, Trash2, Scan, Loader2, File, FileImage, FileCheck } from "lucide-react";
+import { FileText, Download, Eye, Upload, Trash2, Scan, Loader2, File, FileImage, FileCheck, Search } from "lucide-react";
 import { toast } from "sonner";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
+import Tesseract from 'tesseract.js';
+import * as pdfjsLib from 'pdfjs-dist';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -71,6 +73,53 @@ export const ProcessDocuments = ({ processoNumero = "PC/2024/001" }: ProcessDocu
   const [descricao, setDescricao] = useState("");
   const [viewerUrl, setViewerUrl] = useState<string | null>(null);
   const [showViewer, setShowViewer] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isProcessingOCR, setIsProcessingOCR] = useState(false);
+
+  // Configurar PDF.js worker
+  useEffect(() => {
+    pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+  }, []);
+
+  // Extract text from PDF
+  const extractTextFromPDF = async (file: File): Promise<string> => {
+    try {
+      const arrayBuffer = await file.arrayBuffer();
+      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+      let fullText = '';
+
+      for (let i = 1; i <= pdf.numPages; i++) {
+        const page = await pdf.getPage(i);
+        const textContent = await page.getTextContent();
+        const pageText = textContent.items
+          .map((item: any) => item.str)
+          .join(' ');
+        fullText += pageText + '\n';
+      }
+
+      return fullText.trim();
+    } catch (error) {
+      console.error('Erro ao extrair texto do PDF:', error);
+      throw error;
+    }
+  };
+
+  // Extract text from image using OCR
+  const extractTextFromImage = async (file: File): Promise<string> => {
+    try {
+      const result = await Tesseract.recognize(file, 'por', {
+        logger: (m) => {
+          if (m.status === 'recognizing text') {
+            console.log(`Progresso OCR: ${Math.round(m.progress * 100)}%`);
+          }
+        },
+      });
+      return result.data.text.trim();
+    } catch (error) {
+      console.error('Erro ao processar OCR:', error);
+      throw error;
+    }
+  };
 
   // Fetch documentos
   const { data: documents = [], isLoading } = useQuery({
@@ -85,6 +134,21 @@ export const ProcessDocuments = ({ processoNumero = "PC/2024/001" }: ProcessDocu
       if (error) throw error;
       return data;
     },
+  });
+
+  // Search documents by extracted text
+  const { data: searchResults } = useQuery({
+    queryKey: ['search-documentos', searchQuery],
+    queryFn: async () => {
+      if (!searchQuery || searchQuery.length < 3) return null;
+      
+      const { data, error } = await supabase
+        .rpc('search_documentos', { search_query: searchQuery });
+
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: searchQuery.length >= 3,
   });
 
   // Upload mutation
@@ -111,7 +175,29 @@ export const ProcessDocuments = ({ processoNumero = "PC/2024/001" }: ProcessDocu
 
       if (uploadError) throw uploadError;
 
-      // Inserir metadados
+      // Extract text based on file type
+      setIsProcessingOCR(true);
+      let textoExtraido = '';
+      let ocrProcessado = false;
+
+      try {
+        if (uploadFile.type === 'application/pdf') {
+          textoExtraido = await extractTextFromPDF(uploadFile);
+          ocrProcessado = true;
+          toast.success("Texto extraído do PDF com sucesso!");
+        } else if (uploadFile.type.startsWith('image/')) {
+          textoExtraido = await extractTextFromImage(uploadFile);
+          ocrProcessado = true;
+          toast.success("OCR processado com sucesso!");
+        }
+      } catch (error) {
+        console.error('Erro no processamento OCR:', error);
+        toast.warning('Documento anexado, mas não foi possível extrair texto');
+      } finally {
+        setIsProcessingOCR(false);
+      }
+
+      // Inserir metadados com texto extraído
       const { error: dbError } = await supabase
         .from("processo_documentos")
         .insert({
@@ -124,14 +210,20 @@ export const ProcessDocuments = ({ processoNumero = "PC/2024/001" }: ProcessDocu
           storage_path: filePath,
           uploaded_by: user.id,
           status: "pendente",
+          texto_extraido: textoExtraido,
+          ocr_processado: ocrProcessado,
+          ocr_processado_em: ocrProcessado ? new Date().toISOString() : null,
         });
 
       if (dbError) throw dbError;
 
-      return { filePath };
+      return { filePath, ocrProcessado };
     },
-    onSuccess: () => {
-      toast.success("Documento anexado com sucesso!");
+    onSuccess: (data) => {
+      const message = data.ocrProcessado 
+        ? "Documento anexado e texto extraído com sucesso!" 
+        : "Documento anexado com sucesso!";
+      toast.success(message);
       queryClient.invalidateQueries({ queryKey: ["processo-documentos", processoNumero] });
       setShowUploadDialog(false);
       setUploadFile(null);
@@ -249,6 +341,10 @@ export const ProcessDocuments = ({ processoNumero = "PC/2024/001" }: ProcessDocu
     return <File className="h-6 w-6 text-muted-foreground" />;
   };
 
+  const displayDocuments = searchQuery.length >= 3 && searchResults 
+    ? searchResults 
+    : documents;
+
   if (isLoading) {
     return (
       <Card className="border-border">
@@ -276,9 +372,12 @@ export const ProcessDocuments = ({ processoNumero = "PC/2024/001" }: ProcessDocu
               <Scan className="mr-2 h-4 w-4" />
               Digitalizar
             </Button>
-            <Button onClick={() => fileInputRef.current?.click()}>
+            <Button 
+              onClick={() => fileInputRef.current?.click()}
+              disabled={isProcessingOCR}
+            >
               <Upload className="mr-2 h-4 w-4" />
-              Anexar Documento
+              {isProcessingOCR ? 'Processando...' : 'Anexar Documento'}
             </Button>
             <input
               ref={fileInputRef}
@@ -290,103 +389,159 @@ export const ProcessDocuments = ({ processoNumero = "PC/2024/001" }: ProcessDocu
           </div>
         </CardHeader>
         <CardContent>
-          {documents.length === 0 ? (
+          {/* Search Bar */}
+          <div className="mb-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                type="text"
+                placeholder="Pesquisar por conteúdo dos documentos (mínimo 3 caracteres)..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+            {searchQuery.length >= 3 && searchResults && (
+              <p className="text-sm text-muted-foreground mt-2">
+                {searchResults.length} documento(s) encontrado(s)
+              </p>
+            )}
+          </div>
+
+          {displayDocuments.length === 0 ? (
             <div className="text-center py-12 text-muted-foreground">
               <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p className="text-lg font-medium">Nenhum documento anexado</p>
+              <p className="text-lg font-medium">
+                {searchQuery ? "Nenhum documento encontrado" : "Nenhum documento anexado"}
+              </p>
               <p className="text-sm mt-2">
-                Clique em "Anexar Documento" para adicionar arquivos ao processo
+                {searchQuery 
+                  ? "Tente usar palavras-chave diferentes" 
+                  : 'Clique em "Anexar Documento" para adicionar arquivos ao processo'
+                }
               </p>
             </div>
           ) : (
             <div className="space-y-3">
-              {documents.map((doc) => (
+              {displayDocuments.map((doc: any) => (
                 <div
                   key={doc.id}
-                  className="flex items-center justify-between p-4 rounded-lg border border-border hover:bg-secondary/50 transition-colors"
+                  className="flex flex-col p-4 rounded-lg border border-border hover:bg-secondary/50 transition-colors"
                 >
-                  <div className="flex items-center gap-4 flex-1">
-                    <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                      {getFileIcon(doc.tipo_mime)}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4 flex-1">
+                      <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                        {getFileIcon(doc.tipo_mime)}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <p className="font-semibold text-foreground truncate">
+                            {doc.nome_arquivo}
+                          </p>
+                          <Badge variant="outline" className="flex-shrink-0 text-xs">
+                            {doc.tipo_documento}
+                          </Badge>
+                        </div>
+                        <div className="flex items-center gap-3 text-sm text-muted-foreground flex-wrap">
+                          <span>{formatFileSize(doc.tamanho_arquivo)}</span>
+                          <span>•</span>
+                          <span>{format(new Date(doc.criado_em), "dd/MM/yyyy HH:mm")}</span>
+                          {doc.descricao && (
+                            <>
+                              <span>•</span>
+                              <span className="truncate max-w-xs">{doc.descricao}</span>
+                            </>
+                          )}
+                        </div>
+                      </div>
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <p className="font-semibold text-foreground truncate">
-                          {doc.nome_arquivo}
-                        </p>
-                        <Badge variant="outline" className="flex-shrink-0 text-xs">
-                          {doc.tipo_documento}
+                    <div className="flex items-center gap-2 flex-shrink-0 ml-4">
+                      {doc.ocr_processado && (
+                        <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                          <Search className="h-3 w-3 mr-1" />
+                          OCR
                         </Badge>
-                      </div>
-                      <div className="flex items-center gap-3 text-sm text-muted-foreground flex-wrap">
-                        <span>{formatFileSize(doc.tamanho_arquivo)}</span>
-                        <span>•</span>
-                        <span>{format(new Date(doc.criado_em), "dd/MM/yyyy HH:mm")}</span>
-                        {doc.descricao && (
-                          <>
-                            <span>•</span>
-                            <span className="truncate max-w-xs">{doc.descricao}</span>
-                          </>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2 flex-shrink-0 ml-4">
-                    <Badge className={statusColors[doc.status]}>
-                      {statusLabels[doc.status]}
-                    </Badge>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleView(doc)}
-                      title="Visualizar"
-                    >
-                      <Eye className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleDownload(doc)}
-                      title="Baixar"
-                    >
-                      <Download className="h-4 w-4" />
-                    </Button>
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
+                      )}
+                      <Badge className={statusColors[doc.status]}>
+                        {statusLabels[doc.status]}
+                      </Badge>
+                      {doc.texto_extraido && (
                         <Button
                           variant="ghost"
                           size="icon"
-                          title="Eliminar"
-                          className="text-destructive hover:text-destructive"
-                          disabled={deleteMutation.isPending}
+                          title="Ver texto extraído"
+                          onClick={() => {
+                            toast.info(
+                              <div className="max-h-60 overflow-y-auto">
+                                <p className="font-semibold mb-2">Texto extraído:</p>
+                                <p className="text-xs whitespace-pre-wrap">{doc.texto_extraido}</p>
+                              </div>
+                            );
+                          }}
                         >
-                          {deleteMutation.isPending ? (
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                          ) : (
-                            <Trash2 className="h-4 w-4" />
-                          )}
+                          <FileText className="h-4 w-4" />
                         </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Confirmar eliminação</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            Tem certeza que deseja eliminar o documento "{doc.nome_arquivo}"?
-                            Esta ação não pode ser desfeita.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                          <AlertDialogAction
-                            onClick={() => handleDelete(doc)}
-                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                      )}
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleView(doc)}
+                        title="Visualizar"
+                      >
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleDownload(doc)}
+                        title="Baixar"
+                      >
+                        <Download className="h-4 w-4" />
+                      </Button>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            title="Eliminar"
+                            className="text-destructive hover:text-destructive"
+                            disabled={deleteMutation.isPending}
                           >
-                            Eliminar
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
+                            {deleteMutation.isPending ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <Trash2 className="h-4 w-4" />
+                            )}
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Confirmar eliminação</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Tem certeza que deseja eliminar o documento "{doc.nome_arquivo}"?
+                              Esta ação não pode ser desfeita.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => handleDelete(doc)}
+                              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                            >
+                              Eliminar
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
                   </div>
+                  {searchQuery && doc.texto_extraido && (
+                    <div className="mt-2 p-2 bg-muted/50 rounded text-xs">
+                      <p className="text-muted-foreground line-clamp-2">
+                        {doc.texto_extraido.substring(0, 200)}...
+                      </p>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -412,6 +567,11 @@ export const ProcessDocuments = ({ processoNumero = "PC/2024/001" }: ProcessDocu
                   <p className="text-sm text-muted-foreground">
                     {formatFileSize(uploadFile.size)}
                   </p>
+                  {(uploadFile.type === 'application/pdf' || uploadFile.type.startsWith('image/')) && (
+                    <p className="text-xs text-green-600 mt-1">
+                      ✓ OCR será processado automaticamente
+                    </p>
+                  )}
                 </div>
               </div>
             )}
@@ -449,12 +609,12 @@ export const ProcessDocuments = ({ processoNumero = "PC/2024/001" }: ProcessDocu
             </Button>
             <Button
               onClick={handleUpload}
-              disabled={!tipoDocumento || uploadMutation.isPending}
+              disabled={!tipoDocumento || uploadMutation.isPending || isProcessingOCR}
             >
-              {uploadMutation.isPending ? (
+              {uploadMutation.isPending || isProcessingOCR ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  A anexar...
+                  {isProcessingOCR ? 'Processando OCR...' : 'A anexar...'}
                 </>
               ) : (
                 <>
