@@ -48,13 +48,13 @@ export const Configuracoes = ({ onBack }: ConfiguracoesProps) => {
       if (error) throw error;
 
       toast({
-        title: "Senha atualizada",
+        title: "Senha actualizada",
         description: "Sua senha foi alterada com sucesso.",
       });
       reset();
     } catch (error: any) {
       toast({
-        title: "Erro ao atualizar senha",
+        title: "Erro ao actualizar senha",
         description: error.message || "Ocorreu um erro ao alterar a senha.",
         variant: "destructive"
       });
@@ -267,7 +267,7 @@ export const Configuracoes = ({ onBack }: ConfiguracoesProps) => {
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
                   <Label className="text-base">Logs de Auditoria</Label>
-                  <p className="text-sm text-muted-foreground">Registar todas as ações</p>
+                  <p className="text-sm text-muted-foreground">Registar todas as acções</p>
                 </div>
                 <Switch defaultChecked />
               </div>

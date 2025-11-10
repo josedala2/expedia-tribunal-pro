@@ -113,7 +113,7 @@ export const Fiscalizacao = ({ onBack, onNavigate }: FiscalizacaoProps) => {
               <TableHead>Programa</TableHead>
               <TableHead>Auditor Responsável</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead>Ações</TableHead>
+              <TableHead>Acções</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -180,7 +180,7 @@ export const Fiscalizacao = ({ onBack, onNavigate }: FiscalizacaoProps) => {
                         <AlertDialogHeader>
                           <AlertDialogTitle>Confirmar eliminação</AlertDialogTitle>
                           <AlertDialogDescription>
-                            Tem certeza que deseja eliminar o processo {processo.numero}? Esta ação não pode ser desfeita.
+                            Tem certeza que deseja eliminar o processo {processo.numero}? Esta acção não pode ser desfeita.
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>

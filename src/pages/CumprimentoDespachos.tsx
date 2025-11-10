@@ -177,7 +177,7 @@ export default function CumprimentoDespachos({ onNavigate }: CumprimentoDespacho
         <CardHeader>
           <CardTitle>Responsabilidades do Escrivão</CardTitle>
           <CardDescription>
-            Ações e mandados a cumprir
+            Acções e mandados a cumprir
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -242,7 +242,7 @@ export default function CumprimentoDespachos({ onNavigate }: CumprimentoDespacho
                   <th className="p-3 text-center text-sm font-semibold">Prazo</th>
                   <th className="p-3 text-center text-sm font-semibold">Prioridade</th>
                   <th className="p-3 text-center text-sm font-semibold">Status</th>
-                  <th className="p-3 text-center text-sm font-semibold">Ações</th>
+                  <th className="p-3 text-center text-sm font-semibold">Acções</th>
                 </tr>
               </thead>
               <tbody>

@@ -77,7 +77,7 @@ export const Usuarios = ({ onBack }: UsuariosProps) => {
               <TableHead>Cargo</TableHead>
               <TableHead>Perfil</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead>Ações</TableHead>
+              <TableHead>Acções</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>

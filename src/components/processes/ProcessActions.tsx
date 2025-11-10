@@ -16,8 +16,8 @@ export const ProcessActions = () => {
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <Card className="border-border">
         <CardHeader>
-          <CardTitle>Ações Disponíveis</CardTitle>
-          <p className="text-sm text-muted-foreground">Execute ações no processo atual</p>
+          <CardTitle>Acções Disponíveis</CardTitle>
+          <p className="text-sm text-muted-foreground">Execute acções no processo actual</p>
         </CardHeader>
         <CardContent className="space-y-3">
           <Button className="w-full justify-start gap-3 h-12 bg-success hover:bg-success/90 text-white">

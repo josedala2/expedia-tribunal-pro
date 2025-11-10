@@ -113,7 +113,7 @@ export const ProcessosVisto = ({ onBack, onNavigate }: ProcessosVistoProps) => {
               <TableHead>Entidade</TableHead>
               <TableHead>Valor</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead>Ações</TableHead>
+              <TableHead>Acções</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -184,7 +184,7 @@ export const ProcessosVisto = ({ onBack, onNavigate }: ProcessosVistoProps) => {
                         <AlertDialogHeader>
                           <AlertDialogTitle>Confirmar eliminação</AlertDialogTitle>
                           <AlertDialogDescription>
-                            Tem certeza que deseja eliminar o processo {processo.numero}? Esta ação não pode ser desfeita.
+                            Tem certeza que deseja eliminar o processo {processo.numero}? Esta acção não pode ser desfeita.
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>

@@ -156,7 +156,7 @@ export default function DespachoPromocao({ onNavigate }: DespachoPromocaoProps) 
                   <th className="p-3 text-center text-sm font-semibold">Data Decisão</th>
                   <th className="p-3 text-center text-sm font-semibold">Guia Cobrança</th>
                   <th className="p-3 text-center text-sm font-semibold">Status</th>
-                  <th className="p-3 text-center text-sm font-semibold">Ações</th>
+                  <th className="p-3 text-center text-sm font-semibold">Acções</th>
                 </tr>
               </thead>
               <tbody>

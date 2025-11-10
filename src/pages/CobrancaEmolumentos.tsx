@@ -183,7 +183,7 @@ export default function CobrancaEmolumentos({ onNavigate }: CobrancaEmolumentosP
                   <th className="p-3 text-right text-sm font-semibold">Emolumentos</th>
                   <th className="p-3 text-center text-sm font-semibold">Status</th>
                   <th className="p-3 text-center text-sm font-semibold">Vencimento</th>
-                  <th className="p-3 text-center text-sm font-semibold">Ações</th>
+                  <th className="p-3 text-center text-sm font-semibold">Acções</th>
                 </tr>
               </thead>
               <tbody>
@@ -269,7 +269,7 @@ export default function CobrancaEmolumentos({ onNavigate }: CobrancaEmolumentosP
           <AlertDialogHeader>
             <AlertDialogTitle>Confirmar Eliminação</AlertDialogTitle>
             <AlertDialogDescription>
-              Tem certeza que deseja eliminar esta guia de cobrança? Esta ação não
+              Tem certeza que deseja eliminar esta guia de cobrança? Esta acção não
               pode ser desfeita.
             </AlertDialogDescription>
           </AlertDialogHeader>

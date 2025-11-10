@@ -511,7 +511,7 @@ export const DetalheProcessoPrestacao = ({ onBack }: DetalheProcessoPrestacaoPro
           </TabsTrigger>
           <TabsTrigger value="acoes" className="font-semibold">
             <CheckCircle className="h-4 w-4 mr-2" />
-            Ações
+            Acções
           </TabsTrigger>
         </TabsList>
 
@@ -548,7 +548,7 @@ export const DetalheProcessoPrestacao = ({ onBack }: DetalheProcessoPrestacaoPro
                 Histórico de Mudanças
               </CardTitle>
               <CardDescription>
-                Registro completo de todas as ações realizadas no processo
+                Registo completo de todas as acções realizadas no processo
               </CardDescription>
             </CardHeader>
             <CardContent>

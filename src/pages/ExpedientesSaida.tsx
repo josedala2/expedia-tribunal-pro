@@ -122,7 +122,7 @@ export default function ExpedientesSaida({ onNavigate }: ExpedientesSaidaProps) 
                   <TableHead>Data Saída</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Responsável</TableHead>
-                  <TableHead className="text-right">Ações</TableHead>
+                  <TableHead className="text-right">Acções</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>

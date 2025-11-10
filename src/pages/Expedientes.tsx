@@ -165,7 +165,7 @@ export const Expedientes = ({ onBack, onNavigate }: ExpedientesProps) => {
               <TableHead>Prioridade</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Data</TableHead>
-              <TableHead>Ações</TableHead>
+              <TableHead>Acções</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>

@@ -110,7 +110,7 @@ export const PrestacaoContas = ({ onBack, onNavigate }: PrestacaoContasProps) =>
               <TableHead>Exercício</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Prazo</TableHead>
-              <TableHead>Ações</TableHead>
+              <TableHead>Acções</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -177,7 +177,7 @@ export const PrestacaoContas = ({ onBack, onNavigate }: PrestacaoContasProps) =>
                         <AlertDialogHeader>
                           <AlertDialogTitle>Confirmar eliminação</AlertDialogTitle>
                           <AlertDialogDescription>
-                            Tem certeza que deseja eliminar o processo {processo.numero}? Esta ação não pode ser desfeita.
+                            Tem certeza que deseja eliminar o processo {processo.numero}? Esta acção não pode ser desfeita.
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>

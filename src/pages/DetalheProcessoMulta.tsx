@@ -160,7 +160,7 @@ export const DetalheProcessoMulta = ({ onBack }: DetalheProcessoMultaProps) => {
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="tramitacao" className="font-bold">Tramitação</TabsTrigger>
           <TabsTrigger value="documentos" className="font-bold">Documentos</TabsTrigger>
-          <TabsTrigger value="acoes" className="font-bold">Ações</TabsTrigger>
+          <TabsTrigger value="acoes" className="font-bold">Acções</TabsTrigger>
         </TabsList>
 
         <TabsContent value="tramitacao">

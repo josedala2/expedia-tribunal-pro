@@ -80,7 +80,7 @@ export const ProcessosMulta = ({ onBack, onNavigate }: ProcessosMultaProps) => {
               <TableHead>Infrações</TableHead>
               <TableHead>Valor da Multa</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead>Ações</TableHead>
+              <TableHead>Acções</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>

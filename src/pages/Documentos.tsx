@@ -378,7 +378,7 @@ export const Documentos = ({ onBack }: DocumentosProps) => {
               <TableHead>Categoria</TableHead>
               <TableHead>Tamanho</TableHead>
               <TableHead>Data</TableHead>
-              <TableHead>Ações</TableHead>
+              <TableHead>Acções</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>

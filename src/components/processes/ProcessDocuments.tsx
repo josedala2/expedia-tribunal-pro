@@ -518,8 +518,8 @@ export const ProcessDocuments = ({ processoNumero = "PC/2024/001" }: ProcessDocu
                           <AlertDialogHeader>
                             <AlertDialogTitle>Confirmar eliminação</AlertDialogTitle>
                             <AlertDialogDescription>
-                              Tem certeza que deseja eliminar o documento "{doc.nome_arquivo}"?
-                              Esta ação não pode ser desfeita.
+                            Tem certeza que deseja eliminar o documento "{doc.nome_arquivo}"?
+                            Esta acção não pode ser desfeita.
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>

@@ -41,13 +41,13 @@ export const AcaoProcesso = ({ processoId, etapaAtual }: AcaoProcessoProps) => {
     const acaoTexto = {
       aprovar: "aprovado e avançado",
       rejeitar: "rejeitado",
-      solicitar: "devolvido para correção",
+      solicitar: "devolvido para correcção",
       distribuir: "distribuído",
       analisar: "encaminhado para análise"
     }[tipoAcao];
 
     toast({
-      title: "Ação realizada com sucesso!",
+      title: "Acção realizada com sucesso!",
       description: `Processo ${processoId} foi ${acaoTexto}.`,
     });
 
@@ -63,7 +63,7 @@ export const AcaoProcesso = ({ processoId, etapaAtual }: AcaoProcessoProps) => {
         <div>
           <h3 className="text-xl font-bold text-foreground mb-2 flex items-center gap-2">
             <FileText className="h-6 w-6 text-primary" />
-            Ações do Processo
+            Acções do Processo
           </h3>
           <p className="text-sm text-muted-foreground">
             Etapa Atual: <span className="font-semibold text-foreground">{etapaAtual}</span>
@@ -75,10 +75,10 @@ export const AcaoProcesso = ({ processoId, etapaAtual }: AcaoProcessoProps) => {
 
         <div className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="tipoAcao">Tipo de Ação *</Label>
+            <Label htmlFor="tipoAcao">Tipo de Acção *</Label>
             <Select value={acao} onValueChange={setAcao}>
               <SelectTrigger>
-                <SelectValue placeholder="Selecione uma ação" />
+                <SelectValue placeholder="Selecione uma acção" />
               </SelectTrigger>
               <SelectContent className="bg-card z-50">
                 <SelectItem value="analisar">Analisar Processo</SelectItem>
@@ -219,7 +219,7 @@ export const AcaoProcesso = ({ processoId, etapaAtual }: AcaoProcessoProps) => {
             </div>
             <div className="flex items-center gap-2 text-muted-foreground">
               <div className="h-2 w-2 rounded-full bg-warning"></div>
-              <span>Se solicitar correção: Retorna à Entidade para ajustes</span>
+              <span>Se solicitar correcção: Retorna à Entidade para ajustes</span>
             </div>
             <div className="flex items-center gap-2 text-muted-foreground">
               <div className="h-2 w-2 rounded-full bg-destructive"></div>

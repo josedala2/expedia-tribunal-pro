@@ -108,7 +108,7 @@ export default function OficiosRemessa({ onNavigate }: OficiosRemessaProps) {
                   <TableHead>Assunto</TableHead>
                   <TableHead>Data Emissão</TableHead>
                   <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Ações</TableHead>
+                  <TableHead className="text-right">Acções</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
