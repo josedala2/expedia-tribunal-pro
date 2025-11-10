@@ -645,6 +645,68 @@ export type Database = {
           tamanho_arquivo?: number
           tipo_arquivo?: string
         }
+        Relationships: [
+          {
+            foreignKeyName: "fk_oficio_remessa"
+            columns: ["oficio_id"]
+            isOneToOne: false
+            referencedRelation: "oficios_remessa"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      oficios_remessa: {
+        Row: {
+          assinado: boolean | null
+          assinatura_digital: string | null
+          assunto: string
+          atualizado_em: string
+          conteudo: string
+          criado_em: string
+          criado_por: string | null
+          data_assinatura: string | null
+          data_emissao: string
+          destinatario: string
+          id: string
+          numero: string
+          remetente_cargo: string
+          remetente_nome: string
+          status: string
+        }
+        Insert: {
+          assinado?: boolean | null
+          assinatura_digital?: string | null
+          assunto: string
+          atualizado_em?: string
+          conteudo: string
+          criado_em?: string
+          criado_por?: string | null
+          data_assinatura?: string | null
+          data_emissao?: string
+          destinatario: string
+          id?: string
+          numero: string
+          remetente_cargo: string
+          remetente_nome: string
+          status?: string
+        }
+        Update: {
+          assinado?: boolean | null
+          assinatura_digital?: string | null
+          assunto?: string
+          atualizado_em?: string
+          conteudo?: string
+          criado_em?: string
+          criado_por?: string | null
+          data_assinatura?: string | null
+          data_emissao?: string
+          destinatario?: string
+          id?: string
+          numero?: string
+          remetente_cargo?: string
+          remetente_nome?: string
+          status?: string
+        }
         Relationships: []
       }
       pagamentos_pensao: {

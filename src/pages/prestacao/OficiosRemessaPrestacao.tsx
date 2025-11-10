@@ -1,5 +1,7 @@
-import { useState } from "react";
-import { ArrowLeft, Plus, Eye, Download, Trash2, FileText, Search, Send } from "lucide-react";
+import { useState, useEffect } from "react";
+import { ArrowLeft, Plus, Eye, Download, Trash2, FileText, Search, Send, Filter } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -17,6 +19,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface OficioRemessaPrestacao {
   id: string;
@@ -42,8 +51,44 @@ interface OficiosRemessaPrestacaoProps {
 export const OficiosRemessaPrestacao = ({ onBack, onNavigate }: OficiosRemessaPrestacaoProps) => {
   const [search, setSearch] = useState("");
   const [deleteId, setDeleteId] = useState<string | null>(null);
-  
-  const [oficios] = useState<OficioRemessaPrestacao[]>([
+  const [statusFilter, setStatusFilter] = useState<string>("todos");
+  const queryClient = useQueryClient();
+
+  // Buscar ofícios da base de dados
+  const { data: oficios = [], isLoading } = useQuery({
+    queryKey: ['oficios-remessa'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('oficios_remessa')
+        .select('*')
+        .order('criado_em', { ascending: false });
+      
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  // Mutation para deletar ofício
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from('oficios_remessa')
+        .delete()
+        .eq('id', id);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['oficios-remessa'] });
+      toast.success("Ofício eliminado com sucesso");
+    },
+    onError: (error) => {
+      console.error("Error deleting:", error);
+      toast.error("Erro ao eliminar ofício");
+    },
+  });
+
+  const [oficiosMock] = useState<OficioRemessaPrestacao[]>([
     {
       id: "1",
       numero: "OF-PC-2024-001",
@@ -103,13 +148,17 @@ export const OficiosRemessaPrestacao = ({ onBack, onNavigate }: OficiosRemessaPr
     "Notificação": "border-purple-500 text-purple-700",
   };
 
-  const filteredOficios = oficios.filter(
-    (oficio) =>
+  // Filtrar ofícios
+  const filteredOficios = oficios.filter((oficio) => {
+    const matchesSearch = 
       oficio.numero.toLowerCase().includes(search.toLowerCase()) ||
-      oficio.processo.toLowerCase().includes(search.toLowerCase()) ||
-      oficio.entidade.toLowerCase().includes(search.toLowerCase()) ||
-      oficio.destinatario.toLowerCase().includes(search.toLowerCase())
-  );
+      oficio.destinatario.toLowerCase().includes(search.toLowerCase()) ||
+      oficio.assunto.toLowerCase().includes(search.toLowerCase());
+    
+    const matchesStatus = statusFilter === "todos" || oficio.status === statusFilter;
+    
+    return matchesSearch && matchesStatus;
+  });
 
   const handleNovoOficio = () => {
     if (onNavigate) {
@@ -131,7 +180,7 @@ export const OficiosRemessaPrestacao = ({ onBack, onNavigate }: OficiosRemessaPr
 
   const confirmDelete = () => {
     if (deleteId) {
-      toast.success("Ofício eliminado com sucesso");
+      deleteMutation.mutate(deleteId);
       setDeleteId(null);
     }
   };
@@ -141,9 +190,9 @@ export const OficiosRemessaPrestacao = ({ onBack, onNavigate }: OficiosRemessaPr
   };
 
   const totalOficios = oficios.length;
-  const oficiosEnviados = oficios.filter(o => o.status === "Enviado" || o.status === "Recebido").length;
-  const oficiosPendentes = oficios.filter(o => o.status === "Elaborado" || o.status === "Assinado").length;
-  const oficiosRecebidos = oficios.filter(o => o.status === "Recebido").length;
+  const oficiosRascunho = oficios.filter(o => o.status === "rascunho").length;
+  const oficiosAssinados = oficios.filter(o => o.status === "assinado").length;
+  const oficiosEnviados = oficios.filter(o => o.status === "enviado").length;
 
   return (
     <div className="space-y-6">
@@ -178,10 +227,18 @@ export const OficiosRemessaPrestacao = ({ onBack, onNavigate }: OficiosRemessaPr
         </Card>
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Pendentes</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Rascunhos</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-yellow-600">{oficiosPendentes}</div>
+            <div className="text-2xl font-bold text-gray-600">{oficiosRascunho}</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-medium text-muted-foreground">Assinados</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-blue-600">{oficiosAssinados}</div>
           </CardContent>
         </Card>
         <Card>
@@ -189,15 +246,7 @@ export const OficiosRemessaPrestacao = ({ onBack, onNavigate }: OficiosRemessaPr
             <CardTitle className="text-sm font-medium text-muted-foreground">Enviados</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-blue-600">{oficiosEnviados}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Recebidos</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-green-600">{oficiosRecebidos}</div>
+            <div className="text-2xl font-bold text-green-600">{oficiosEnviados}</div>
           </CardContent>
         </Card>
       </div>
@@ -268,17 +317,31 @@ export const OficiosRemessaPrestacao = ({ onBack, onNavigate }: OficiosRemessaPr
         </CardContent>
       </Card>
 
-      {/* Pesquisa */}
+      {/* Pesquisa e Filtros */}
       <Card>
         <CardContent className="pt-6">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Buscar por número, processo, entidade ou destinatário..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="pl-10"
-            />
+          <div className="flex gap-4">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Buscar por número, destinatário ou assunto..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="w-[180px]">
+                <Filter className="h-4 w-4 mr-2" />
+                <SelectValue placeholder="Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="todos">Todos</SelectItem>
+                <SelectItem value="rascunho">Rascunho</SelectItem>
+                <SelectItem value="assinado">Assinado</SelectItem>
+                <SelectItem value="enviado">Enviado</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </CardContent>
       </Card>
@@ -296,9 +359,6 @@ export const OficiosRemessaPrestacao = ({ onBack, onNavigate }: OficiosRemessaPr
             <TableHeader>
               <TableRow>
                 <TableHead>Nº Ofício</TableHead>
-                <TableHead>Nº Processo</TableHead>
-                <TableHead>Entidade</TableHead>
-                <TableHead>Tipo Ofício</TableHead>
                 <TableHead>Destinatário</TableHead>
                 <TableHead>Assunto</TableHead>
                 <TableHead className="text-center">Data Emissão</TableHead>
@@ -307,9 +367,15 @@ export const OficiosRemessaPrestacao = ({ onBack, onNavigate }: OficiosRemessaPr
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredOficios.length === 0 ? (
+              {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={9} className="text-center text-muted-foreground">
+                  <TableCell colSpan={6} className="text-center text-muted-foreground">
+                    Carregando...
+                  </TableCell>
+                </TableRow>
+              ) : filteredOficios.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center text-muted-foreground">
                     Nenhum ofício encontrado
                   </TableCell>
                 </TableRow>
@@ -318,31 +384,25 @@ export const OficiosRemessaPrestacao = ({ onBack, onNavigate }: OficiosRemessaPr
                   <TableRow key={oficio.id}>
                     <TableCell className="font-medium">{oficio.numero}</TableCell>
                     <TableCell>
-                      <Badge variant="outline" className="bg-primary/10">
-                        {oficio.processo}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>{oficio.entidade}</TableCell>
-                    <TableCell>
-                      <Badge variant="outline" className={tipoOficioColors[oficio.tipoOficio]}>
-                        {oficio.tipoOficio}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
                       <div>
                         <div className="font-medium text-sm">{oficio.destinatario}</div>
-                        <div className="text-xs text-muted-foreground">{oficio.cargoDestinatario}</div>
+                        <div className="text-xs text-muted-foreground">{oficio.remetente_cargo}</div>
                       </div>
                     </TableCell>
                     <TableCell className="max-w-xs">
                       <div className="truncate text-sm">{oficio.assunto}</div>
                     </TableCell>
                     <TableCell className="text-center">
-                      {format(oficio.dataEmissao, "dd/MM/yyyy")}
+                      {format(new Date(oficio.data_emissao), "dd/MM/yyyy")}
                     </TableCell>
                     <TableCell className="text-center">
-                      <Badge className={statusColors[oficio.status]}>
-                        {oficio.status}
+                      <Badge className={
+                        oficio.status === "rascunho" ? "bg-gray-500 text-white" :
+                        oficio.status === "assinado" ? "bg-blue-500 text-white" :
+                        "bg-green-500 text-white"
+                      }>
+                        {oficio.status === "rascunho" ? "Rascunho" :
+                         oficio.status === "assinado" ? "Assinado" : "Enviado"}
                       </Badge>
                     </TableCell>
                     <TableCell>
@@ -363,7 +423,7 @@ export const OficiosRemessaPrestacao = ({ onBack, onNavigate }: OficiosRemessaPr
                         >
                           <Download className="h-4 w-4" />
                         </Button>
-                        {oficio.status === "Assinado" && (
+                        {oficio.status === "assinado" && (
                           <Button
                             variant="ghost"
                             size="sm"
@@ -373,7 +433,7 @@ export const OficiosRemessaPrestacao = ({ onBack, onNavigate }: OficiosRemessaPr
                             <Send className="h-4 w-4" />
                           </Button>
                         )}
-                        {oficio.status === "Elaborado" && (
+                        {oficio.status === "rascunho" && (
                           <Button
                             variant="ghost"
                             size="sm"

@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { ArrowLeft, FileText, Eye, FileSignature } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -149,6 +151,48 @@ export const NovoOficioRemessaPrestacao = ({ onBack, onNavigate }: NovoOficioRem
   const [showAssinaturaDialog, setShowAssinaturaDialog] = useState(false);
   const [assinatura, setAssinatura] = useState<string | null>(null);
   const [anexos, setAnexos] = useState<any[]>([]);
+  const [oficioId, setOficioId] = useState<string | null>(null);
+  const queryClient = useQueryClient();
+
+  // Mutation para criar ofício
+  const createOficioMutation = useMutation({
+    mutationFn: async (data: any) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Usuário não autenticado");
+
+      const { data: oficio, error } = await supabase
+        .from('oficios_remessa')
+        .insert({
+          numero: `OF-${new Date().getFullYear()}-${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`,
+          data_emissao: data.dataEmissao.toISOString(),
+          destinatario: data.destinatario,
+          assunto: data.assunto,
+          conteudo: data.conteudo,
+          remetente_nome: data.remetente_nome || "Tribunal de Contas",
+          remetente_cargo: data.remetente_cargo || "Juiz Conselheiro",
+          assinado: !!assinatura,
+          assinatura_digital: assinatura,
+          data_assinatura: assinatura ? new Date().toISOString() : null,
+          status: assinatura ? 'assinado' : 'rascunho',
+          criado_por: user.id,
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      return oficio;
+    },
+    onSuccess: (oficio) => {
+      setOficioId(oficio.id);
+      queryClient.invalidateQueries({ queryKey: ['oficios-remessa'] });
+      toast.success("Ofício criado com sucesso!");
+      setTimeout(() => onBack(), 1500);
+    },
+    onError: (error) => {
+      console.error("Error creating oficio:", error);
+      toast.error("Erro ao criar ofício");
+    },
+  });
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -182,11 +226,7 @@ export const NovoOficioRemessaPrestacao = ({ onBack, onNavigate }: NovoOficioRem
       toast.error("Por favor, assine o ofício antes de submeter");
       return;
     }
-    console.log("Form data:", data);
-    console.log("Assinatura:", assinatura);
-    console.log("Anexos:", anexos);
-    toast.success("Ofício criado e assinado com sucesso!");
-    onBack();
+    createOficioMutation.mutate(data);
   };
 
   const handleAssinadoComSucesso = (assinaturaDigital: string) => {
@@ -484,9 +524,10 @@ export const NovoOficioRemessaPrestacao = ({ onBack, onNavigate }: NovoOficioRem
           </Card>
 
           {/* Anexos */}
-          <AnexosUpload 
+          <AnexosUpload
             anexos={anexos}
             onAnexosChange={setAnexos}
+            oficioId={oficioId || undefined}
           />
 
           {/* Ações */}
