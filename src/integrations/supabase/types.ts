@@ -614,6 +614,39 @@ export type Database = {
         }
         Relationships: []
       }
+      oficio_anexos: {
+        Row: {
+          criado_em: string
+          criado_por: string | null
+          id: string
+          nome_arquivo: string
+          oficio_id: string
+          storage_path: string
+          tamanho_arquivo: number
+          tipo_arquivo: string
+        }
+        Insert: {
+          criado_em?: string
+          criado_por?: string | null
+          id?: string
+          nome_arquivo: string
+          oficio_id: string
+          storage_path: string
+          tamanho_arquivo: number
+          tipo_arquivo: string
+        }
+        Update: {
+          criado_em?: string
+          criado_por?: string | null
+          id?: string
+          nome_arquivo?: string
+          oficio_id?: string
+          storage_path?: string
+          tamanho_arquivo?: number
+          tipo_arquivo?: string
+        }
+        Relationships: []
+      }
       pagamentos_pensao: {
         Row: {
           ano: number

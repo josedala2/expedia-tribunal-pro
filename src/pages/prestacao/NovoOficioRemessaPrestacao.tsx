@@ -37,6 +37,7 @@ import { cn } from "@/lib/utils";
 import { DocumentViewer } from "@/components/documents/DocumentViewer";
 import { OficioTemplate } from "@/components/documents/OficioTemplate";
 import { AssinarOficioDialog } from "@/components/oficios/AssinarOficioDialog";
+import { AnexosUpload } from "@/components/oficios/AnexosUpload";
 
 const formSchema = z.object({
   processo: z.string().min(1, { message: "Selecione um processo" }),
@@ -147,6 +148,7 @@ export const NovoOficioRemessaPrestacao = ({ onBack, onNavigate }: NovoOficioRem
   const [previewData, setPreviewData] = useState<any>(null);
   const [showAssinaturaDialog, setShowAssinaturaDialog] = useState(false);
   const [assinatura, setAssinatura] = useState<string | null>(null);
+  const [anexos, setAnexos] = useState<any[]>([]);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -182,6 +184,7 @@ export const NovoOficioRemessaPrestacao = ({ onBack, onNavigate }: NovoOficioRem
     }
     console.log("Form data:", data);
     console.log("Assinatura:", assinatura);
+    console.log("Anexos:", anexos);
     toast.success("Ofício criado e assinado com sucesso!");
     onBack();
   };
@@ -479,6 +482,12 @@ export const NovoOficioRemessaPrestacao = ({ onBack, onNavigate }: NovoOficioRem
               )}
             </CardContent>
           </Card>
+
+          {/* Anexos */}
+          <AnexosUpload 
+            anexos={anexos}
+            onAnexosChange={setAnexos}
+          />
 
           {/* Ações */}
           <div className="flex justify-between">
