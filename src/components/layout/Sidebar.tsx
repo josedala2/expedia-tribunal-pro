@@ -72,7 +72,7 @@ const menuGroups = [
           { id: "expediente-prestacao", label: "Expediente de Relatório" },
           { id: "tramitacao-prestacao", label: "Tramitação do Processo" },
           { id: "cumprimento-despachos-prestacao", label: "Cumprimento de Despachos" },
-          { id: "cobranca-emolumentos", label: "Cobrança de Emolumentos" },
+          { id: "cobranca-emolumentos-prestacao", label: "Cobrança de Emolumentos" },
           { id: "despacho-promocao", label: "Despacho de Promoção" },
           { id: "oficios-remessa", label: "Ofícios de Remessa" },
           { id: "saida-expediente-prestacao", label: "Saída de Expediente" },
