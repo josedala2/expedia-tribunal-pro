@@ -160,16 +160,19 @@ export const NovoOficioRemessaPrestacao = ({ onBack, onNavigate }: NovoOficioRem
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Usuário não autenticado");
 
+      // Gerar número único do ofício
+      const numeroOficio = `OF-PC-${new Date().getFullYear()}-${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}`;
+
       const { data: oficio, error } = await supabase
         .from('oficios_remessa')
         .insert({
-          numero: `OF-${new Date().getFullYear()}-${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`,
-          data_emissao: data.dataEmissao.toISOString(),
-          destinatario: data.destinatario,
+          numero: numeroOficio,
+          data_emissao: data.dataEmissao.toISOString().split('T')[0],
+          destinatario: `${data.destinatario} - ${data.cargoDestinatario}, ${data.entidadeDestinatario}`,
           assunto: data.assunto,
           conteudo: data.conteudo,
-          remetente_nome: data.remetente_nome || "Tribunal de Contas",
-          remetente_cargo: data.remetente_cargo || "Juiz Conselheiro",
+          remetente_nome: "Tribunal de Contas",
+          remetente_cargo: "Juiz Conselheiro",
           assinado: !!assinatura,
           assinatura_digital: assinatura,
           data_assinatura: assinatura ? new Date().toISOString() : null,
@@ -189,8 +192,8 @@ export const NovoOficioRemessaPrestacao = ({ onBack, onNavigate }: NovoOficioRem
       setTimeout(() => onBack(), 1500);
     },
     onError: (error) => {
-      console.error("Error creating oficio:", error);
-      toast.error("Erro ao criar ofício");
+      console.error("Erro ao criar ofício:", error);
+      toast.error("Erro ao criar ofício. Por favor, tente novamente.");
     },
   });
 
