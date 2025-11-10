@@ -74,7 +74,7 @@ const menuGroups = [
           { id: "cumprimento-despachos-prestacao", label: "Cumprimento de Despachos" },
           { id: "cobranca-emolumentos-prestacao", label: "Cobrança de Emolumentos" },
           { id: "despacho-promocao-prestacao", label: "Despacho de Promoção" },
-          { id: "oficios-remessa", label: "Ofícios de Remessa" },
+          { id: "oficios-remessa-prestacao", label: "Ofícios de Remessa" },
           { id: "saida-expediente-prestacao", label: "Saída de Expediente" },
           { id: "prestacao-soberania", label: "Órgãos de Soberania" },
         ]
