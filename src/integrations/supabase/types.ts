@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      areas_funcionais: {
+        Row: {
+          actualizado_em: string
+          criado_em: string
+          descricao: string | null
+          id: string
+          nome_area: string
+          unidades_internas: string[] | null
+        }
+        Insert: {
+          actualizado_em?: string
+          criado_em?: string
+          descricao?: string | null
+          id?: string
+          nome_area: string
+          unidades_internas?: string[] | null
+        }
+        Update: {
+          actualizado_em?: string
+          criado_em?: string
+          descricao?: string | null
+          id?: string
+          nome_area?: string
+          unidades_internas?: string[] | null
+        }
+        Relationships: []
+      }
       dependentes_funcionario: {
         Row: {
           bi: string | null
@@ -869,6 +896,47 @@ export type Database = {
           },
         ]
       }
+      perfis_utilizador: {
+        Row: {
+          activo: boolean | null
+          actualizado_em: string
+          area_funcional_id: string | null
+          criado_em: string
+          descricao: string | null
+          id: string
+          nome_perfil: string
+          permissoes: Database["public"]["Enums"]["permissao_sistema"][] | null
+        }
+        Insert: {
+          activo?: boolean | null
+          actualizado_em?: string
+          area_funcional_id?: string | null
+          criado_em?: string
+          descricao?: string | null
+          id?: string
+          nome_perfil: string
+          permissoes?: Database["public"]["Enums"]["permissao_sistema"][] | null
+        }
+        Update: {
+          activo?: boolean | null
+          actualizado_em?: string
+          area_funcional_id?: string | null
+          criado_em?: string
+          descricao?: string | null
+          id?: string
+          nome_perfil?: string
+          permissoes?: Database["public"]["Enums"]["permissao_sistema"][] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "perfis_utilizador_area_funcional_id_fkey"
+            columns: ["area_funcional_id"]
+            isOneToOne: false
+            referencedRelation: "areas_funcionais"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       processo_documentos: {
         Row: {
           atualizado_em: string
@@ -1266,11 +1334,47 @@ export type Database = {
         }
         Relationships: []
       }
+      utilizador_perfis: {
+        Row: {
+          atribuido_em: string
+          atribuido_por: string | null
+          id: string
+          perfil_id: string
+          user_id: string
+        }
+        Insert: {
+          atribuido_em?: string
+          atribuido_por?: string | null
+          id?: string
+          perfil_id: string
+          user_id: string
+        }
+        Update: {
+          atribuido_em?: string
+          atribuido_por?: string | null
+          id?: string
+          perfil_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "utilizador_perfis_perfil_id_fkey"
+            columns: ["perfil_id"]
+            isOneToOne: false
+            referencedRelation: "perfis_utilizador"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      get_user_permissions: {
+        Args: { _user_id: string }
+        Returns: Database["public"]["Enums"]["permissao_sistema"][]
+      }
       get_user_roles: {
         Args: { _user_id: string }
         Returns: Database["public"]["Enums"]["app_role"][]
@@ -1297,6 +1401,13 @@ export type Database = {
         Args: { expediente_id: string; user_id: string }
         Returns: boolean
       }
+      user_has_permission: {
+        Args: {
+          _permission: Database["public"]["Enums"]["permissao_sistema"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
       app_role:
@@ -1309,6 +1420,30 @@ export type Database = {
         | "dst"
         | "secretaria"
         | "ministerio_publico"
+      permissao_sistema:
+        | "processo.criar"
+        | "processo.ver"
+        | "processo.editar"
+        | "processo.autuar"
+        | "processo.distribuir"
+        | "processo.ver.todos"
+        | "processo.submeter.juiz"
+        | "expediente.validar"
+        | "expediente.aprovar"
+        | "expediente.devolver"
+        | "documento.anexar"
+        | "relatorio.criar"
+        | "relatorio.editar"
+        | "relatorio.validar"
+        | "cq.executar"
+        | "oficio.emitir"
+        | "decisao.proferir"
+        | "decisao.coadjuvar"
+        | "prazo.suspender"
+        | "vista.mp.abrir"
+        | "promocao.emitir"
+        | "notificacao.executar"
+        | "certidao.emitir"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1446,6 +1581,31 @@ export const Constants = {
         "dst",
         "secretaria",
         "ministerio_publico",
+      ],
+      permissao_sistema: [
+        "processo.criar",
+        "processo.ver",
+        "processo.editar",
+        "processo.autuar",
+        "processo.distribuir",
+        "processo.ver.todos",
+        "processo.submeter.juiz",
+        "expediente.validar",
+        "expediente.aprovar",
+        "expediente.devolver",
+        "documento.anexar",
+        "relatorio.criar",
+        "relatorio.editar",
+        "relatorio.validar",
+        "cq.executar",
+        "oficio.emitir",
+        "decisao.proferir",
+        "decisao.coadjuvar",
+        "prazo.suspender",
+        "vista.mp.abrir",
+        "promocao.emitir",
+        "notificacao.executar",
+        "certidao.emitir",
       ],
     },
   },
