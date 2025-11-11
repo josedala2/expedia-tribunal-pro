@@ -48,6 +48,7 @@ export const GestaoSeccoesDivisoes = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [editingType, setEditingType] = useState<"seccao" | "divisao">("seccao");
+  const [editingId, setEditingId] = useState<string>("");
   const [editingValue, setEditingValue] = useState("");
   const [newValue, setNewValue] = useState("");
   const [newDescription, setNewDescription] = useState("");
@@ -79,14 +80,22 @@ export const GestaoSeccoesDivisoes = () => {
       
       if (error) throw error;
       
-      const seccaoMap = new Map<string, { count: number, descricao?: string, divisao_pai?: string }>();
+      const seccaoMap = new Map<string, { 
+        count: number, 
+        descricao?: string, 
+        divisao_pai?: string,
+        divisao_pai_id?: string,
+        id?: string 
+      }>();
       
       // Add from estrutura
       estruturaData?.forEach(item => {
         seccaoMap.set(item.nome, { 
           count: 0, 
           descricao: item.descricao || undefined,
-          divisao_pai: item.divisao_pai?.nome
+          divisao_pai: item.divisao_pai?.nome,
+          divisao_pai_id: item.divisao_pai_id,
+          id: item.id
         });
       });
       
@@ -107,7 +116,9 @@ export const GestaoSeccoesDivisoes = () => {
           name, 
           count: data.count, 
           descricao: data.descricao,
-          divisao_pai: data.divisao_pai
+          divisao_pai: data.divisao_pai,
+          divisao_pai_id: data.divisao_pai_id,
+          id: data.id
         }))
         .sort((a, b) => a.name.localeCompare(b.name));
     },
@@ -157,7 +168,35 @@ export const GestaoSeccoesDivisoes = () => {
 
   // Update mutation
   const updateMutation = useMutation({
-    mutationFn: async ({ type, oldValue, newValue }: { type: "seccao" | "divisao", oldValue: string, newValue: string }) => {
+    mutationFn: async ({ 
+      type, 
+      id,
+      oldValue, 
+      newValue,
+      divisao_pai_id 
+    }: { 
+      type: "seccao" | "divisao", 
+      id?: string,
+      oldValue: string, 
+      newValue: string,
+      divisao_pai_id?: string 
+    }) => {
+      // Update in organizacao_estrutura if we have an ID
+      if (id) {
+        const updateData: any = { nome: newValue };
+        if (type === "seccao") {
+          updateData.divisao_pai_id = divisao_pai_id || null;
+        }
+        
+        const { error: estruturaError } = await supabase
+          .from("organizacao_estrutura")
+          .update(updateData)
+          .eq("id", id);
+        
+        if (estruturaError) throw estruturaError;
+      }
+      
+      // Update in profiles
       const column = type === "seccao" ? "seccao" : "divisao";
       const { error } = await supabase
         .from("profiles")
@@ -175,8 +214,10 @@ export const GestaoSeccoesDivisoes = () => {
         description: `${editingType === "seccao" ? "Secção" : "Divisão"} atualizada em todos os perfis.`,
       });
       setEditDialogOpen(false);
+      setEditingId("");
       setEditingValue("");
       setNewValue("");
+      setDivisaoPaiId("");
     },
     onError: (error: any) => {
       toast({
@@ -218,10 +259,12 @@ export const GestaoSeccoesDivisoes = () => {
     },
   });
 
-  const handleEdit = (type: "seccao" | "divisao", value: string) => {
+  const handleEdit = (type: "seccao" | "divisao", value: string, id?: string, divisaoPaiIdAtual?: string) => {
     setEditingType(type);
+    setEditingId(id || "");
     setEditingValue(value);
     setNewValue(value);
+    setDivisaoPaiId(divisaoPaiIdAtual || "");
     setEditDialogOpen(true);
   };
 
@@ -289,7 +332,13 @@ export const GestaoSeccoesDivisoes = () => {
       });
       return;
     }
-    updateMutation.mutate({ type: editingType, oldValue: editingValue, newValue: newValue.trim() });
+    updateMutation.mutate({ 
+      type: editingType,
+      id: editingId,
+      oldValue: editingValue, 
+      newValue: newValue.trim(),
+      divisao_pai_id: divisaoPaiId 
+    });
   };
 
   const confirmDelete = () => {
@@ -376,7 +425,7 @@ export const GestaoSeccoesDivisoes = () => {
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => handleEdit("seccao", seccao.name)}
+                            onClick={() => handleEdit("seccao", seccao.name, seccao.id, seccao.divisao_pai_id)}
                           >
                             <Pencil className="h-4 w-4" />
                           </Button>
@@ -494,6 +543,24 @@ export const GestaoSeccoesDivisoes = () => {
                 placeholder="Digite o novo nome"
               />
             </div>
+            {editingType === "seccao" && (
+              <div className="space-y-2">
+                <Label>Divisão</Label>
+                <Select value={divisaoPaiId} onValueChange={setDivisaoPaiId}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione uma divisão" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">Sem divisão</SelectItem>
+                    {divisoes?.filter(d => d.id).map((divisao) => (
+                      <SelectItem key={divisao.id} value={divisao.id!}>
+                        {divisao.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setEditDialogOpen(false)}>
