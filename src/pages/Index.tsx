@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Header } from "@/components/layout/Header";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Dashboard } from "@/components/dashboard/Dashboard";
+import { TourGuide } from "@/components/layout/TourGuide";
 import PortalIntranet from "./portal/PortalIntranet";
 import MeuPerfil from "./portal/MeuPerfil";
 import Assiduidade from "./portal/Assiduidade";
@@ -101,6 +102,19 @@ const Index = () => {
   const [currentView, setCurrentView] = useState<View>("dashboard");
   const [selectedProcessId, setSelectedProcessId] = useState<string | null>(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [runTour, setRunTour] = useState(false);
+
+  useEffect(() => {
+    const hasSeenTour = localStorage.getItem("hasSeenTour");
+    if (!hasSeenTour) {
+      setTimeout(() => setRunTour(true), 1000);
+    }
+  }, []);
+
+  const handleTourComplete = () => {
+    localStorage.setItem("hasSeenTour", "true");
+    setRunTour(false);
+  };
 
   const handleViewProcess = (processId: string) => {
     setSelectedProcessId(processId);
@@ -118,6 +132,8 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <TourGuide run={runTour} onComplete={handleTourComplete} />
+      
       <Header 
         onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
         isSidebarOpen={isSidebarOpen}

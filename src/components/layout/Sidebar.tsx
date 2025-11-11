@@ -225,7 +225,7 @@ export const Sidebar = ({ isOpen, currentView, onNavigate }: SidebarProps) => {
       
       <aside
         className={cn(
-          "fixed left-0 top-[8rem] md:top-[12rem] h-[calc(100vh-8rem)] md:h-[calc(100vh-12rem)] bg-card border-r border-border transition-all duration-300 z-40 shadow-lg",
+          "sidebar-section fixed left-0 top-[8rem] md:top-[12rem] h-[calc(100vh-8rem)] md:h-[calc(100vh-12rem)] bg-card border-r border-border transition-all duration-300 z-40 shadow-lg",
           isOpen ? "w-72 md:w-80 translate-x-0" : "w-0 -translate-x-full"
         )}
       >

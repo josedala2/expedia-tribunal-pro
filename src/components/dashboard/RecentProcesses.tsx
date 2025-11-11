@@ -60,6 +60,7 @@ export const RecentProcesses = ({ onNavigate }: RecentProcessesProps) => {
         <Button 
           variant="outline" 
           size="sm"
+          className="quick-actions"
           onClick={() => onNavigate("processes")}
         >
           Ver Todos

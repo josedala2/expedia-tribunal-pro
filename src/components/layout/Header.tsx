@@ -23,7 +23,7 @@ const horizontalMenuItemsRight = [
 
 export const Header = ({ onToggleSidebar, isSidebarOpen, currentView, onNavigate }: HeaderProps) => {
   return (
-    <div className="sticky top-0 z-50 bg-card border-b-2 border-border shadow-md">
+    <div className="header-section sticky top-0 z-50 bg-card border-b-2 border-border shadow-md">
       {/* Top Bar - Banner Image */}
       <div className="relative h-[80px] sm:h-[100px] md:h-[140px] lg:h-[160px] overflow-hidden">
         <img 
