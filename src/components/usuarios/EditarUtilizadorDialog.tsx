@@ -9,8 +9,12 @@ import { Separator } from "@/components/ui/separator";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Shield, Plus, X, User, Cog, Link2 } from "lucide-react";
+import { Loader2, Shield, Plus, X, User, Cog, Link2, Check, ChevronsUpDown } from "lucide-react";
 import type { Database } from "@/integrations/supabase/types";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
+import { cn } from "@/lib/utils";
+import { useQuery } from "@tanstack/react-query";
 
 type AppRole = Database["public"]["Enums"]["app_role"];
 
@@ -39,7 +43,24 @@ export const EditarUtilizadorDialog = ({ open, onOpenChange, onSuccess, userId }
   const [currentRoles, setCurrentRoles] = useState<RoleWithType[]>([]);
   const [selectedRole, setSelectedRole] = useState<AppRole | "">("");
   const [addingRole, setAddingRole] = useState(false);
+  const [openSeccao, setOpenSeccao] = useState(false);
+  const [openDivisao, setOpenDivisao] = useState(false);
   const { toast } = useToast();
+
+  const { data: profiles } = useQuery({
+    queryKey: ["profiles-seccao-divisao"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("seccao, divisao");
+      
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const seccoes = [...new Set(profiles?.map(p => p.seccao).filter(Boolean))].sort();
+  const divisoes = [...new Set(profiles?.map(p => p.divisao).filter(Boolean))].sort();
 
   const getRoleIcon = (tipo: 'manual' | 'automatico' | 'herdado') => {
     switch (tipo) {
@@ -301,19 +322,103 @@ export const EditarUtilizadorDialog = ({ open, onOpenChange, onSuccess, userId }
               </div>
               <div className="space-y-2">
                 <Label htmlFor="edit_seccao">Secção</Label>
-                <Input
-                  id="edit_seccao"
-                  value={formData.seccao}
-                  onChange={(e) => setFormData({ ...formData, seccao: e.target.value })}
-                />
+                <Popover open={openSeccao} onOpenChange={setOpenSeccao}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      aria-expanded={openSeccao}
+                      className="w-full justify-between"
+                    >
+                      {formData.seccao || "Selecione ou crie nova secção"}
+                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-full p-0">
+                    <Command>
+                      <CommandInput 
+                        placeholder="Pesquisar ou criar secção..." 
+                        value={formData.seccao}
+                        onValueChange={(value) => setFormData({ ...formData, seccao: value })}
+                      />
+                      <CommandEmpty>
+                        <div className="p-2 text-sm">
+                          Pressione Enter para criar "{formData.seccao}"
+                        </div>
+                      </CommandEmpty>
+                      <CommandGroup>
+                        {seccoes.map((seccao) => (
+                          <CommandItem
+                            key={seccao}
+                            value={seccao}
+                            onSelect={(currentValue) => {
+                              setFormData({ ...formData, seccao: currentValue });
+                              setOpenSeccao(false);
+                            }}
+                          >
+                            <Check
+                              className={cn(
+                                "mr-2 h-4 w-4",
+                                formData.seccao === seccao ? "opacity-100" : "opacity-0"
+                              )}
+                            />
+                            {seccao}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
               </div>
               <div className="space-y-2 col-span-2">
                 <Label htmlFor="edit_divisao">Divisão</Label>
-                <Input
-                  id="edit_divisao"
-                  value={formData.divisao}
-                  onChange={(e) => setFormData({ ...formData, divisao: e.target.value })}
-                />
+                <Popover open={openDivisao} onOpenChange={setOpenDivisao}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      aria-expanded={openDivisao}
+                      className="w-full justify-between"
+                    >
+                      {formData.divisao || "Selecione ou crie nova divisão"}
+                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-full p-0">
+                    <Command>
+                      <CommandInput 
+                        placeholder="Pesquisar ou criar divisão..." 
+                        value={formData.divisao}
+                        onValueChange={(value) => setFormData({ ...formData, divisao: value })}
+                      />
+                      <CommandEmpty>
+                        <div className="p-2 text-sm">
+                          Pressione Enter para criar "{formData.divisao}"
+                        </div>
+                      </CommandEmpty>
+                      <CommandGroup>
+                        {divisoes.map((divisao) => (
+                          <CommandItem
+                            key={divisao}
+                            value={divisao}
+                            onSelect={(currentValue) => {
+                              setFormData({ ...formData, divisao: currentValue });
+                              setOpenDivisao(false);
+                            }}
+                          >
+                            <Check
+                              className={cn(
+                                "mr-2 h-4 w-4",
+                                formData.divisao === divisao ? "opacity-100" : "opacity-0"
+                              )}
+                            />
+                            {divisao}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
               </div>
             </div>
           </div>
