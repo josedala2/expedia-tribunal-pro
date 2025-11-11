@@ -3,11 +3,13 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2 } from "lucide-react";
+import { Loader2, Check, ChevronsUpDown } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { cn } from "@/lib/utils";
 
 interface CriarUtilizadorDialogProps {
   open: boolean;
@@ -17,6 +19,8 @@ interface CriarUtilizadorDialogProps {
 
 export const CriarUtilizadorDialog = ({ open, onOpenChange, onSuccess }: CriarUtilizadorDialogProps) => {
   const [loading, setLoading] = useState(false);
+  const [openSeccao, setOpenSeccao] = useState(false);
+  const [openDivisao, setOpenDivisao] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -151,39 +155,107 @@ export const CriarUtilizadorDialog = ({ open, onOpenChange, onSuccess }: CriarUt
             </div>
             <div className="space-y-2">
               <Label htmlFor="seccao">Secção</Label>
-              <Select
-                value={formData.seccao}
-                onValueChange={(value) => setFormData({ ...formData, seccao: value })}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione a secção" />
-                </SelectTrigger>
-                <SelectContent>
-                  {seccoes.map((seccao) => (
-                    <SelectItem key={seccao} value={seccao}>
-                      {seccao}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Popover open={openSeccao} onOpenChange={setOpenSeccao}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={openSeccao}
+                    className="w-full justify-between"
+                  >
+                    {formData.seccao || "Selecione ou crie nova secção"}
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-full p-0">
+                  <Command>
+                    <CommandInput 
+                      placeholder="Pesquisar ou criar nova..." 
+                      value={formData.seccao}
+                      onValueChange={(value) => setFormData({ ...formData, seccao: value })}
+                    />
+                    <CommandList>
+                      <CommandEmpty>
+                        <div className="p-2 text-sm text-muted-foreground">
+                          Pressione Enter para criar "{formData.seccao}"
+                        </div>
+                      </CommandEmpty>
+                      <CommandGroup>
+                        {seccoes.map((seccao) => (
+                          <CommandItem
+                            key={seccao}
+                            value={seccao}
+                            onSelect={(currentValue) => {
+                              setFormData({ ...formData, seccao: currentValue });
+                              setOpenSeccao(false);
+                            }}
+                          >
+                            <Check
+                              className={cn(
+                                "mr-2 h-4 w-4",
+                                formData.seccao === seccao ? "opacity-100" : "opacity-0"
+                              )}
+                            />
+                            {seccao}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
             </div>
             <div className="space-y-2">
               <Label htmlFor="divisao">Divisão</Label>
-              <Select
-                value={formData.divisao}
-                onValueChange={(value) => setFormData({ ...formData, divisao: value })}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione a divisão" />
-                </SelectTrigger>
-                <SelectContent>
-                  {divisoes.map((divisao) => (
-                    <SelectItem key={divisao} value={divisao}>
-                      {divisao}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Popover open={openDivisao} onOpenChange={setOpenDivisao}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={openDivisao}
+                    className="w-full justify-between"
+                  >
+                    {formData.divisao || "Selecione ou crie nova divisão"}
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-full p-0">
+                  <Command>
+                    <CommandInput 
+                      placeholder="Pesquisar ou criar nova..." 
+                      value={formData.divisao}
+                      onValueChange={(value) => setFormData({ ...formData, divisao: value })}
+                    />
+                    <CommandList>
+                      <CommandEmpty>
+                        <div className="p-2 text-sm text-muted-foreground">
+                          Pressione Enter para criar "{formData.divisao}"
+                        </div>
+                      </CommandEmpty>
+                      <CommandGroup>
+                        {divisoes.map((divisao) => (
+                          <CommandItem
+                            key={divisao}
+                            value={divisao}
+                            onSelect={(currentValue) => {
+                              setFormData({ ...formData, divisao: currentValue });
+                              setOpenDivisao(false);
+                            }}
+                          >
+                            <Check
+                              className={cn(
+                                "mr-2 h-4 w-4",
+                                formData.divisao === divisao ? "opacity-100" : "opacity-0"
+                              )}
+                            />
+                            {divisao}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
             </div>
           </div>
           <DialogFooter>
