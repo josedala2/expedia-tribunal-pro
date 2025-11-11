@@ -775,6 +775,33 @@ export type Database = {
         }
         Relationships: []
       }
+      organizacao_estrutura: {
+        Row: {
+          criado_em: string | null
+          criado_por: string | null
+          descricao: string | null
+          id: string
+          nome: string
+          tipo: string
+        }
+        Insert: {
+          criado_em?: string | null
+          criado_por?: string | null
+          descricao?: string | null
+          id?: string
+          nome: string
+          tipo: string
+        }
+        Update: {
+          criado_em?: string | null
+          criado_por?: string | null
+          descricao?: string | null
+          id?: string
+          nome?: string
+          tipo?: string
+        }
+        Relationships: []
+      }
       pagamentos_pensao: {
         Row: {
           ano: number

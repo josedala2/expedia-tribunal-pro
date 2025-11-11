@@ -50,17 +50,39 @@ export const EditarUtilizadorDialog = ({ open, onOpenChange, onSuccess, userId }
   const { data: profiles } = useQuery({
     queryKey: ["profiles-seccao-divisao"],
     queryFn: async () => {
+      // Fetch from organizacao_estrutura
+      const { data: estruturaSeccoes } = await supabase
+        .from("organizacao_estrutura")
+        .select("nome")
+        .eq("tipo", "seccao");
+      
+      const { data: estruturaDivisoes } = await supabase
+        .from("organizacao_estrutura")
+        .select("nome")
+        .eq("tipo", "divisao");
+      
+      // Fetch from profiles
       const { data, error } = await supabase
         .from("profiles")
         .select("seccao, divisao");
       
       if (error) throw error;
-      return data;
+      
+      return {
+        seccoes: [...new Set([
+          ...(estruturaSeccoes?.map(e => e.nome) || []),
+          ...(data?.map(p => p.seccao).filter(Boolean) || [])
+        ])],
+        divisoes: [...new Set([
+          ...(estruturaDivisoes?.map(e => e.nome) || []),
+          ...(data?.map(p => p.divisao).filter(Boolean) || [])
+        ])]
+      };
     },
   });
 
-  const seccoes = [...new Set(profiles?.map(p => p.seccao).filter(Boolean))].sort();
-  const divisoes = [...new Set(profiles?.map(p => p.divisao).filter(Boolean))].sort();
+  const seccoes = profiles?.seccoes?.sort() || [];
+  const divisoes = profiles?.divisoes?.sort() || [];
 
   const getRoleIcon = (tipo: 'manual' | 'automatico' | 'herdado') => {
     switch (tipo) {

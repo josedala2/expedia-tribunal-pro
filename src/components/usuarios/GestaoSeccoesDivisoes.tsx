@@ -43,6 +43,7 @@ export const GestaoSeccoesDivisoes = () => {
   const [editingType, setEditingType] = useState<"seccao" | "divisao">("seccao");
   const [editingValue, setEditingValue] = useState("");
   const [newValue, setNewValue] = useState("");
+  const [newDescription, setNewDescription] = useState("");
   const [deletingValue, setDeletingValue] = useState("");
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -51,21 +52,40 @@ export const GestaoSeccoesDivisoes = () => {
   const { data: seccoes, isLoading: loadingSeccoes } = useQuery({
     queryKey: ["seccoes-with-count"],
     queryFn: async () => {
-      const { data, error } = await supabase
+      // Fetch from organizacao_estrutura
+      const { data: estruturaData } = await supabase
+        .from("organizacao_estrutura")
+        .select("*")
+        .eq("tipo", "seccao");
+      
+      // Fetch from profiles
+      const { data: profilesData, error } = await supabase
         .from("profiles")
         .select("seccao");
       
       if (error) throw error;
       
-      const seccaoMap = new Map<string, number>();
-      data.forEach(profile => {
+      const seccaoMap = new Map<string, { count: number, descricao?: string }>();
+      
+      // Add from estrutura
+      estruturaData?.forEach(item => {
+        seccaoMap.set(item.nome, { count: 0, descricao: item.descricao || undefined });
+      });
+      
+      // Count from profiles
+      profilesData.forEach(profile => {
         if (profile.seccao) {
-          seccaoMap.set(profile.seccao, (seccaoMap.get(profile.seccao) || 0) + 1);
+          const existing = seccaoMap.get(profile.seccao);
+          if (existing) {
+            existing.count++;
+          } else {
+            seccaoMap.set(profile.seccao, { count: 1 });
+          }
         }
       });
       
       return Array.from(seccaoMap.entries())
-        .map(([name, count]) => ({ name, count }))
+        .map(([name, data]) => ({ name, count: data.count, descricao: data.descricao }))
         .sort((a, b) => a.name.localeCompare(b.name));
     },
   });
@@ -74,21 +94,40 @@ export const GestaoSeccoesDivisoes = () => {
   const { data: divisoes, isLoading: loadingDivisoes } = useQuery({
     queryKey: ["divisoes-with-count"],
     queryFn: async () => {
-      const { data, error } = await supabase
+      // Fetch from organizacao_estrutura
+      const { data: estruturaData } = await supabase
+        .from("organizacao_estrutura")
+        .select("*")
+        .eq("tipo", "divisao");
+      
+      // Fetch from profiles
+      const { data: profilesData, error } = await supabase
         .from("profiles")
         .select("divisao");
       
       if (error) throw error;
       
-      const divisaoMap = new Map<string, number>();
-      data.forEach(profile => {
+      const divisaoMap = new Map<string, { count: number, descricao?: string }>();
+      
+      // Add from estrutura
+      estruturaData?.forEach(item => {
+        divisaoMap.set(item.nome, { count: 0, descricao: item.descricao || undefined });
+      });
+      
+      // Count from profiles
+      profilesData.forEach(profile => {
         if (profile.divisao) {
-          divisaoMap.set(profile.divisao, (divisaoMap.get(profile.divisao) || 0) + 1);
+          const existing = divisaoMap.get(profile.divisao);
+          if (existing) {
+            existing.count++;
+          } else {
+            divisaoMap.set(profile.divisao, { count: 1 });
+          }
         }
       });
       
       return Array.from(divisaoMap.entries())
-        .map(([name, count]) => ({ name, count }))
+        .map(([name, data]) => ({ name, count: data.count, descricao: data.descricao }))
         .sort((a, b) => a.name.localeCompare(b.name));
     },
   });
@@ -172,8 +211,43 @@ export const GestaoSeccoesDivisoes = () => {
   const handleAdd = (type: "seccao" | "divisao") => {
     setEditingType(type);
     setNewValue("");
+    setNewDescription("");
     setAddDialogOpen(true);
   };
+
+  // Add mutation
+  const addMutation = useMutation({
+    mutationFn: async ({ type, nome, descricao }: { type: "seccao" | "divisao", nome: string, descricao?: string }) => {
+      const { error } = await supabase
+        .from("organizacao_estrutura")
+        .insert({
+          tipo: type,
+          nome: nome.trim(),
+          descricao: descricao?.trim() || null,
+        });
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["seccoes-with-count"] });
+      queryClient.invalidateQueries({ queryKey: ["divisoes-with-count"] });
+      queryClient.invalidateQueries({ queryKey: ["profiles-seccao-divisao"] });
+      toast({
+        title: "Criado com sucesso",
+        description: `${editingType === "seccao" ? "Secção" : "Divisão"} cadastrada e disponível para seleção.`,
+      });
+      setAddDialogOpen(false);
+      setNewValue("");
+      setNewDescription("");
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Erro ao cadastrar",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
 
   const confirmEdit = () => {
     if (!newValue.trim()) {
@@ -189,6 +263,18 @@ export const GestaoSeccoesDivisoes = () => {
 
   const confirmDelete = () => {
     deleteMutation.mutate({ type: editingType, value: deletingValue });
+  };
+
+  const confirmAdd = () => {
+    if (!newValue.trim()) {
+      toast({
+        title: "Nome inválido",
+        description: "O nome não pode estar vazio.",
+        variant: "destructive",
+      });
+      return;
+    }
+    addMutation.mutate({ type: editingType, nome: newValue, descricao: newDescription });
   };
 
   return (
@@ -214,9 +300,13 @@ export const GestaoSeccoesDivisoes = () => {
                 <div>
                   <CardTitle>Gestão de Secções</CardTitle>
                   <CardDescription>
-                    Editar ou remover secções existentes
+                    Cadastrar, editar ou remover secções
                   </CardDescription>
                 </div>
+                <Button onClick={() => handleAdd("seccao")} className="gap-2">
+                  <Plus className="h-4 w-4" />
+                  Nova Secção
+                </Button>
               </div>
             </CardHeader>
             <CardContent>
@@ -277,9 +367,13 @@ export const GestaoSeccoesDivisoes = () => {
                 <div>
                   <CardTitle>Gestão de Divisões</CardTitle>
                   <CardDescription>
-                    Editar ou remover divisões existentes
+                    Cadastrar, editar ou remover divisões
                   </CardDescription>
                 </div>
+                <Button onClick={() => handleAdd("divisao")} className="gap-2">
+                  <Plus className="h-4 w-4" />
+                  Nova Divisão
+                </Button>
               </div>
             </CardHeader>
             <CardContent>
@@ -364,6 +458,45 @@ export const GestaoSeccoesDivisoes = () => {
             <Button onClick={confirmEdit} disabled={updateMutation.isPending}>
               {updateMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Atualizar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Add Dialog */}
+      <Dialog open={addDialogOpen} onOpenChange={setAddDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Nova {editingType === "seccao" ? "Secção" : "Divisão"}</DialogTitle>
+            <DialogDescription>
+              Cadastrar uma nova {editingType === "seccao" ? "secção" : "divisão"} para a organização.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label>Nome *</Label>
+              <Input
+                value={newValue}
+                onChange={(e) => setNewValue(e.target.value)}
+                placeholder={`Digite o nome da ${editingType === "seccao" ? "secção" : "divisão"}`}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Descrição (opcional)</Label>
+              <Input
+                value={newDescription}
+                onChange={(e) => setNewDescription(e.target.value)}
+                placeholder="Digite uma descrição"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setAddDialogOpen(false)}>
+              Cancelar
+            </Button>
+            <Button onClick={confirmAdd} disabled={addMutation.isPending}>
+              {addMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Cadastrar
             </Button>
           </DialogFooter>
         </DialogContent>
