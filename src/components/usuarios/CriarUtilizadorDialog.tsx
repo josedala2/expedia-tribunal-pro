@@ -1,11 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2 } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 
 interface CriarUtilizadorDialogProps {
   open: boolean;
@@ -24,6 +26,23 @@ export const CriarUtilizadorDialog = ({ open, onOpenChange, onSuccess }: CriarUt
     divisao: "",
   });
   const { toast } = useToast();
+
+  // Fetch existing secções and divisões
+  const { data: profiles } = useQuery({
+    queryKey: ["profiles-seccao-divisao"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("seccao, divisao");
+      
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  // Extract unique secções and divisões
+  const seccoes = [...new Set(profiles?.map(p => p.seccao).filter(Boolean))].sort();
+  const divisoes = [...new Set(profiles?.map(p => p.divisao).filter(Boolean))].sort();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -132,19 +151,39 @@ export const CriarUtilizadorDialog = ({ open, onOpenChange, onSuccess }: CriarUt
             </div>
             <div className="space-y-2">
               <Label htmlFor="seccao">Secção</Label>
-              <Input
-                id="seccao"
+              <Select
                 value={formData.seccao}
-                onChange={(e) => setFormData({ ...formData, seccao: e.target.value })}
-              />
+                onValueChange={(value) => setFormData({ ...formData, seccao: value })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione a secção" />
+                </SelectTrigger>
+                <SelectContent>
+                  {seccoes.map((seccao) => (
+                    <SelectItem key={seccao} value={seccao}>
+                      {seccao}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div className="space-y-2">
               <Label htmlFor="divisao">Divisão</Label>
-              <Input
-                id="divisao"
+              <Select
                 value={formData.divisao}
-                onChange={(e) => setFormData({ ...formData, divisao: e.target.value })}
-              />
+                onValueChange={(value) => setFormData({ ...formData, divisao: value })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione a divisão" />
+                </SelectTrigger>
+                <SelectContent>
+                  {divisoes.map((divisao) => (
+                    <SelectItem key={divisao} value={divisao}>
+                      {divisao}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
           <DialogFooter>
