@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LoginForm } from "@/components/auth/LoginForm";
 import { RegisterForm } from "@/components/auth/RegisterForm";
 import { useAuth } from "@/contexts/AuthContext";
-import { Shield } from "lucide-react";
+import logoTC from "@/assets/logo-tc.png";
 
 export const Auth = () => {
   const navigate = useNavigate();
@@ -31,8 +31,8 @@ export const Auth = () => {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-accent/20 p-4">
       <Card className="w-full max-w-md p-8">
         <div className="flex flex-col items-center mb-6">
-          <div className="rounded-full bg-primary/10 p-4 mb-4">
-            <Shield className="h-12 w-12 text-primary" />
+          <div className="mb-4">
+            <img src={logoTC} alt="Tribunal de Contas" className="h-24 w-auto" />
           </div>
           <h1 className="text-2xl font-bold text-foreground mb-2">
             Tribunal de Contas
