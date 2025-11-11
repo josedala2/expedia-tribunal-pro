@@ -1,6 +1,7 @@
 import { Menu, Bell, User, Settings, FileText, BarChart3, MessagesSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import headerBanner from "@/assets/header-banner.png";
+import { UserMenu } from "./UserMenu";
 
 interface HeaderProps {
   onToggleSidebar: () => void;
@@ -52,13 +53,9 @@ export const Header = ({ onToggleSidebar, isSidebarOpen, currentView, onNavigate
               <span className="absolute top-0.5 right-0.5 sm:top-1 sm:right-1 h-1.5 w-1.5 sm:h-2 sm:w-2 md:h-2.5 md:w-2.5 bg-red-500 rounded-full"></span>
             </Button>
             
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="bg-white/10 hover:bg-white/20 backdrop-blur-sm h-8 w-8 sm:h-9 sm:w-9 md:h-11 md:w-11 lg:h-12 lg:w-12"
-            >
-              <User className="h-4 w-4 sm:h-5 sm:w-5 md:h-5 md:w-5 lg:h-6 lg:w-6 text-white" />
-            </Button>
+            <div className="bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-full">
+              <UserMenu />
+            </div>
           </div>
         </div>
         
