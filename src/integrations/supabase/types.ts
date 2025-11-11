@@ -41,6 +41,45 @@ export type Database = {
         }
         Relationships: []
       }
+      auth_logs: {
+        Row: {
+          criado_em: string
+          detalhes: Json | null
+          email: string | null
+          evento: string
+          id: string
+          ip_address: string | null
+          localizacao: string | null
+          sucesso: boolean
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          criado_em?: string
+          detalhes?: Json | null
+          email?: string | null
+          evento: string
+          id?: string
+          ip_address?: string | null
+          localizacao?: string | null
+          sucesso: boolean
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          criado_em?: string
+          detalhes?: Json | null
+          email?: string | null
+          evento?: string
+          id?: string
+          ip_address?: string | null
+          localizacao?: string | null
+          sucesso?: boolean
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       dependentes_funcionario: {
         Row: {
           bi: string | null
@@ -1254,6 +1293,42 @@ export type Database = {
           },
         ]
       }
+      sessoes_activas: {
+        Row: {
+          activa: boolean
+          id: string
+          iniciada_em: string
+          ip_address: string | null
+          localizacao: string | null
+          session_id: string
+          ultima_actividade: string
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          activa?: boolean
+          id?: string
+          iniciada_em?: string
+          ip_address?: string | null
+          localizacao?: string | null
+          session_id: string
+          ultima_actividade?: string
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          activa?: boolean
+          id?: string
+          iniciada_em?: string
+          ip_address?: string | null
+          localizacao?: string | null
+          session_id?: string
+          ultima_actividade?: string
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       solicitacoes_declaracoes: {
         Row: {
           aprovado_em: string | null
@@ -1371,6 +1446,8 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      cleanup_inactive_sessions: { Args: never; Returns: undefined }
+      cleanup_old_auth_logs: { Args: never; Returns: undefined }
       get_user_permissions: {
         Args: { _user_id: string }
         Returns: Database["public"]["Enums"]["permissao_sistema"][]
@@ -1396,6 +1473,10 @@ export type Database = {
           texto_extraido: string
           tipo_documento: string
         }[]
+      }
+      update_session_activity: {
+        Args: { session_id_param: string }
+        Returns: undefined
       }
       user_can_access_expediente: {
         Args: { expediente_id: string; user_id: string }
