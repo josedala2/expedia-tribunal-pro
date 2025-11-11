@@ -6,12 +6,19 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Shield, Plus, X } from "lucide-react";
+import { Loader2, Shield, Plus, X, User, Cog, Link2 } from "lucide-react";
 import type { Database } from "@/integrations/supabase/types";
 
 type AppRole = Database["public"]["Enums"]["app_role"];
+
+interface RoleWithType {
+  role: AppRole;
+  tipo_atribuicao: 'manual' | 'automatico' | 'herdado';
+  origem_atribuicao: string | null;
+}
 
 interface EditarUtilizadorDialogProps {
   open: boolean;
@@ -29,10 +36,43 @@ export const EditarUtilizadorDialog = ({ open, onOpenChange, onSuccess, userId }
     seccao: "",
     divisao: "",
   });
-  const [currentRoles, setCurrentRoles] = useState<AppRole[]>([]);
+  const [currentRoles, setCurrentRoles] = useState<RoleWithType[]>([]);
   const [selectedRole, setSelectedRole] = useState<AppRole | "">("");
   const [addingRole, setAddingRole] = useState(false);
   const { toast } = useToast();
+
+  const getRoleIcon = (tipo: 'manual' | 'automatico' | 'herdado') => {
+    switch (tipo) {
+      case 'manual':
+        return <User className="h-3 w-3" />;
+      case 'automatico':
+        return <Cog className="h-3 w-3" />;
+      case 'herdado':
+        return <Link2 className="h-3 w-3" />;
+    }
+  };
+
+  const getRoleBadgeVariant = (tipo: 'manual' | 'automatico' | 'herdado') => {
+    switch (tipo) {
+      case 'manual':
+        return "default";
+      case 'automatico':
+        return "secondary";
+      case 'herdado':
+        return "outline";
+    }
+  };
+
+  const getRoleTypeLabel = (tipo: 'manual' | 'automatico' | 'herdado') => {
+    switch (tipo) {
+      case 'manual':
+        return "Atribuída manualmente";
+      case 'automatico':
+        return "Atribuída automaticamente";
+      case 'herdado':
+        return "Herdada";
+    }
+  };
 
   const roleLabels: Record<AppRole, string> = {
     admin: "Administrador",
@@ -58,7 +98,7 @@ export const EditarUtilizadorDialog = ({ open, onOpenChange, onSuccess, userId }
     "ministerio_publico",
   ];
 
-  const availableRoles = allRoles.filter(role => !currentRoles.includes(role));
+  const availableRoles = allRoles.filter(role => !currentRoles.find(r => r.role === role));
 
   useEffect(() => {
     if (userId && open) {
@@ -88,15 +128,19 @@ export const EditarUtilizadorDialog = ({ open, onOpenChange, onSuccess, userId }
         });
       }
 
-      // Buscar roles
+      // Buscar roles com tipo de atribuição
       const { data: rolesData, error: rolesError } = await supabase
         .from("user_roles")
-        .select("role")
+        .select("role, tipo_atribuicao, origem_atribuicao")
         .eq("user_id", userId);
 
       if (rolesError) throw rolesError;
 
-      setCurrentRoles(rolesData?.map(r => r.role) || []);
+      setCurrentRoles(rolesData?.map(r => ({
+        role: r.role,
+        tipo_atribuicao: (r.tipo_atribuicao || 'manual') as 'manual' | 'automatico' | 'herdado',
+        origem_atribuicao: r.origem_atribuicao,
+      })) || []);
     } catch (error: any) {
       toast({
         title: "Erro ao carregar dados",
@@ -113,7 +157,12 @@ export const EditarUtilizadorDialog = ({ open, onOpenChange, onSuccess, userId }
     try {
       const { error } = await supabase
         .from("user_roles")
-        .insert({ user_id: userId, role: selectedRole });
+        .insert({ 
+          user_id: userId, 
+          role: selectedRole,
+          tipo_atribuicao: 'manual',
+          origem_atribuicao: null,
+        });
 
       if (error) throw error;
 
@@ -122,7 +171,11 @@ export const EditarUtilizadorDialog = ({ open, onOpenChange, onSuccess, userId }
         description: `A role ${roleLabels[selectedRole]} foi atribuída com sucesso.`,
       });
 
-      setCurrentRoles([...currentRoles, selectedRole]);
+      setCurrentRoles([...currentRoles, {
+        role: selectedRole,
+        tipo_atribuicao: 'manual',
+        origem_atribuicao: null,
+      }]);
       setSelectedRole("");
     } catch (error: any) {
       toast({
@@ -135,8 +188,18 @@ export const EditarUtilizadorDialog = ({ open, onOpenChange, onSuccess, userId }
     }
   };
 
-  const removeRole = async (role: AppRole) => {
+  const removeRole = async (role: AppRole, tipo: 'manual' | 'automatico' | 'herdado') => {
     if (!userId) return;
+
+    // Não permitir remover roles automáticas ou herdadas
+    if (tipo !== 'manual') {
+      toast({
+        title: "Ação não permitida",
+        description: `Não é possível remover roles ${tipo === 'automatico' ? 'automáticas' : 'herdadas'}. Contacte o administrador do sistema.`,
+        variant: "destructive",
+      });
+      return;
+    }
 
     try {
       const { error } = await supabase
@@ -152,7 +215,7 @@ export const EditarUtilizadorDialog = ({ open, onOpenChange, onSuccess, userId }
         description: `A role ${roleLabels[role]} foi removida com sucesso.`,
       });
 
-      setCurrentRoles(currentRoles.filter(r => r !== role));
+      setCurrentRoles(currentRoles.filter(r => r.role !== role));
     } catch (error: any) {
       toast({
         title: "Erro ao remover role",
@@ -269,28 +332,64 @@ export const EditarUtilizadorDialog = ({ open, onOpenChange, onSuccess, userId }
               <Label>Roles Atribuídas</Label>
               <div className="flex flex-wrap gap-2 min-h-[40px] p-3 border rounded-md bg-muted/30">
                 {currentRoles.length > 0 ? (
-                  currentRoles.map((role) => (
-                    <Badge
-                      key={role}
-                      variant="default"
-                      className="gap-2 bg-primary hover:bg-primary/90"
-                    >
-                      <Shield className="h-3 w-3" />
-                      {roleLabels[role]}
-                      <button
-                        type="button"
-                        onClick={() => removeRole(role)}
-                        className="ml-1 hover:bg-primary-foreground/20 rounded-full p-0.5"
-                      >
-                        <X className="h-3 w-3" />
-                      </button>
-                    </Badge>
-                  ))
+                  <TooltipProvider>
+                    {currentRoles.map((roleData) => (
+                      <Tooltip key={roleData.role}>
+                        <TooltipTrigger asChild>
+                          <Badge
+                            variant={getRoleBadgeVariant(roleData.tipo_atribuicao)}
+                            className="gap-2"
+                          >
+                            {getRoleIcon(roleData.tipo_atribuicao)}
+                            {roleLabels[roleData.role]}
+                            {roleData.tipo_atribuicao === 'manual' && (
+                              <button
+                                type="button"
+                                onClick={() => removeRole(roleData.role, roleData.tipo_atribuicao)}
+                                className="ml-1 hover:bg-background/20 rounded-full p-0.5"
+                              >
+                                <X className="h-3 w-3" />
+                              </button>
+                            )}
+                          </Badge>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <div className="space-y-1">
+                            <p className="font-semibold">{getRoleTypeLabel(roleData.tipo_atribuicao)}</p>
+                            {roleData.origem_atribuicao && (
+                              <p className="text-xs text-muted-foreground">
+                                Origem: {roleData.origem_atribuicao}
+                              </p>
+                            )}
+                            {roleData.tipo_atribuicao !== 'manual' && (
+                              <p className="text-xs text-muted-foreground italic">
+                                Não pode ser removida manualmente
+                              </p>
+                            )}
+                          </div>
+                        </TooltipContent>
+                      </Tooltip>
+                    ))}
+                  </TooltipProvider>
                 ) : (
                   <span className="text-sm text-muted-foreground">
                     Nenhuma role atribuída
                   </span>
                 )}
+              </div>
+              <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                <div className="flex items-center gap-1">
+                  <User className="h-3 w-3" />
+                  <span>Manual</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Cog className="h-3 w-3" />
+                  <span>Automática</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Link2 className="h-3 w-3" />
+                  <span>Herdada</span>
+                </div>
               </div>
             </div>
 

@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
-import { ArrowLeft, Plus, Search, Filter, Users, Shield, Settings, Edit, Trash2 } from "lucide-react";
+import { ArrowLeft, Plus, Search, Filter, Users, Shield, Settings, Edit, Trash2, User, Cog, Link2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -15,6 +16,12 @@ import { EditarUtilizadorDialog } from "@/components/usuarios/EditarUtilizadorDi
 import type { Database } from "@/integrations/supabase/types";
 
 type AppRole = Database["public"]["Enums"]["app_role"];
+
+interface RoleWithType {
+  role: AppRole;
+  tipo_atribuicao: 'manual' | 'automatico' | 'herdado';
+  origem_atribuicao: string | null;
+}
 
 interface UsuariosProps {
   onBack: () => void;
@@ -27,7 +34,7 @@ interface Usuario {
   telefone: string | null;
   seccao: string | null;
   divisao: string | null;
-  roles: AppRole[];
+  roles: RoleWithType[];
 }
 
 export const Usuarios = ({ onBack }: UsuariosProps) => {
@@ -59,13 +66,17 @@ export const Usuarios = ({ onBack }: UsuariosProps) => {
 
       const { data: rolesData, error: rolesError } = await supabase
         .from("user_roles")
-        .select("user_id, role");
+        .select("user_id, role, tipo_atribuicao, origem_atribuicao");
 
       if (rolesError) throw rolesError;
 
       const usersWithRoles = profilesData.map((profile) => ({
         ...profile,
-        roles: rolesData?.filter((r) => r.user_id === profile.id).map((r) => r.role) || [],
+        roles: rolesData?.filter((r) => r.user_id === profile.id).map((r) => ({
+          role: r.role,
+          tipo_atribuicao: (r.tipo_atribuicao || 'manual') as 'manual' | 'automatico' | 'herdado',
+          origem_atribuicao: r.origem_atribuicao,
+        })) || [],
       }));
 
       setUsuarios(usersWithRoles);
@@ -131,6 +142,39 @@ export const Usuarios = ({ onBack }: UsuariosProps) => {
     return labels[role] || role;
   };
 
+  const getRoleIcon = (tipo: 'manual' | 'automatico' | 'herdado') => {
+    switch (tipo) {
+      case 'manual':
+        return <User className="h-3 w-3" />;
+      case 'automatico':
+        return <Cog className="h-3 w-3" />;
+      case 'herdado':
+        return <Link2 className="h-3 w-3" />;
+    }
+  };
+
+  const getRoleBadgeVariant = (tipo: 'manual' | 'automatico' | 'herdado') => {
+    switch (tipo) {
+      case 'manual':
+        return "outline" as const;
+      case 'automatico':
+        return "secondary" as const;
+      case 'herdado':
+        return "default" as const;
+    }
+  };
+
+  const getRoleTypeLabel = (tipo: 'manual' | 'automatico' | 'herdado') => {
+    switch (tipo) {
+      case 'manual':
+        return "Atribuída manualmente por administrador";
+      case 'automatico':
+        return "Atribuída automaticamente pelo sistema";
+      case 'herdado':
+        return "Herdada de grupo ou perfil";
+    }
+  };
+
   if (showGestaoPerfis) {
     return <GestaoPerfisPerfis onBack={() => setShowGestaoPerfis(false)} />;
   }
@@ -176,19 +220,19 @@ export const Usuarios = ({ onBack }: UsuariosProps) => {
         </Card>
         <Card className="p-6 border-l-4 border-l-primary">
           <div className="text-2xl font-bold text-primary">
-            {usuarios.filter(u => u.roles.includes("admin")).length}
+            {usuarios.filter(u => u.roles.some(r => r.role === "admin")).length}
           </div>
           <div className="text-sm text-muted-foreground uppercase">Administradores</div>
         </Card>
         <Card className="p-6 border-l-4 border-l-accent">
           <div className="text-2xl font-bold text-accent">
-            {usuarios.filter(u => u.roles.includes("tecnico_sg")).length}
+            {usuarios.filter(u => u.roles.some(r => r.role === "tecnico_sg")).length}
           </div>
           <div className="text-sm text-muted-foreground uppercase">Técnicos</div>
         </Card>
         <Card className="p-6 border-l-4 border-l-secondary">
           <div className="text-2xl font-bold text-foreground">
-            {usuarios.filter(u => u.roles.includes("juiz_relator") || u.roles.includes("juiz_adjunto")).length}
+            {usuarios.filter(u => u.roles.some(r => r.role === "juiz_relator" || r.role === "juiz_adjunto")).length}
           </div>
           <div className="text-sm text-muted-foreground uppercase">Juízes</div>
         </Card>
@@ -240,12 +284,31 @@ export const Usuarios = ({ onBack }: UsuariosProps) => {
                   <TableCell>
                     <div className="flex flex-wrap gap-1">
                       {usuario.roles.length > 0 ? (
-                        usuario.roles.map((role) => (
-                          <Badge key={role} variant="outline" className="gap-1 border-accent text-accent">
-                            <Shield className="h-3 w-3" />
-                            {getRoleLabel(role)}
-                          </Badge>
-                        ))
+                        <TooltipProvider>
+                          {usuario.roles.map((roleData) => (
+                            <Tooltip key={roleData.role}>
+                              <TooltipTrigger asChild>
+                                <Badge 
+                                  variant={getRoleBadgeVariant(roleData.tipo_atribuicao)} 
+                                  className="gap-1 cursor-help"
+                                >
+                                  {getRoleIcon(roleData.tipo_atribuicao)}
+                                  {getRoleLabel(roleData.role)}
+                                </Badge>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <div className="space-y-1">
+                                  <p className="font-semibold">{getRoleTypeLabel(roleData.tipo_atribuicao)}</p>
+                                  {roleData.origem_atribuicao && (
+                                    <p className="text-xs text-muted-foreground">
+                                      Origem: {roleData.origem_atribuicao}
+                                    </p>
+                                  )}
+                                </div>
+                              </TooltipContent>
+                            </Tooltip>
+                          ))}
+                        </TooltipProvider>
                       ) : (
                         <span className="text-muted-foreground text-sm">Sem roles</span>
                       )}
