@@ -1,21 +1,29 @@
-import { ArrowLeft, Plus, Search, Filter, Users, Shield } from "lucide-react";
+import { useState } from "react";
+import { ArrowLeft, Plus, Search, Filter, Users, Shield, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { GestaoPerfisPerfis } from "./GestaoPerfisPerfis";
 
 interface UsuariosProps {
   onBack: () => void;
 }
 
 export const Usuarios = ({ onBack }: UsuariosProps) => {
+  const [showGestaoPerfis, setShowGestaoPerfis] = useState(false);
+  
   const usuarios = [
     { nome: "João Silva", email: "joao.silva@tc.gov.ao", cargo: "Auditor Sénior", perfil: "Auditor", status: "Ativo" },
     { nome: "Maria Santos", email: "maria.santos@tc.gov.ao", cargo: "Técnica Superior", perfil: "Técnico", status: "Ativo" },
     { nome: "Carlos Neto", email: "carlos.neto@tc.gov.ao", cargo: "Diretor de Departamento", perfil: "Gestor", status: "Ativo" },
   ];
+
+  if (showGestaoPerfis) {
+    return <GestaoPerfisPerfis onBack={() => setShowGestaoPerfis(false)} />;
+  }
 
   return (
     <div className="space-y-6">
@@ -32,10 +40,20 @@ export const Usuarios = ({ onBack }: UsuariosProps) => {
             <p className="text-muted-foreground">Administração de utilizadores e permissões do sistema</p>
           </div>
         </div>
-        <Button className="bg-primary hover:bg-primary-hover text-primary-foreground gap-2">
-          <Plus className="h-5 w-5" />
-          Novo Utilizador
-        </Button>
+        <div className="flex gap-2">
+          <Button 
+            variant="outline"
+            className="gap-2"
+            onClick={() => setShowGestaoPerfis(true)}
+          >
+            <Settings className="h-5 w-5" />
+            Perfis e Permissões
+          </Button>
+          <Button className="bg-primary hover:bg-primary-hover text-primary-foreground gap-2">
+            <Plus className="h-5 w-5" />
+            Novo Utilizador
+          </Button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
