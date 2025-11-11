@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
-import { ArrowLeft, Plus, Search, Filter, Users, Shield, Settings, Edit, Trash2, User, Cog, Link2 } from "lucide-react";
+import { ArrowLeft, Plus, Search, Filter, Users, Shield, Settings, Edit, Trash2, User, Cog, Link2, BarChart3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -13,6 +14,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { GestaoPerfisPerfis } from "./GestaoPerfisPerfis";
 import { CriarUtilizadorDialog } from "@/components/usuarios/CriarUtilizadorDialog";
 import { EditarUtilizadorDialog } from "@/components/usuarios/EditarUtilizadorDialog";
+import { DashboardPermissoes } from "@/components/usuarios/DashboardPermissoes";
 import type { Database } from "@/integrations/supabase/types";
 
 type AppRole = Database["public"]["Enums"]["app_role"];
@@ -213,60 +215,73 @@ export const Usuarios = ({ onBack }: UsuariosProps) => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="p-6 border-l-4 border-l-success">
-          <div className="text-2xl font-bold text-success">{usuarios.length}</div>
-          <div className="text-sm text-muted-foreground uppercase">Utilizadores Total</div>
-        </Card>
-        <Card className="p-6 border-l-4 border-l-primary">
-          <div className="text-2xl font-bold text-primary">
-            {usuarios.filter(u => u.roles.some(r => r.role === "admin")).length}
-          </div>
-          <div className="text-sm text-muted-foreground uppercase">Administradores</div>
-        </Card>
-        <Card className="p-6 border-l-4 border-l-accent">
-          <div className="text-2xl font-bold text-accent">
-            {usuarios.filter(u => u.roles.some(r => r.role === "tecnico_sg")).length}
-          </div>
-          <div className="text-sm text-muted-foreground uppercase">Técnicos</div>
-        </Card>
-        <Card className="p-6 border-l-4 border-l-secondary">
-          <div className="text-2xl font-bold text-foreground">
-            {usuarios.filter(u => u.roles.some(r => r.role === "juiz_relator" || r.role === "juiz_adjunto")).length}
-          </div>
-          <div className="text-sm text-muted-foreground uppercase">Juízes</div>
-        </Card>
-      </div>
+      <Tabs defaultValue="usuarios" className="space-y-6">
+        <TabsList className="grid w-full max-w-md grid-cols-2">
+          <TabsTrigger value="usuarios" className="gap-2">
+            <Users className="h-4 w-4" />
+            Utilizadores
+          </TabsTrigger>
+          <TabsTrigger value="estatisticas" className="gap-2">
+            <BarChart3 className="h-4 w-4" />
+            Estatísticas
+          </TabsTrigger>
+        </TabsList>
 
-      <Card className="p-6">
-        <div className="flex gap-4 mb-6">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input 
-              placeholder="Pesquisar por nome ou email..." 
-              className="pl-9"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
+        <TabsContent value="usuarios" className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <Card className="p-6 border-l-4 border-l-success">
+              <div className="text-2xl font-bold text-success">{usuarios.length}</div>
+              <div className="text-sm text-muted-foreground uppercase">Utilizadores Total</div>
+            </Card>
+            <Card className="p-6 border-l-4 border-l-primary">
+              <div className="text-2xl font-bold text-primary">
+                {usuarios.filter(u => u.roles.some(r => r.role === "admin")).length}
+              </div>
+              <div className="text-sm text-muted-foreground uppercase">Administradores</div>
+            </Card>
+            <Card className="p-6 border-l-4 border-l-accent">
+              <div className="text-2xl font-bold text-accent">
+                {usuarios.filter(u => u.roles.some(r => r.role === "tecnico_sg")).length}
+              </div>
+              <div className="text-sm text-muted-foreground uppercase">Técnicos</div>
+            </Card>
+            <Card className="p-6 border-l-4 border-l-secondary">
+              <div className="text-2xl font-bold text-foreground">
+                {usuarios.filter(u => u.roles.some(r => r.role === "juiz_relator" || r.role === "juiz_adjunto")).length}
+              </div>
+              <div className="text-sm text-muted-foreground uppercase">Juízes</div>
+            </Card>
           </div>
-        </div>
 
-{loading ? (
-          <div className="text-center py-12">
-            <p className="text-muted-foreground">A carregar utilizadores...</p>
-          </div>
-        ) : (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Utilizador</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Secção/Divisão</TableHead>
-                <TableHead>Roles</TableHead>
-                <TableHead className="text-right">Acções</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
+          <Card className="p-6">
+            <div className="flex gap-4 mb-6">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input 
+                  placeholder="Pesquisar por nome ou email..." 
+                  className="pl-9"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+            </div>
+
+            {loading ? (
+              <div className="text-center py-12">
+                <p className="text-muted-foreground">A carregar utilizadores...</p>
+              </div>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Utilizador</TableHead>
+                    <TableHead>Email</TableHead>
+                    <TableHead>Secção/Divisão</TableHead>
+                    <TableHead>Roles</TableHead>
+                    <TableHead className="text-right">Acções</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
               {filteredUsuarios.map((usuario) => (
                 <TableRow key={usuario.id}>
                   <TableCell>
@@ -348,6 +363,12 @@ export const Usuarios = ({ onBack }: UsuariosProps) => {
           </Table>
         )}
       </Card>
+    </TabsContent>
+
+        <TabsContent value="estatisticas">
+          <DashboardPermissoes />
+        </TabsContent>
+      </Tabs>
 
       <CriarUtilizadorDialog
         open={criarDialogOpen}
