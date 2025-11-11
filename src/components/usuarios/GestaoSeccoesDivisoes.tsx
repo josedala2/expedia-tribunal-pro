@@ -35,6 +35,13 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export const GestaoSeccoesDivisoes = () => {
   const [editDialogOpen, setEditDialogOpen] = useState(false);
@@ -44,6 +51,7 @@ export const GestaoSeccoesDivisoes = () => {
   const [editingValue, setEditingValue] = useState("");
   const [newValue, setNewValue] = useState("");
   const [newDescription, setNewDescription] = useState("");
+  const [divisaoPaiId, setDivisaoPaiId] = useState<string>("");
   const [deletingValue, setDeletingValue] = useState("");
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -52,10 +60,16 @@ export const GestaoSeccoesDivisoes = () => {
   const { data: seccoes, isLoading: loadingSeccoes } = useQuery({
     queryKey: ["seccoes-with-count"],
     queryFn: async () => {
-      // Fetch from organizacao_estrutura
+      // Fetch from organizacao_estrutura with divisao info
       const { data: estruturaData } = await supabase
         .from("organizacao_estrutura")
-        .select("*")
+        .select(`
+          *,
+          divisao_pai:divisao_pai_id (
+            id,
+            nome
+          )
+        `)
         .eq("tipo", "seccao");
       
       // Fetch from profiles
@@ -65,11 +79,15 @@ export const GestaoSeccoesDivisoes = () => {
       
       if (error) throw error;
       
-      const seccaoMap = new Map<string, { count: number, descricao?: string }>();
+      const seccaoMap = new Map<string, { count: number, descricao?: string, divisao_pai?: string }>();
       
       // Add from estrutura
       estruturaData?.forEach(item => {
-        seccaoMap.set(item.nome, { count: 0, descricao: item.descricao || undefined });
+        seccaoMap.set(item.nome, { 
+          count: 0, 
+          descricao: item.descricao || undefined,
+          divisao_pai: item.divisao_pai?.nome
+        });
       });
       
       // Count from profiles
@@ -85,7 +103,12 @@ export const GestaoSeccoesDivisoes = () => {
       });
       
       return Array.from(seccaoMap.entries())
-        .map(([name, data]) => ({ name, count: data.count, descricao: data.descricao }))
+        .map(([name, data]) => ({ 
+          name, 
+          count: data.count, 
+          descricao: data.descricao,
+          divisao_pai: data.divisao_pai
+        }))
         .sort((a, b) => a.name.localeCompare(b.name));
     },
   });
@@ -107,11 +130,11 @@ export const GestaoSeccoesDivisoes = () => {
       
       if (error) throw error;
       
-      const divisaoMap = new Map<string, { count: number, descricao?: string }>();
+      const divisaoMap = new Map<string, { count: number, descricao?: string, id?: string }>();
       
       // Add from estrutura
       estruturaData?.forEach(item => {
-        divisaoMap.set(item.nome, { count: 0, descricao: item.descricao || undefined });
+        divisaoMap.set(item.nome, { count: 0, descricao: item.descricao || undefined, id: item.id });
       });
       
       // Count from profiles
@@ -127,7 +150,7 @@ export const GestaoSeccoesDivisoes = () => {
       });
       
       return Array.from(divisaoMap.entries())
-        .map(([name, data]) => ({ name, count: data.count, descricao: data.descricao }))
+        .map(([name, data]) => ({ name, count: data.count, descricao: data.descricao, id: data.id }))
         .sort((a, b) => a.name.localeCompare(b.name));
     },
   });
@@ -212,18 +235,25 @@ export const GestaoSeccoesDivisoes = () => {
     setEditingType(type);
     setNewValue("");
     setNewDescription("");
+    setDivisaoPaiId("");
     setAddDialogOpen(true);
   };
 
   // Add mutation
   const addMutation = useMutation({
-    mutationFn: async ({ type, nome, descricao }: { type: "seccao" | "divisao", nome: string, descricao?: string }) => {
+    mutationFn: async ({ type, nome, descricao, divisao_pai_id }: { 
+      type: "seccao" | "divisao", 
+      nome: string, 
+      descricao?: string,
+      divisao_pai_id?: string 
+    }) => {
       const { error } = await supabase
         .from("organizacao_estrutura")
         .insert({
           tipo: type,
           nome: nome.trim(),
           descricao: descricao?.trim() || null,
+          divisao_pai_id: type === "seccao" && divisao_pai_id ? divisao_pai_id : null,
         });
       
       if (error) throw error;
@@ -239,6 +269,7 @@ export const GestaoSeccoesDivisoes = () => {
       setAddDialogOpen(false);
       setNewValue("");
       setNewDescription("");
+      setDivisaoPaiId("");
     },
     onError: (error: any) => {
       toast({
@@ -274,7 +305,12 @@ export const GestaoSeccoesDivisoes = () => {
       });
       return;
     }
-    addMutation.mutate({ type: editingType, nome: newValue, descricao: newDescription });
+    addMutation.mutate({ 
+      type: editingType, 
+      nome: newValue, 
+      descricao: newDescription,
+      divisao_pai_id: divisaoPaiId 
+    });
   };
 
   return (
@@ -319,6 +355,7 @@ export const GestaoSeccoesDivisoes = () => {
                   <TableHeader>
                     <TableRow>
                       <TableHead>Nome da Secção</TableHead>
+                      <TableHead>Divisão</TableHead>
                       <TableHead>Utilizadores</TableHead>
                       <TableHead className="text-right">Ações</TableHead>
                     </TableRow>
@@ -327,6 +364,13 @@ export const GestaoSeccoesDivisoes = () => {
                     {seccoes?.map((seccao) => (
                       <TableRow key={seccao.name}>
                         <TableCell className="font-medium">{seccao.name}</TableCell>
+                        <TableCell>
+                          {seccao.divisao_pai ? (
+                            <span className="text-sm text-muted-foreground">{seccao.divisao_pai}</span>
+                          ) : (
+                            <span className="text-sm text-muted-foreground italic">Sem divisão</span>
+                          )}
+                        </TableCell>
                         <TableCell>{seccao.count}</TableCell>
                         <TableCell className="text-right space-x-2">
                           <Button
@@ -348,7 +392,7 @@ export const GestaoSeccoesDivisoes = () => {
                     ))}
                     {!seccoes?.length && (
                       <TableRow>
-                        <TableCell colSpan={3} className="text-center text-muted-foreground">
+                        <TableCell colSpan={4} className="text-center text-muted-foreground">
                           Nenhuma secção encontrada
                         </TableCell>
                       </TableRow>
@@ -489,6 +533,24 @@ export const GestaoSeccoesDivisoes = () => {
                 placeholder="Digite uma descrição"
               />
             </div>
+            {editingType === "seccao" && (
+              <div className="space-y-2">
+                <Label>Divisão (opcional)</Label>
+                <Select value={divisaoPaiId} onValueChange={setDivisaoPaiId}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione uma divisão" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">Sem divisão</SelectItem>
+                    {divisoes?.filter(d => d.id).map((divisao) => (
+                      <SelectItem key={divisao.id} value={divisao.id!}>
+                        {divisao.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setAddDialogOpen(false)}>

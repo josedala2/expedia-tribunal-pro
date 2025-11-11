@@ -780,6 +780,7 @@ export type Database = {
           criado_em: string | null
           criado_por: string | null
           descricao: string | null
+          divisao_pai_id: string | null
           id: string
           nome: string
           tipo: string
@@ -788,6 +789,7 @@ export type Database = {
           criado_em?: string | null
           criado_por?: string | null
           descricao?: string | null
+          divisao_pai_id?: string | null
           id?: string
           nome: string
           tipo: string
@@ -796,11 +798,20 @@ export type Database = {
           criado_em?: string | null
           criado_por?: string | null
           descricao?: string | null
+          divisao_pai_id?: string | null
           id?: string
           nome?: string
           tipo?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "organizacao_estrutura_divisao_pai_id_fkey"
+            columns: ["divisao_pai_id"]
+            isOneToOne: false
+            referencedRelation: "organizacao_estrutura"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       pagamentos_pensao: {
         Row: {
