@@ -7,7 +7,7 @@ interface AdminConfigMenuProps {
   onNavigate: (view: string) => void;
 }
 
-const menuItems = [
+export const menuItems = [
   { id: "admin-settings", title: "Configurações Gerais", description: "Gerir configurações do sistema", icon: Settings },
   { id: "calendario-judicial", title: "Calendário Judicial", description: "Gerir feriados e dias não úteis", icon: Calendar },
   { id: "regras-distribuicao", title: "Regras de Distribuição", description: "Configurar distribuição de processos", icon: GitBranch },
