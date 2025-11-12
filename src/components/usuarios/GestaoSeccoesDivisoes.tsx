@@ -52,7 +52,7 @@ export const GestaoSeccoesDivisoes = () => {
   const [editingValue, setEditingValue] = useState("");
   const [newValue, setNewValue] = useState("");
   const [newDescription, setNewDescription] = useState("");
-  const [divisaoPaiId, setDivisaoPaiId] = useState<string>("");
+  const [divisaoPaiId, setDivisaoPaiId] = useState<string>("none");
   const [deletingValue, setDeletingValue] = useState("");
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -185,7 +185,7 @@ export const GestaoSeccoesDivisoes = () => {
       if (id) {
         const updateData: any = { nome: newValue };
         if (type === "seccao") {
-          updateData.divisao_pai_id = divisao_pai_id || null;
+          updateData.divisao_pai_id = divisao_pai_id === "none" ? null : divisao_pai_id || null;
         }
         
         const { error: estruturaError } = await supabase
@@ -264,7 +264,7 @@ export const GestaoSeccoesDivisoes = () => {
     setEditingId(id || "");
     setEditingValue(value);
     setNewValue(value);
-    setDivisaoPaiId(divisaoPaiIdAtual || "");
+    setDivisaoPaiId(divisaoPaiIdAtual || "none");
     setEditDialogOpen(true);
   };
 
@@ -278,7 +278,7 @@ export const GestaoSeccoesDivisoes = () => {
     setEditingType(type);
     setNewValue("");
     setNewDescription("");
-    setDivisaoPaiId("");
+    setDivisaoPaiId("none");
     setAddDialogOpen(true);
   };
 
@@ -337,7 +337,7 @@ export const GestaoSeccoesDivisoes = () => {
       id: editingId,
       oldValue: editingValue, 
       newValue: newValue.trim(),
-      divisao_pai_id: divisaoPaiId 
+      divisao_pai_id: divisaoPaiId === "none" ? undefined : divisaoPaiId 
     });
   };
 
@@ -358,7 +358,7 @@ export const GestaoSeccoesDivisoes = () => {
       type: editingType, 
       nome: newValue, 
       descricao: newDescription,
-      divisao_pai_id: divisaoPaiId 
+      divisao_pai_id: divisaoPaiId === "none" ? undefined : divisaoPaiId 
     });
   };
 
@@ -551,7 +551,7 @@ export const GestaoSeccoesDivisoes = () => {
                     <SelectValue placeholder="Selecione uma divisão" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Sem divisão</SelectItem>
+                    <SelectItem value="none">Sem divisão</SelectItem>
                     {divisoes?.filter(d => d.id).map((divisao) => (
                       <SelectItem key={divisao.id} value={divisao.id!}>
                         {divisao.name}
@@ -608,7 +608,7 @@ export const GestaoSeccoesDivisoes = () => {
                     <SelectValue placeholder="Selecione uma divisão" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Sem divisão</SelectItem>
+                    <SelectItem value="none">Sem divisão</SelectItem>
                     {divisoes?.filter(d => d.id).map((divisao) => (
                       <SelectItem key={divisao.id} value={divisao.id!}>
                         {divisao.name}
