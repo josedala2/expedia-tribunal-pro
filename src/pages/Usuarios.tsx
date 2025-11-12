@@ -16,6 +16,7 @@ import { CriarUtilizadorDialog } from "@/components/usuarios/CriarUtilizadorDial
 import { EditarUtilizadorDialog } from "@/components/usuarios/EditarUtilizadorDialog";
 import { DashboardPermissoes } from "@/components/usuarios/DashboardPermissoes";
 import { GestaoSeccoesDivisoes } from "@/components/usuarios/GestaoSeccoesDivisoes";
+import { TransferenciaMassaUtilizadores } from "@/components/usuarios/TransferenciaMassaUtilizadores";
 import type { Database } from "@/integrations/supabase/types";
 
 type AppRole = Database["public"]["Enums"]["app_role"];
@@ -217,10 +218,14 @@ export const Usuarios = ({ onBack }: UsuariosProps) => {
       </div>
 
       <Tabs defaultValue="usuarios" className="space-y-6">
-        <TabsList className="grid w-full max-w-2xl grid-cols-3">
+        <TabsList className="grid w-full max-w-3xl grid-cols-4">
           <TabsTrigger value="usuarios" className="gap-2">
             <Users className="h-4 w-4" />
             Utilizadores
+          </TabsTrigger>
+          <TabsTrigger value="transferencia" className="gap-2">
+            <Users className="h-4 w-4" />
+            Transferência em Massa
           </TabsTrigger>
           <TabsTrigger value="estatisticas" className="gap-2">
             <BarChart3 className="h-4 w-4" />
@@ -372,6 +377,10 @@ export const Usuarios = ({ onBack }: UsuariosProps) => {
 
         <TabsContent value="estatisticas">
           <DashboardPermissoes />
+        </TabsContent>
+
+        <TabsContent value="transferencia">
+          <TransferenciaMassaUtilizadores />
         </TabsContent>
 
         <TabsContent value="organizacao">
