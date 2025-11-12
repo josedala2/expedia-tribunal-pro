@@ -1328,34 +1328,34 @@ export type Database = {
       }
       profiles: {
         Row: {
-          created_at: string | null
+          atualizado_em: string | null
+          criado_em: string | null
           divisao: string | null
           email: string
           id: string
           nome_completo: string
           seccao: string | null
           telefone: string | null
-          updated_at: string | null
         }
         Insert: {
-          created_at?: string | null
+          atualizado_em?: string | null
+          criado_em?: string | null
           divisao?: string | null
           email: string
           id: string
           nome_completo: string
           seccao?: string | null
           telefone?: string | null
-          updated_at?: string | null
         }
         Update: {
-          created_at?: string | null
+          atualizado_em?: string | null
+          criado_em?: string | null
           divisao?: string | null
           email?: string
           id?: string
           nome_completo?: string
           seccao?: string | null
           telefone?: string | null
-          updated_at?: string | null
         }
         Relationships: []
       }

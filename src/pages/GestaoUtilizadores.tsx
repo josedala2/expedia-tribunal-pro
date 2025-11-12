@@ -53,7 +53,7 @@ interface UserProfile {
   telefone: string | null;
   seccao: string | null;
   divisao: string | null;
-  created_at: string;
+  criado_em: string;
   roles: RoleWithType[];
 }
 
