@@ -69,12 +69,31 @@ export const useAuthAudit = () => {
         .eq("user_id", userId)
         .eq("activa", true);
 
-      // Criar nova sessão
-      await supabase.from("sessoes_activas").insert({
-        user_id: userId,
-        session_id: sessionId,
-        user_agent: browserInfo.userAgent,
-      });
+      // Verificar se já existe uma sessão com este session_id
+      const { data: existingSession } = await supabase
+        .from("sessoes_activas")
+        .select("id")
+        .eq("session_id", sessionId)
+        .maybeSingle();
+
+      if (existingSession) {
+        // Atualizar sessão existente
+        await supabase
+          .from("sessoes_activas")
+          .update({
+            activa: true,
+            ultima_actividade: new Date().toISOString(),
+            user_agent: browserInfo.userAgent,
+          })
+          .eq("session_id", sessionId);
+      } else {
+        // Criar nova sessão
+        await supabase.from("sessoes_activas").insert({
+          user_id: userId,
+          session_id: sessionId,
+          user_agent: browserInfo.userAgent,
+        });
+      }
     } catch (error) {
       console.error("Erro ao registar sessão activa:", error);
     }

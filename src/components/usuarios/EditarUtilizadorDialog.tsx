@@ -420,10 +420,9 @@ export const EditarUtilizadorDialog = ({ open, onOpenChange, onSuccess, userId }
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-full p-0">
-                    <Command>
+                    <Command shouldFilter={false}>
                       <CommandInput 
                         placeholder="Pesquisar ou criar secção..." 
-                        value={formData.seccao}
                         onValueChange={(value) => setFormData({ ...formData, seccao: value })}
                       />
                       <CommandEmpty>
@@ -470,10 +469,9 @@ export const EditarUtilizadorDialog = ({ open, onOpenChange, onSuccess, userId }
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-full p-0">
-                    <Command>
+                    <Command shouldFilter={false}>
                       <CommandInput 
                         placeholder="Pesquisar ou criar divisão..." 
-                        value={formData.divisao}
                         onValueChange={(value) => setFormData({ ...formData, divisao: value })}
                       />
                       <CommandEmpty>

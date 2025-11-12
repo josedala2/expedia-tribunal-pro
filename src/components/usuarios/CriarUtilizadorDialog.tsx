@@ -190,10 +190,9 @@ export const CriarUtilizadorDialog = ({ open, onOpenChange, onSuccess }: CriarUt
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-full p-0">
-                  <Command>
+                  <Command shouldFilter={false}>
                     <CommandInput 
                       placeholder="Pesquisar ou criar nova..." 
-                      value={formData.seccao}
                       onValueChange={(value) => setFormData({ ...formData, seccao: value })}
                     />
                     <CommandList>
@@ -242,10 +241,9 @@ export const CriarUtilizadorDialog = ({ open, onOpenChange, onSuccess }: CriarUt
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-full p-0">
-                  <Command>
+                  <Command shouldFilter={false}>
                     <CommandInput 
                       placeholder="Pesquisar ou criar nova..." 
-                      value={formData.divisao}
                       onValueChange={(value) => setFormData({ ...formData, divisao: value })}
                     />
                     <CommandList>
