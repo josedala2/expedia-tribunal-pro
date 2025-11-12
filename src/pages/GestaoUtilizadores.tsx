@@ -4,6 +4,7 @@ import type { Database } from "@/integrations/supabase/types";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Table,
   TableBody,
@@ -21,7 +22,7 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { Shield, Search, UserPlus, Trash2 } from "lucide-react";
+import { Shield, Search, UserPlus, Trash2, Building2, Users } from "lucide-react";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import {
   AlertDialog,
@@ -33,8 +34,17 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { GestaoSeccoesDivisoes } from "@/components/usuarios/GestaoSeccoesDivisoes";
+import { EditarUtilizadorDialog } from "@/components/usuarios/EditarUtilizadorDialog";
+import { CriarUtilizadorDialog } from "@/components/usuarios/CriarUtilizadorDialog";
 
 type AppRole = Database["public"]["Enums"]["app_role"];
+
+interface RoleWithType {
+  role: AppRole;
+  tipo_atribuicao: 'manual' | 'automatico' | 'herdado';
+  origem_atribuicao: string | null;
+}
 
 interface UserProfile {
   id: string;
@@ -44,7 +54,7 @@ interface UserProfile {
   seccao: string | null;
   divisao: string | null;
   created_at: string;
-  roles: AppRole[];
+  roles: RoleWithType[];
 }
 
 export const GestaoUtilizadores = () => {
@@ -52,13 +62,13 @@ export const GestaoUtilizadores = () => {
   const [filteredUsers, setFilteredUsers] = useState<UserProfile[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
-  const [selectedUser, setSelectedUser] = useState<string | null>(null);
-  const [selectedRole, setSelectedRole] = useState<AppRole | "">("");
-  const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; userId: string; role: AppRole }>({
+  const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; userId: string }>({
     open: false,
     userId: "",
-    role: "admin",
   });
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [createDialogOpen, setCreateDialogOpen] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const { toast } = useToast();
 
   const fetchUsers = async () => {
@@ -73,10 +83,10 @@ export const GestaoUtilizadores = () => {
 
       if (profilesError) throw profilesError;
 
-      // Buscar roles de cada usuário
+      // Buscar roles de cada usuário com tipo de atribuição
       const { data: rolesData, error: rolesError } = await supabase
         .from("user_roles")
-        .select("user_id, role");
+        .select("user_id, role, tipo_atribuicao, origem_atribuicao");
 
       if (rolesError) throw rolesError;
 
@@ -85,7 +95,11 @@ export const GestaoUtilizadores = () => {
         ...profile,
         roles: rolesData
           ?.filter((r) => r.user_id === profile.id)
-          .map((r) => r.role) || [],
+          .map((r) => ({
+            role: r.role,
+            tipo_atribuicao: (r.tipo_atribuicao || 'manual') as 'manual' | 'automatico' | 'herdado',
+            origem_atribuicao: r.origem_atribuicao,
+          })) || [],
       }));
 
       setUsers(usersWithRoles);
@@ -114,66 +128,41 @@ export const GestaoUtilizadores = () => {
     setFilteredUsers(filtered);
   }, [searchTerm, users]);
 
-  const addRole = async (userId: string, role: AppRole) => {
+  const handleDelete = async (userId: string) => {
     try {
-      const { error } = await supabase
-        .from("user_roles")
-        .insert({ user_id: userId, role });
+      const { error } = await supabase.auth.admin.deleteUser(userId);
 
       if (error) throw error;
 
       toast({
-        title: "Role adicionada",
-        description: "A role foi atribuída com sucesso.",
+        title: "Utilizador eliminado",
+        description: "O utilizador foi eliminado com sucesso.",
       });
 
       await fetchUsers();
-      setSelectedUser(null);
-      setSelectedRole("");
+      setDeleteDialog({ open: false, userId: "" });
     } catch (error: any) {
       toast({
-        title: "Erro ao adicionar role",
+        title: "Erro ao eliminar utilizador",
         description: error.message,
         variant: "destructive",
       });
     }
   };
 
-  const removeRole = async (userId: string, role: AppRole) => {
-    try {
-      const { error } = await supabase
-        .from("user_roles")
-        .delete()
-        .eq("user_id", userId)
-        .eq("role", role);
-
-      if (error) throw error;
-
-      toast({
-        title: "Role removida",
-        description: "A role foi removida com sucesso.",
-      });
-
-      await fetchUsers();
-      setDeleteDialog({ open: false, userId: "", role: "admin" });
-    } catch (error: any) {
-      toast({
-        title: "Erro ao remover role",
-        description: error.message,
-        variant: "destructive",
-      });
-    }
+  const handleEdit = (userId: string) => {
+    setSelectedUserId(userId);
+    setEditDialogOpen(true);
   };
 
-  const getRoleBadgeVariant = (role: AppRole) => {
-    switch (role) {
-      case "admin":
-        return "destructive";
-      case "juiz_relator":
-      case "presidente_camara":
+  const getRoleBadgeVariant = (tipo: 'manual' | 'automatico' | 'herdado') => {
+    switch (tipo) {
+      case 'manual':
         return "default";
-      default:
+      case 'automatico':
         return "secondary";
+      case 'herdado':
+        return "outline";
     }
   };
 
@@ -197,187 +186,171 @@ export const GestaoUtilizadores = () => {
       <div className="container mx-auto p-6 space-y-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Shield className="h-8 w-8 text-primary" />
+            <Users className="h-8 w-8 text-primary" />
             <div>
               <h1 className="text-3xl font-bold text-foreground">
                 Gestão de Utilizadores
               </h1>
               <p className="text-muted-foreground">
-                Gerir roles e permissões dos utilizadores
+                Gerir utilizadores, roles e organização
               </p>
             </div>
           </div>
+          <Button onClick={() => setCreateDialogOpen(true)} className="gap-2">
+            <UserPlus className="h-4 w-4" />
+            Novo Utilizador
+          </Button>
         </div>
 
-        <Card className="p-6">
-          <div className="flex items-center gap-4 mb-6">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Pesquisar por nome ou email..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-          </div>
+        <Tabs defaultValue="utilizadores" className="space-y-6">
+          <TabsList>
+            <TabsTrigger value="utilizadores" className="gap-2">
+              <Users className="h-4 w-4" />
+              Utilizadores
+            </TabsTrigger>
+            <TabsTrigger value="organizacao" className="gap-2">
+              <Building2 className="h-4 w-4" />
+              Organização
+            </TabsTrigger>
+          </TabsList>
 
-          {loading ? (
-            <div className="text-center py-12">
-              <p className="text-muted-foreground">A carregar utilizadores...</p>
-            </div>
-          ) : (
-            <div className="border rounded-lg">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Nome</TableHead>
-                    <TableHead>Email</TableHead>
-                    <TableHead>Secção/Divisão</TableHead>
-                    <TableHead>Roles</TableHead>
-                    <TableHead className="text-right">Ações</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredUsers.map((user) => (
-                    <TableRow key={user.id}>
-                      <TableCell className="font-medium">
-                        {user.nome_completo}
-                      </TableCell>
-                      <TableCell>{user.email}</TableCell>
-                      <TableCell>
-                        {user.seccao || user.divisao || "-"}
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex flex-wrap gap-2">
-                          {user.roles.length > 0 ? (
-                            user.roles.map((role) => (
-                              <Badge
-                                key={role}
-                                variant={getRoleBadgeVariant(role)}
-                                className="flex items-center gap-1"
-                              >
-                                {getRoleLabel(role)}
-                                <button
-                                  onClick={() =>
-                                    setDeleteDialog({
-                                      open: true,
-                                      userId: user.id,
-                                      role,
-                                    })
-                                  }
-                                  className="ml-1 hover:bg-background/20 rounded-full p-0.5"
-                                >
-                                  <Trash2 className="h-3 w-3" />
-                                </button>
-                              </Badge>
-                            ))
-                          ) : (
-                            <span className="text-muted-foreground text-sm">
-                              Sem roles
-                            </span>
-                          )}
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        {selectedUser === user.id ? (
-                          <div className="flex items-center justify-end gap-2">
-                            <Select
-                              value={selectedRole}
-                              onValueChange={(value) => setSelectedRole(value as AppRole)}
-                            >
-                              <SelectTrigger className="w-40">
-                                <SelectValue placeholder="Selecionar role" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="admin">
-                                  Administrador
-                                </SelectItem>
-                                <SelectItem value="tecnico_sg">
-                                  Técnico SG
-                                </SelectItem>
-                                <SelectItem value="chefe_cg">
-                                  Chefe CG
-                                </SelectItem>
-                                <SelectItem value="juiz_relator">
-                                  Juiz Relator
-                                </SelectItem>
-                                <SelectItem value="juiz_adjunto">
-                                  Juiz Adjunto
-                                </SelectItem>
-                                <SelectItem value="presidente_camara">
-                                  Presidente Câmara
-                                </SelectItem>
-                                <SelectItem value="dst">DST</SelectItem>
-                                <SelectItem value="secretaria">
-                                  Secretaria
-                                </SelectItem>
-                                <SelectItem value="ministerio_publico">
-                                  Ministério Público
-                                </SelectItem>
-                              </SelectContent>
-                            </Select>
+          <TabsContent value="utilizadores">
+            <Card className="p-6">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Pesquisar por nome ou email..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+              </div>
+
+              {loading ? (
+                <div className="text-center py-12">
+                  <p className="text-muted-foreground">A carregar utilizadores...</p>
+                </div>
+              ) : (
+                <div className="border rounded-lg">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Nome</TableHead>
+                        <TableHead>Email</TableHead>
+                        <TableHead>Secção/Divisão</TableHead>
+                        <TableHead>Roles</TableHead>
+                        <TableHead className="text-right">Ações</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {filteredUsers.map((user) => (
+                        <TableRow key={user.id}>
+                          <TableCell className="font-medium">
+                            {user.nome_completo}
+                          </TableCell>
+                          <TableCell>{user.email}</TableCell>
+                          <TableCell>
+                            <div className="flex flex-col gap-1">
+                              {user.seccao && (
+                                <span className="text-sm">Secção: {user.seccao}</span>
+                              )}
+                              {user.divisao && (
+                                <span className="text-sm text-muted-foreground">
+                                  Divisão: {user.divisao}
+                                </span>
+                              )}
+                              {!user.seccao && !user.divisao && "-"}
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex flex-wrap gap-2">
+                              {user.roles.length > 0 ? (
+                                user.roles.map((roleData) => (
+                                  <Badge
+                                    key={roleData.role}
+                                    variant={getRoleBadgeVariant(roleData.tipo_atribuicao)}
+                                  >
+                                    {getRoleLabel(roleData.role)}
+                                  </Badge>
+                                ))
+                              ) : (
+                                <span className="text-muted-foreground text-sm">
+                                  Sem roles
+                                </span>
+                              )}
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-right space-x-2">
                             <Button
                               size="sm"
-                              onClick={() => selectedRole && addRole(user.id, selectedRole as AppRole)}
-                              disabled={!selectedRole}
+                              variant="outline"
+                              onClick={() => handleEdit(user.id)}
                             >
-                              Adicionar
+                              Editar
                             </Button>
                             <Button
                               size="sm"
-                              variant="ghost"
-                              onClick={() => {
-                                setSelectedUser(null);
-                                setSelectedRole("");
-                              }}
+                              variant="destructive"
+                              onClick={() =>
+                                setDeleteDialog({
+                                  open: true,
+                                  userId: user.id,
+                                })
+                              }
                             >
-                              Cancelar
+                              <Trash2 className="h-4 w-4" />
                             </Button>
-                          </div>
-                        ) : (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => setSelectedUser(user.id)}
-                          >
-                            <UserPlus className="h-4 w-4 mr-2" />
-                            Adicionar Role
-                          </Button>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          )}
-        </Card>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              )}
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="organizacao">
+            <GestaoSeccoesDivisoes />
+          </TabsContent>
+        </Tabs>
+
+        <EditarUtilizadorDialog
+          open={editDialogOpen}
+          onOpenChange={setEditDialogOpen}
+          onSuccess={fetchUsers}
+          userId={selectedUserId}
+        />
+
+        <CriarUtilizadorDialog
+          open={createDialogOpen}
+          onOpenChange={setCreateDialogOpen}
+          onSuccess={fetchUsers}
+        />
 
         <AlertDialog
           open={deleteDialog.open}
           onOpenChange={(open) =>
-            !open && setDeleteDialog({ open: false, userId: "", role: "admin" })
+            !open && setDeleteDialog({ open: false, userId: "" })
           }
         >
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Remover Role</AlertDialogTitle>
+              <AlertDialogTitle>Eliminar Utilizador</AlertDialogTitle>
               <AlertDialogDescription>
-                Tem certeza que deseja remover a role "
-                {getRoleLabel(deleteDialog.role)}" deste utilizador? Esta ação
-                não pode ser desfeita.
+                Tem certeza que deseja eliminar este utilizador? Esta ação
+                não pode ser desfeita e irá remover todos os dados associados.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel>Cancelar</AlertDialogCancel>
               <AlertDialogAction
-                onClick={() =>
-                  removeRole(deleteDialog.userId, deleteDialog.role)
-                }
+                onClick={() => handleDelete(deleteDialog.userId)}
                 className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               >
-                Remover
+                Eliminar
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
