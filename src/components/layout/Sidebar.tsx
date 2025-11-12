@@ -1,4 +1,4 @@
-import { LayoutDashboard, FileText, FolderCheck, Eye, FileBarChart, DollarSign, Users, Inbox, ChevronDown, ChevronRight, CheckCircle } from "lucide-react";
+import { LayoutDashboard, FileText, FolderCheck, Eye, FileBarChart, DollarSign, Users, Inbox, ChevronDown, ChevronRight, CheckCircle, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -181,11 +181,35 @@ const menuGroups = [
       },
     ]
   },
+  {
+    id: "admin-config-group",
+    title: "Administração & Configurações",
+    items: [
+      { 
+        id: "admin-config", 
+        label: "Administração & Configurações", 
+        icon: Settings,
+        submenu: [
+          { id: "admin-settings", label: "Configurações Gerais" },
+          { id: "calendario-judicial", label: "Calendário Judicial" },
+          { id: "regras-distribuicao", label: "Regras de Distribuição" },
+          { id: "mapa-letra-juiz", label: "Mapa Letra de Juiz" },
+          { id: "sla-regras", label: "Regras de SLA" },
+          { id: "emolumentos-tabela", label: "Tabela de Emolumentos" },
+          { id: "doc-templates", label: "Templates de Documentos" },
+          { id: "notificacao-templates", label: "Templates de Notificação" },
+          { id: "retencao-regras", label: "Regras de Retenção" },
+          { id: "integration-config", label: "Configurações de Integração" },
+          { id: "feature-flags", label: "Feature Flags" },
+        ]
+      },
+    ]
+  },
 ];
 
 export const Sidebar = ({ isOpen, currentView, onNavigate }: SidebarProps) => {
-  const [expandedGroups, setExpandedGroups] = useState<string[]>(["dashboard-group", "portal-intranet-group", "expedientes-group", "prestacao-contas-group", "visto-group", "fiscalizacao-group", "multas-group"]);
-  const [expandedMenus, setExpandedMenus] = useState<string[]>(["portal-intranet", "gestao-rh", "prestacao-contas", "visto", "fiscalizacao", "recurso-ordinario", "recurso-inconstitucionalidade"]);
+  const [expandedGroups, setExpandedGroups] = useState<string[]>(["dashboard-group", "portal-intranet-group", "expedientes-group", "prestacao-contas-group", "visto-group", "fiscalizacao-group", "multas-group", "admin-config-group"]);
+  const [expandedMenus, setExpandedMenus] = useState<string[]>(["portal-intranet", "gestao-rh", "prestacao-contas", "visto", "fiscalizacao", "recurso-ordinario", "recurso-inconstitucionalidade", "admin-config"]);
 
   const toggleGroup = (groupId: string) => {
     setExpandedGroups(prev => 

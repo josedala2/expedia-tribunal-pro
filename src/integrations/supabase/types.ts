@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_settings: {
+        Row: {
+          atualizado_em: string
+          criado_em: string
+          id: string
+          locale: string
+          modo_manutencao: boolean
+          timezone: string
+        }
+        Insert: {
+          atualizado_em?: string
+          criado_em?: string
+          id?: string
+          locale?: string
+          modo_manutencao?: boolean
+          timezone?: string
+        }
+        Update: {
+          atualizado_em?: string
+          criado_em?: string
+          id?: string
+          locale?: string
+          modo_manutencao?: boolean
+          timezone?: string
+        }
+        Relationships: []
+      }
       areas_funcionais: {
         Row: {
           actualizado_em: string
@@ -80,6 +107,33 @@ export type Database = {
         }
         Relationships: []
       }
+      calendario_judicial: {
+        Row: {
+          considera_para_slas: boolean
+          criado_em: string
+          criado_por: string | null
+          descricao: string
+          feriado: string
+          id: string
+        }
+        Insert: {
+          considera_para_slas?: boolean
+          criado_em?: string
+          criado_por?: string | null
+          descricao: string
+          feriado: string
+          id?: string
+        }
+        Update: {
+          considera_para_slas?: boolean
+          criado_em?: string
+          criado_por?: string | null
+          descricao?: string
+          feriado?: string
+          id?: string
+        }
+        Relationships: []
+      }
       dependentes_funcionario: {
         Row: {
           bi: string | null
@@ -117,6 +171,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      doc_templates: {
+        Row: {
+          ativo: boolean
+          atualizado_em: string
+          criado_em: string
+          formato: string
+          id: string
+          nome: string
+          placeholders: string[] | null
+          tipo: string
+          versao: string
+        }
+        Insert: {
+          ativo?: boolean
+          atualizado_em?: string
+          criado_em?: string
+          formato: string
+          id?: string
+          nome: string
+          placeholders?: string[] | null
+          tipo: string
+          versao: string
+        }
+        Update: {
+          ativo?: boolean
+          atualizado_em?: string
+          criado_em?: string
+          formato?: string
+          id?: string
+          nome?: string
+          placeholders?: string[] | null
+          tipo?: string
+          versao?: string
+        }
+        Relationships: []
       }
       documentos_oficiais: {
         Row: {
@@ -212,6 +302,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      emolumentos_tabela: {
+        Row: {
+          atualizado_em: string
+          criado_em: string
+          formula: string
+          id: string
+          maximo_pct: number | null
+          minimo: number
+          tipo_processo: string
+        }
+        Insert: {
+          atualizado_em?: string
+          criado_em?: string
+          formula: string
+          id?: string
+          maximo_pct?: number | null
+          minimo: number
+          tipo_processo: string
+        }
+        Update: {
+          atualizado_em?: string
+          criado_em?: string
+          formula?: string
+          id?: string
+          maximo_pct?: number | null
+          minimo?: number
+          tipo_processo?: string
+        }
+        Relationships: []
       }
       expedientes: {
         Row: {
@@ -321,6 +441,33 @@ export type Database = {
           status?: string | null
           telefone_externo?: string | null
           tipo?: string
+        }
+        Relationships: []
+      }
+      feature_flags: {
+        Row: {
+          ativo: boolean
+          atualizado_em: string
+          chave: string
+          criado_em: string
+          descricao: string
+          id: string
+        }
+        Insert: {
+          ativo?: boolean
+          atualizado_em?: string
+          chave: string
+          criado_em?: string
+          descricao: string
+          id?: string
+        }
+        Update: {
+          ativo?: boolean
+          atualizado_em?: string
+          chave?: string
+          criado_em?: string
+          descricao?: string
+          id?: string
         }
         Relationships: []
       }
@@ -534,6 +681,36 @@ export type Database = {
           },
         ]
       }
+      integration_config: {
+        Row: {
+          ativo: boolean
+          atualizado_em: string
+          config: Json
+          criado_em: string
+          id: string
+          nome: string
+          tipo: string
+        }
+        Insert: {
+          ativo?: boolean
+          atualizado_em?: string
+          config: Json
+          criado_em?: string
+          id?: string
+          nome: string
+          tipo: string
+        }
+        Update: {
+          ativo?: boolean
+          atualizado_em?: string
+          config?: Json
+          criado_em?: string
+          id?: string
+          nome?: string
+          tipo?: string
+        }
+        Relationships: []
+      }
       logs_auditoria: {
         Row: {
           acao: string
@@ -572,6 +749,51 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: []
+      }
+      mapa_letra_juiz: {
+        Row: {
+          atualizado_em: string
+          criado_em: string
+          id: string
+          juiz_adjunto_perfil_id: string | null
+          juiz_relator_perfil_id: string | null
+          letra: string
+          vigencia: Json | null
+        }
+        Insert: {
+          atualizado_em?: string
+          criado_em?: string
+          id?: string
+          juiz_adjunto_perfil_id?: string | null
+          juiz_relator_perfil_id?: string | null
+          letra: string
+          vigencia?: Json | null
+        }
+        Update: {
+          atualizado_em?: string
+          criado_em?: string
+          id?: string
+          juiz_adjunto_perfil_id?: string | null
+          juiz_relator_perfil_id?: string | null
+          letra?: string
+          vigencia?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mapa_letra_juiz_juiz_adjunto_perfil_id_fkey"
+            columns: ["juiz_adjunto_perfil_id"]
+            isOneToOne: false
+            referencedRelation: "perfis_utilizador"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mapa_letra_juiz_juiz_relator_perfil_id_fkey"
+            columns: ["juiz_relator_perfil_id"]
+            isOneToOne: false
+            referencedRelation: "perfis_utilizador"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       movimentacoes_funcionarios: {
         Row: {
@@ -677,6 +899,36 @@ export type Database = {
           status?: string
           tipo?: string
           titulo?: string
+        }
+        Relationships: []
+      }
+      notificacao_templates: {
+        Row: {
+          assunto: string | null
+          atualizado_em: string
+          canal: string
+          corpo: string
+          criado_em: string
+          evento: string
+          id: string
+        }
+        Insert: {
+          assunto?: string | null
+          atualizado_em?: string
+          canal: string
+          corpo: string
+          criado_em?: string
+          evento: string
+          id?: string
+        }
+        Update: {
+          assunto?: string | null
+          atualizado_em?: string
+          canal?: string
+          corpo?: string
+          criado_em?: string
+          evento?: string
+          id?: string
         }
         Relationships: []
       }
@@ -1213,6 +1465,36 @@ export type Database = {
           },
         ]
       }
+      regras_distribuicao: {
+        Row: {
+          ativo: boolean
+          atualizado_em: string
+          criado_em: string
+          criterio: string
+          id: string
+          parametros: Json | null
+          tipo_processo: string
+        }
+        Insert: {
+          ativo?: boolean
+          atualizado_em?: string
+          criado_em?: string
+          criterio: string
+          id?: string
+          parametros?: Json | null
+          tipo_processo: string
+        }
+        Update: {
+          ativo?: boolean
+          atualizado_em?: string
+          criado_em?: string
+          criterio?: string
+          id?: string
+          parametros?: Json | null
+          tipo_processo?: string
+        }
+        Relationships: []
+      }
       remuneracoes: {
         Row: {
           ano: number
@@ -1290,6 +1572,33 @@ export type Database = {
           },
         ]
       }
+      retencao_regras: {
+        Row: {
+          anos_retencao: number
+          atualizado_em: string
+          criado_em: string
+          id: string
+          politica: string
+          tipo_processo: string
+        }
+        Insert: {
+          anos_retencao: number
+          atualizado_em?: string
+          criado_em?: string
+          id?: string
+          politica: string
+          tipo_processo: string
+        }
+        Update: {
+          anos_retencao?: number
+          atualizado_em?: string
+          criado_em?: string
+          id?: string
+          politica?: string
+          tipo_processo?: string
+        }
+        Relationships: []
+      }
       saldo_ferias: {
         Row: {
           ano: number
@@ -1364,6 +1673,36 @@ export type Database = {
           ultima_actividade?: string
           user_agent?: string | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      sla_regras: {
+        Row: {
+          atualizado_em: string
+          criado_em: string
+          id: string
+          prazo_dias: number
+          suspende_por_solicitacao: boolean
+          tipo_processo: string
+          urgencia: string
+        }
+        Insert: {
+          atualizado_em?: string
+          criado_em?: string
+          id?: string
+          prazo_dias: number
+          suspende_por_solicitacao?: boolean
+          tipo_processo: string
+          urgencia: string
+        }
+        Update: {
+          atualizado_em?: string
+          criado_em?: string
+          id?: string
+          prazo_dias?: number
+          suspende_por_solicitacao?: boolean
+          tipo_processo?: string
+          urgencia?: string
         }
         Relationships: []
       }
