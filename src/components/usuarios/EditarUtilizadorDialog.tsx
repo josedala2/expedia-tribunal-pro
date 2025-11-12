@@ -9,7 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Shield, Plus, X, User, Cog, Link2, Check, ChevronsUpDown } from "lucide-react";
+import { Loader2, Shield, Plus, X, User, Cog, Link2, Check, ChevronsUpDown, KeyRound } from "lucide-react";
 import type { Database } from "@/integrations/supabase/types";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
@@ -45,6 +45,9 @@ export const EditarUtilizadorDialog = ({ open, onOpenChange, onSuccess, userId }
   const [addingRole, setAddingRole] = useState(false);
   const [openSeccao, setOpenSeccao] = useState(false);
   const [openDivisao, setOpenDivisao] = useState(false);
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [updatingPassword, setUpdatingPassword] = useState(false);
   const { toast } = useToast();
 
   const { data: profiles } = useQuery({
@@ -265,6 +268,66 @@ export const EditarUtilizadorDialog = ({ open, onOpenChange, onSuccess, userId }
         description: error.message,
         variant: "destructive",
       });
+    }
+  };
+
+  const handleUpdatePassword = async () => {
+    if (!userId) return;
+
+    if (!newPassword || !confirmPassword) {
+      toast({
+        title: "Erro",
+        description: "Por favor, preencha ambos os campos de senha.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      toast({
+        title: "Erro",
+        description: "As senhas não coincidem.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      toast({
+        title: "Erro",
+        description: "A senha deve ter pelo menos 6 caracteres.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setUpdatingPassword(true);
+
+    try {
+      const { error } = await supabase.functions.invoke("update-user-password", {
+        body: {
+          userId,
+          newPassword,
+        },
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Senha atualizada",
+        description: "A senha foi alterada com sucesso.",
+      });
+
+      setNewPassword("");
+      setConfirmPassword("");
+    } catch (error: any) {
+      toast({
+        title: "Erro ao atualizar senha",
+        description: error.message || "Ocorreu um erro ao atualizar a senha.",
+        variant: "destructive",
+      });
+    } finally {
+      setUpdatingPassword(false);
     }
   };
 
@@ -552,6 +615,52 @@ export const EditarUtilizadorDialog = ({ open, onOpenChange, onSuccess, userId }
                 </div>
               </div>
             )}
+          </div>
+
+          <Separator />
+
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
+                <KeyRound className="h-4 w-4 text-primary" />
+                Gestão de Senha
+              </h3>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="new_password">Nova Senha</Label>
+                <Input
+                  id="new_password"
+                  type="password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  placeholder="Mínimo 6 caracteres"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="confirm_password">Confirmar Senha</Label>
+                <Input
+                  id="confirm_password"
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="Repita a senha"
+                />
+              </div>
+            </div>
+
+            <Button
+              type="button"
+              onClick={handleUpdatePassword}
+              disabled={updatingPassword || !newPassword || !confirmPassword}
+              variant="secondary"
+              className="w-full"
+            >
+              {updatingPassword && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              <KeyRound className="mr-2 h-4 w-4" />
+              Alterar Senha
+            </Button>
           </div>
 
           <DialogFooter>
