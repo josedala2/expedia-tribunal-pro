@@ -24,6 +24,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { useProcessosVisto } from "@/hooks/useProcessosVisto";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface ProcessosVistoProps {
   onBack: () => void;
@@ -31,24 +33,27 @@ interface ProcessosVistoProps {
 }
 
 export const ProcessosVisto = ({ onBack, onNavigate }: ProcessosVistoProps) => {
-  const handleView = (numero: string) => {
-    toast.info(`A visualizar processo ${numero}`);
-    onNavigate?.("detalhe-visto");
+  const { processos, isLoading, updateProcesso, deleteProcesso } = useProcessosVisto();
+
+  const handleView = (id: string) => {
+    const processo = processos.find(p => p.id === id);
+    if (processo) {
+      toast.info(`A visualizar processo ${processo.numero}`);
+      onNavigate?.("detalhe-visto");
+    }
   };
 
-  const handleChangeStatus = (numero: string, newStatus: string) => {
-    toast.success(`Estado do processo ${numero} alterado para: ${newStatus}`);
+  const handleChangeStatus = (id: string, newStatus: string) => {
+    updateProcesso.mutate({ id, status: newStatus });
   };
 
-  const handleDelete = (numero: string) => {
-    toast.success(`Processo ${numero} eliminado com sucesso!`);
+  const handleDelete = (id: string) => {
+    deleteProcesso.mutate(id);
   };
 
-  const processos = [
-    { numero: "PV/2024/001", tipo: "Visto Prévio", entidade: "Ministério das Finanças", valor: "150.000.000 Kz", status: "Aguardando Análise" },
-    { numero: "PV/2024/002", tipo: "Visto Sucessivo", entidade: "MINSA", valor: "85.000.000 Kz", status: "Em Análise" },
-    { numero: "PV/2024/003", tipo: "Visto Prévio", entidade: "MINTRANS", valor: "200.000.000 Kz", status: "Visado" },
-  ];
+  const getStatusCount = (status: string) => {
+    return processos.filter(p => p.status === status).length;
+  };
 
   return (
     <div className="space-y-6">
@@ -76,19 +81,19 @@ export const ProcessosVisto = ({ onBack, onNavigate }: ProcessosVistoProps) => {
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card className="p-6 border-l-4 border-l-accent">
-          <div className="text-2xl font-bold text-accent">18</div>
+          <div className="text-2xl font-bold text-accent">{isLoading ? <Skeleton className="h-8 w-12" /> : getStatusCount("Aguardando Análise")}</div>
           <div className="text-sm text-muted-foreground uppercase">Aguardando Análise</div>
         </Card>
         <Card className="p-6 border-l-4 border-l-primary">
-          <div className="text-2xl font-bold text-primary">32</div>
+          <div className="text-2xl font-bold text-primary">{isLoading ? <Skeleton className="h-8 w-12" /> : getStatusCount("Em Análise")}</div>
           <div className="text-sm text-muted-foreground uppercase">Em Análise</div>
         </Card>
         <Card className="p-6 border-l-4 border-l-success">
-          <div className="text-2xl font-bold text-success">156</div>
+          <div className="text-2xl font-bold text-success">{isLoading ? <Skeleton className="h-8 w-12" /> : getStatusCount("Visado")}</div>
           <div className="text-sm text-muted-foreground uppercase">Visados</div>
         </Card>
         <Card className="p-6 border-l-4 border-l-destructive">
-          <div className="text-2xl font-bold text-destructive">12</div>
+          <div className="text-2xl font-bold text-destructive">{isLoading ? <Skeleton className="h-8 w-12" /> : getStatusCount("Recusado")}</div>
           <div className="text-sm text-muted-foreground uppercase">Recusados</div>
         </Card>
       </div>
