@@ -123,15 +123,17 @@ export const ProcessosVisto = ({ onBack, onNavigate }: ProcessosVistoProps) => {
           </TableHeader>
           <TableBody>
             {processos.map((processo) => (
-              <TableRow key={processo.numero}>
+              <TableRow key={processo.id}>
                 <TableCell className="font-medium">{processo.numero}</TableCell>
                 <TableCell>
                   <Badge variant="outline" className="border-accent text-accent">
                     {processo.tipo}
                   </Badge>
                 </TableCell>
-                <TableCell>{processo.entidade}</TableCell>
-                <TableCell className="font-semibold">{processo.valor}</TableCell>
+                <TableCell>{processo.entidade_contratante || "-"}</TableCell>
+                <TableCell className="font-semibold">
+                  {processo.valor_contrato ? `${processo.valor_contrato.toLocaleString()} Kz` : "-"}
+                </TableCell>
                 <TableCell>
                   <Badge 
                     variant={processo.status === "Visado" ? "default" : "secondary"}
@@ -145,7 +147,7 @@ export const ProcessosVisto = ({ onBack, onNavigate }: ProcessosVistoProps) => {
                     <Button 
                       variant="ghost" 
                       size="sm"
-                      onClick={() => handleView(processo.numero)}
+                      onClick={() => handleView(processo.id)}
                       title="Ver detalhes"
                     >
                       <Eye className="h-4 w-4 mr-1" />
@@ -160,16 +162,16 @@ export const ProcessosVisto = ({ onBack, onNavigate }: ProcessosVistoProps) => {
                       <DropdownMenuContent align="end" className="bg-card">
                         <DropdownMenuLabel>Alterar Estado</DropdownMenuLabel>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={() => handleChangeStatus(processo.numero, "Aguardando Análise")}>
+                        <DropdownMenuItem onClick={() => handleChangeStatus(processo.id, "Aguardando Análise")}>
                           Aguardando Análise
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleChangeStatus(processo.numero, "Em Análise")}>
+                        <DropdownMenuItem onClick={() => handleChangeStatus(processo.id, "Em Análise")}>
                           Em Análise
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleChangeStatus(processo.numero, "Visado")}>
+                        <DropdownMenuItem onClick={() => handleChangeStatus(processo.id, "Visado")}>
                           Visado
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleChangeStatus(processo.numero, "Recusado")}>
+                        <DropdownMenuItem onClick={() => handleChangeStatus(processo.id, "Recusado")}>
                           Recusado
                         </DropdownMenuItem>
                       </DropdownMenuContent>
@@ -194,7 +196,7 @@ export const ProcessosVisto = ({ onBack, onNavigate }: ProcessosVistoProps) => {
                         </AlertDialogHeader>
                         <AlertDialogFooter>
                           <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                          <AlertDialogAction onClick={() => handleDelete(processo.numero)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                          <AlertDialogAction onClick={() => handleDelete(processo.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
                             Eliminar
                           </AlertDialogAction>
                         </AlertDialogFooter>
