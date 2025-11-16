@@ -41,6 +41,65 @@ export type Database = {
         }
         Relationships: []
       }
+      analise_decisao_juiz: {
+        Row: {
+          atualizado_em: string | null
+          criado_em: string | null
+          criado_por: string | null
+          data_analise: string
+          fundamentacao: string
+          id: string
+          juiz_relator: string
+          observacoes: string | null
+          prazo_restante: number | null
+          processo_id: string | null
+          status: string | null
+          tipo_decisao: string
+          valor_deferido: number | null
+          valor_original: number | null
+        }
+        Insert: {
+          atualizado_em?: string | null
+          criado_em?: string | null
+          criado_por?: string | null
+          data_analise: string
+          fundamentacao: string
+          id?: string
+          juiz_relator: string
+          observacoes?: string | null
+          prazo_restante?: number | null
+          processo_id?: string | null
+          status?: string | null
+          tipo_decisao: string
+          valor_deferido?: number | null
+          valor_original?: number | null
+        }
+        Update: {
+          atualizado_em?: string | null
+          criado_em?: string | null
+          criado_por?: string | null
+          data_analise?: string
+          fundamentacao?: string
+          id?: string
+          juiz_relator?: string
+          observacoes?: string | null
+          prazo_restante?: number | null
+          processo_id?: string | null
+          status?: string | null
+          tipo_decisao?: string
+          valor_deferido?: number | null
+          valor_original?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "analise_decisao_juiz_processo_id_fkey"
+            columns: ["processo_id"]
+            isOneToOne: false
+            referencedRelation: "processos_visto"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       areas_funcionais: {
         Row: {
           actualizado_em: string
@@ -133,6 +192,59 @@ export type Database = {
           id?: string
         }
         Relationships: []
+      }
+      conclusao_autos: {
+        Row: {
+          atualizado_em: string | null
+          criado_em: string | null
+          criado_por: string | null
+          data_conclusao: string
+          destinatario: string
+          escrivao: string
+          id: string
+          motivo: string | null
+          numero_termo: string
+          observacoes: string | null
+          processo_id: string | null
+          status: string | null
+        }
+        Insert: {
+          atualizado_em?: string | null
+          criado_em?: string | null
+          criado_por?: string | null
+          data_conclusao: string
+          destinatario: string
+          escrivao: string
+          id?: string
+          motivo?: string | null
+          numero_termo: string
+          observacoes?: string | null
+          processo_id?: string | null
+          status?: string | null
+        }
+        Update: {
+          atualizado_em?: string | null
+          criado_em?: string | null
+          criado_por?: string | null
+          data_conclusao?: string
+          destinatario?: string
+          escrivao?: string
+          id?: string
+          motivo?: string | null
+          numero_termo?: string
+          observacoes?: string | null
+          processo_id?: string | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conclusao_autos_processo_id_fkey"
+            columns: ["processo_id"]
+            isOneToOne: false
+            referencedRelation: "processos_visto"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       dependentes_funcionario: {
         Row: {
@@ -710,6 +822,59 @@ export type Database = {
           tipo?: string
         }
         Relationships: []
+      }
+      interposicao_recursos: {
+        Row: {
+          atualizado_em: string | null
+          criado_em: string | null
+          criado_por: string | null
+          data_interposicao: string
+          decisao_original: string | null
+          etapa_atual: string | null
+          fundamentacao: string
+          id: string
+          prazo_restante: number | null
+          processo_id: string | null
+          recorrente: string
+          status: string | null
+        }
+        Insert: {
+          atualizado_em?: string | null
+          criado_em?: string | null
+          criado_por?: string | null
+          data_interposicao: string
+          decisao_original?: string | null
+          etapa_atual?: string | null
+          fundamentacao: string
+          id?: string
+          prazo_restante?: number | null
+          processo_id?: string | null
+          recorrente: string
+          status?: string | null
+        }
+        Update: {
+          atualizado_em?: string | null
+          criado_em?: string | null
+          criado_por?: string | null
+          data_interposicao?: string
+          decisao_original?: string | null
+          etapa_atual?: string | null
+          fundamentacao?: string
+          id?: string
+          prazo_restante?: number | null
+          processo_id?: string | null
+          recorrente?: string
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "interposicao_recursos_processo_id_fkey"
+            columns: ["processo_id"]
+            isOneToOne: false
+            referencedRelation: "processos_visto"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       logs_auditoria: {
         Row: {
@@ -1326,6 +1491,78 @@ export type Database = {
         }
         Relationships: []
       }
+      processos_visto: {
+        Row: {
+          atualizado_em: string | null
+          criado_em: string | null
+          criado_por: string | null
+          data_visto_tacito: string | null
+          divisao: string | null
+          entidade_adjudicataria: string | null
+          entidade_contratante: string | null
+          fonte_financiamento: string | null
+          id: string
+          juiz_adjunto: string | null
+          juiz_relator: string | null
+          natureza: string | null
+          numero: string
+          objeto: string
+          observacoes: string | null
+          prazo_dias: number | null
+          prioridade: string | null
+          seccao: string | null
+          status: string | null
+          tipo: string
+          valor_contrato: number | null
+        }
+        Insert: {
+          atualizado_em?: string | null
+          criado_em?: string | null
+          criado_por?: string | null
+          data_visto_tacito?: string | null
+          divisao?: string | null
+          entidade_adjudicataria?: string | null
+          entidade_contratante?: string | null
+          fonte_financiamento?: string | null
+          id?: string
+          juiz_adjunto?: string | null
+          juiz_relator?: string | null
+          natureza?: string | null
+          numero: string
+          objeto: string
+          observacoes?: string | null
+          prazo_dias?: number | null
+          prioridade?: string | null
+          seccao?: string | null
+          status?: string | null
+          tipo: string
+          valor_contrato?: number | null
+        }
+        Update: {
+          atualizado_em?: string | null
+          criado_em?: string | null
+          criado_por?: string | null
+          data_visto_tacito?: string | null
+          divisao?: string | null
+          entidade_adjudicataria?: string | null
+          entidade_contratante?: string | null
+          fonte_financiamento?: string | null
+          id?: string
+          juiz_adjunto?: string | null
+          juiz_relator?: string | null
+          natureza?: string | null
+          numero?: string
+          objeto?: string
+          observacoes?: string | null
+          prazo_dias?: number | null
+          prioridade?: string | null
+          seccao?: string | null
+          status?: string | null
+          tipo?: string
+          valor_contrato?: number | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           atualizado_em: string | null
@@ -1358,6 +1595,62 @@ export type Database = {
           telefone?: string | null
         }
         Relationships: []
+      }
+      promocao_mp: {
+        Row: {
+          atualizado_em: string | null
+          criado_em: string | null
+          criado_por: string | null
+          data_promocao: string
+          decisao_juiz: string | null
+          fundamentacao: string
+          id: string
+          prazo_restante: number | null
+          processo_id: string | null
+          procurador: string
+          recomendacoes: string | null
+          status: string | null
+          tipo_parecer: string
+        }
+        Insert: {
+          atualizado_em?: string | null
+          criado_em?: string | null
+          criado_por?: string | null
+          data_promocao: string
+          decisao_juiz?: string | null
+          fundamentacao: string
+          id?: string
+          prazo_restante?: number | null
+          processo_id?: string | null
+          procurador: string
+          recomendacoes?: string | null
+          status?: string | null
+          tipo_parecer: string
+        }
+        Update: {
+          atualizado_em?: string | null
+          criado_em?: string | null
+          criado_por?: string | null
+          data_promocao?: string
+          decisao_juiz?: string | null
+          fundamentacao?: string
+          id?: string
+          prazo_restante?: number | null
+          processo_id?: string | null
+          procurador?: string
+          recomendacoes?: string | null
+          status?: string | null
+          tipo_parecer?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "promocao_mp_processo_id_fkey"
+            columns: ["processo_id"]
+            isOneToOne: false
+            referencedRelation: "processos_visto"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       provas_vida: {
         Row: {
@@ -1408,6 +1701,48 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      recursos_ordinarios: {
+        Row: {
+          atualizado_em: string | null
+          criado_em: string | null
+          criado_por: string | null
+          data_interposicao: string
+          estado: string | null
+          fundamento: string
+          id: string
+          numero_recurso: string
+          observacoes: string | null
+          processo_original: string
+          recorrente: string
+        }
+        Insert: {
+          atualizado_em?: string | null
+          criado_em?: string | null
+          criado_por?: string | null
+          data_interposicao: string
+          estado?: string | null
+          fundamento: string
+          id?: string
+          numero_recurso: string
+          observacoes?: string | null
+          processo_original: string
+          recorrente: string
+        }
+        Update: {
+          atualizado_em?: string | null
+          criado_em?: string | null
+          criado_por?: string | null
+          data_interposicao?: string
+          estado?: string | null
+          fundamento?: string
+          id?: string
+          numero_recurso?: string
+          observacoes?: string | null
+          processo_original?: string
+          recorrente?: string
+        }
+        Relationships: []
       }
       registos_ponto: {
         Row: {
