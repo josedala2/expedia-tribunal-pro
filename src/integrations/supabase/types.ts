@@ -246,6 +246,127 @@ export type Database = {
           },
         ]
       }
+      cumprimentos_despacho_adfjr: {
+        Row: {
+          acoes_tomadas: string | null
+          atualizado_em: string | null
+          criado_em: string | null
+          criado_por: string | null
+          data_cumprimento: string | null
+          data_despacho: string
+          descricao_despacho: string
+          entidade: string
+          id: string
+          numero_despacho: string
+          numero_processo: string
+          observacoes: string | null
+          processo_id: string | null
+          responsavel: string
+          status: string | null
+        }
+        Insert: {
+          acoes_tomadas?: string | null
+          atualizado_em?: string | null
+          criado_em?: string | null
+          criado_por?: string | null
+          data_cumprimento?: string | null
+          data_despacho: string
+          descricao_despacho: string
+          entidade: string
+          id?: string
+          numero_despacho: string
+          numero_processo: string
+          observacoes?: string | null
+          processo_id?: string | null
+          responsavel: string
+          status?: string | null
+        }
+        Update: {
+          acoes_tomadas?: string | null
+          atualizado_em?: string | null
+          criado_em?: string | null
+          criado_por?: string | null
+          data_cumprimento?: string | null
+          data_despacho?: string
+          descricao_despacho?: string
+          entidade?: string
+          id?: string
+          numero_despacho?: string
+          numero_processo?: string
+          observacoes?: string | null
+          processo_id?: string | null
+          responsavel?: string
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cumprimentos_despacho_adfjr_processo_id_fkey"
+            columns: ["processo_id"]
+            isOneToOne: false
+            referencedRelation: "processos_visto"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cumprimentos_despachos: {
+        Row: {
+          atualizado_em: string | null
+          conteudo_despacho: string
+          criado_em: string | null
+          criado_por: string | null
+          data_cumprimento: string | null
+          data_emissao: string
+          id: string
+          numero_processo: string
+          observacoes: string | null
+          prazo_cumprimento: string | null
+          processo_id: string | null
+          responsavel: string
+          status: string | null
+          tipo_despacho: string
+        }
+        Insert: {
+          atualizado_em?: string | null
+          conteudo_despacho: string
+          criado_em?: string | null
+          criado_por?: string | null
+          data_cumprimento?: string | null
+          data_emissao: string
+          id?: string
+          numero_processo: string
+          observacoes?: string | null
+          prazo_cumprimento?: string | null
+          processo_id?: string | null
+          responsavel: string
+          status?: string | null
+          tipo_despacho: string
+        }
+        Update: {
+          atualizado_em?: string | null
+          conteudo_despacho?: string
+          criado_em?: string | null
+          criado_por?: string | null
+          data_cumprimento?: string | null
+          data_emissao?: string
+          id?: string
+          numero_processo?: string
+          observacoes?: string | null
+          prazo_cumprimento?: string | null
+          processo_id?: string | null
+          responsavel?: string
+          status?: string | null
+          tipo_despacho?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cumprimentos_despachos_processo_id_fkey"
+            columns: ["processo_id"]
+            isOneToOne: false
+            referencedRelation: "processos_visto"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       dependentes_funcionario: {
         Row: {
           bi: string | null
@@ -555,6 +676,65 @@ export type Database = {
           tipo?: string
         }
         Relationships: []
+      }
+      expedientes_processuais: {
+        Row: {
+          assunto: string
+          atualizado_em: string | null
+          criado_em: string | null
+          criado_por: string | null
+          data_entrada: string | null
+          destino: string
+          id: string
+          numero_expediente: string
+          observacoes: string | null
+          origem: string
+          processo_id: string | null
+          status: string | null
+          tipo_expediente: string
+          urgencia: string | null
+        }
+        Insert: {
+          assunto: string
+          atualizado_em?: string | null
+          criado_em?: string | null
+          criado_por?: string | null
+          data_entrada?: string | null
+          destino: string
+          id?: string
+          numero_expediente: string
+          observacoes?: string | null
+          origem: string
+          processo_id?: string | null
+          status?: string | null
+          tipo_expediente: string
+          urgencia?: string | null
+        }
+        Update: {
+          assunto?: string
+          atualizado_em?: string | null
+          criado_em?: string | null
+          criado_por?: string | null
+          data_entrada?: string | null
+          destino?: string
+          id?: string
+          numero_expediente?: string
+          observacoes?: string | null
+          origem?: string
+          processo_id?: string | null
+          status?: string | null
+          tipo_expediente?: string
+          urgencia?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "expedientes_processuais_processo_id_fkey"
+            columns: ["processo_id"]
+            isOneToOne: false
+            referencedRelation: "processos_visto"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       feature_flags: {
         Row: {
@@ -1292,6 +1472,74 @@ export type Database = {
           },
         ]
       }
+      pedidos_reducao_emolumentos: {
+        Row: {
+          atualizado_em: string | null
+          criado_em: string | null
+          criado_por: string | null
+          data_submissao: string | null
+          decisao: string | null
+          documentos_anexos: string | null
+          entidade_contratada: string
+          etapa_atual: string | null
+          fundamentacao: string
+          id: string
+          numero_processo: string
+          observacoes: string | null
+          processo_id: string | null
+          promocao: string | null
+          status: string | null
+          valor_emolumentos: number
+          valor_proposto: number
+        }
+        Insert: {
+          atualizado_em?: string | null
+          criado_em?: string | null
+          criado_por?: string | null
+          data_submissao?: string | null
+          decisao?: string | null
+          documentos_anexos?: string | null
+          entidade_contratada: string
+          etapa_atual?: string | null
+          fundamentacao: string
+          id?: string
+          numero_processo: string
+          observacoes?: string | null
+          processo_id?: string | null
+          promocao?: string | null
+          status?: string | null
+          valor_emolumentos: number
+          valor_proposto: number
+        }
+        Update: {
+          atualizado_em?: string | null
+          criado_em?: string | null
+          criado_por?: string | null
+          data_submissao?: string | null
+          decisao?: string | null
+          documentos_anexos?: string | null
+          entidade_contratada?: string
+          etapa_atual?: string | null
+          fundamentacao?: string
+          id?: string
+          numero_processo?: string
+          observacoes?: string | null
+          processo_id?: string | null
+          promocao?: string | null
+          status?: string | null
+          valor_emolumentos?: number
+          valor_proposto?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pedidos_reducao_emolumentos_processo_id_fkey"
+            columns: ["processo_id"]
+            isOneToOne: false
+            referencedRelation: "processos_visto"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       pensionistas: {
         Row: {
           atualizado_em: string
@@ -1934,6 +2182,65 @@ export type Database = {
         }
         Relationships: []
       }
+      saidas_expedientes: {
+        Row: {
+          assunto: string
+          atualizado_em: string | null
+          criado_em: string | null
+          criado_por: string | null
+          data_envio: string | null
+          destinatario: string
+          forma_envio: string
+          id: string
+          numero_expediente: string
+          numero_registo: string | null
+          observacoes: string | null
+          processo_id: string | null
+          status: string | null
+          tipo_documento: string
+        }
+        Insert: {
+          assunto: string
+          atualizado_em?: string | null
+          criado_em?: string | null
+          criado_por?: string | null
+          data_envio?: string | null
+          destinatario: string
+          forma_envio: string
+          id?: string
+          numero_expediente: string
+          numero_registo?: string | null
+          observacoes?: string | null
+          processo_id?: string | null
+          status?: string | null
+          tipo_documento: string
+        }
+        Update: {
+          assunto?: string
+          atualizado_em?: string | null
+          criado_em?: string | null
+          criado_por?: string | null
+          data_envio?: string | null
+          destinatario?: string
+          forma_envio?: string
+          id?: string
+          numero_expediente?: string
+          numero_registo?: string | null
+          observacoes?: string | null
+          processo_id?: string | null
+          status?: string | null
+          tipo_documento?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "saidas_expedientes_processo_id_fkey"
+            columns: ["processo_id"]
+            isOneToOne: false
+            referencedRelation: "processos_visto"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       saldo_ferias: {
         Row: {
           ano: number
@@ -2096,6 +2403,59 @@ export type Database = {
             columns: ["funcionario_id"]
             isOneToOne: false
             referencedRelation: "funcionarios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tramitacao_processos: {
+        Row: {
+          atualizado_em: string | null
+          criado_em: string | null
+          criado_por: string | null
+          data_inicio: string
+          etapa_atual: string
+          id: string
+          numero_processo: string
+          observacoes: string | null
+          prazo_dias: number | null
+          processo_id: string
+          responsavel: string
+          status: string | null
+        }
+        Insert: {
+          atualizado_em?: string | null
+          criado_em?: string | null
+          criado_por?: string | null
+          data_inicio: string
+          etapa_atual: string
+          id?: string
+          numero_processo: string
+          observacoes?: string | null
+          prazo_dias?: number | null
+          processo_id: string
+          responsavel: string
+          status?: string | null
+        }
+        Update: {
+          atualizado_em?: string | null
+          criado_em?: string | null
+          criado_por?: string | null
+          data_inicio?: string
+          etapa_atual?: string
+          id?: string
+          numero_processo?: string
+          observacoes?: string | null
+          prazo_dias?: number | null
+          processo_id?: string
+          responsavel?: string
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tramitacao_processos_processo_id_fkey"
+            columns: ["processo_id"]
+            isOneToOne: false
+            referencedRelation: "processos_visto"
             referencedColumns: ["id"]
           },
         ]
