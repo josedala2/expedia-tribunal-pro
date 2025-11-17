@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { ArrowLeft, Plus, Search, Filter, FileText, CheckCircle, Clock, XCircle, Eye, Trash2, Edit } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -19,8 +20,10 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -31,9 +34,15 @@ interface ExpedienteProcessualProps {
 }
 
 export const ExpedienteProcessual = ({ onBack, onNavigate }: ExpedienteProcessualProps) => {
+  const [expedienteSelecionado, setExpedienteSelecionado] = useState<any>(null);
+  const [dialogAberto, setDialogAberto] = useState(false);
+
   const handleView = (id: string) => {
-    toast.info(`A visualizar expediente ${id}`);
-    onNavigate?.("detalhe-visto");
+    const expediente = expedientes.find(e => e.id === id);
+    if (expediente) {
+      setExpedienteSelecionado(expediente);
+      setDialogAberto(true);
+    }
   };
 
   const handleChangeStatus = (id: string, newStatus: string) => {
@@ -283,6 +292,53 @@ export const ExpedienteProcessual = ({ onBack, onNavigate }: ExpedienteProcessua
           </Table>
         </CardContent>
       </Card>
+
+      {expedienteSelecionado && (
+        <Dialog open={dialogAberto} onOpenChange={setDialogAberto}>
+          <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Detalhes do Expediente {expedienteSelecionado.id}</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Número</Label>
+                  <p className="font-medium">{expedienteSelecionado.id}</p>
+                </div>
+                <div>
+                  <Label>Tipo</Label>
+                  <p className="font-medium">{expedienteSelecionado.tipo}</p>
+                </div>
+                <div>
+                  <Label>Entidade</Label>
+                  <p className="font-medium">{expedienteSelecionado.entidade}</p>
+                </div>
+                <div>
+                  <Label>Data de Entrada</Label>
+                  <p className="font-medium">{expedienteSelecionado.dataEntrada}</p>
+                </div>
+                <div>
+                  <Label>Responsável</Label>
+                  <p className="font-medium">{expedienteSelecionado.responsavel}</p>
+                </div>
+                <div>
+                  <Label>Urgência</Label>
+                  <Badge className={getUrgenciaColor(expedienteSelecionado.urgencia)}>
+                    {expedienteSelecionado.urgencia}
+                  </Badge>
+                </div>
+                <div className="col-span-2">
+                  <Label>Status</Label>
+                  <Badge className={getStatusColor(expedienteSelecionado.status)}>
+                    {getStatusIcon(expedienteSelecionado.status)}
+                    <span className="ml-1">{expedienteSelecionado.status}</span>
+                  </Badge>
+                </div>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 };

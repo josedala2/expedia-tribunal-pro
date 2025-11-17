@@ -49,6 +49,8 @@ export default function AnaliseDecisaoFinalJuizRelator() {
     observacoes: ""
   });
   const [dialogAberto, setDialogAberto] = useState(false);
+  const [analiseSelecionada, setAnaliseSelecionada] = useState<AnaliseDecisao | null>(null);
+  const [dialogVisualizacao, setDialogVisualizacao] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -83,6 +85,14 @@ export default function AnaliseDecisaoFinalJuizRelator() {
       "Pendente": "outline"
     };
     return <Badge variant={variants[decisao] as any}>{decisao}</Badge>;
+  };
+
+  const handleVerAnalise = (id: string) => {
+    const analise = analises.find(a => a.id === id);
+    if (analise) {
+      setAnaliseSelecionada(analise);
+      setDialogVisualizacao(true);
+    }
   };
 
   return (
