@@ -34,6 +34,8 @@ import {
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { AnaliseDecisaoViewDialog } from "@/components/visto/ViewDialogs";
 import { useToast } from "@/hooks/use-toast";
+import { useAnaliseDecisaoJuiz } from "@/hooks/useAnaliseDecisaoJuiz";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface AnaliseDecisaoJuizRelatorProps {
   onBack: () => void;
@@ -42,6 +44,7 @@ interface AnaliseDecisaoJuizRelatorProps {
 
 export const AnaliseDecisaoJuizRelator = ({ onBack, onNavigate }: AnaliseDecisaoJuizRelatorProps) => {
   const { toast } = useToast();
+  const { analises, isLoading, createAnalise, updateAnalise, deleteAnalise } = useAnaliseDecisaoJuiz();
   const [activeForm, setActiveForm] = useState<string | null>(null);
   const [selectedAnalise, setSelectedAnalise] = useState<any>(null);
   const [showViewDialog, setShowViewDialog] = useState(false);
@@ -50,6 +53,8 @@ export const AnaliseDecisaoJuizRelator = ({ onBack, onNavigate }: AnaliseDecisao
     juizRelator: "",
     dataAnalise: "",
     tipoDecisao: "",
+    valorOriginal: "",
+    valorDeferido: "",
     fundamentacao: "",
     observacoes: "",
   });
@@ -68,73 +73,53 @@ export const AnaliseDecisaoJuizRelator = ({ onBack, onNavigate }: AnaliseDecisao
   };
 
   const handleChangeStatus = (id: string, status: string) => {
-    toast({
-      title: "Status alterado",
-      description: `Status alterado para: ${status}`,
-    });
+    updateAnalise.mutate({ id, status });
   };
 
   const handleDelete = (id: string) => {
-    toast({
-      title: "Análise eliminada",
-      description: "A análise foi eliminada com sucesso.",
-      variant: "destructive",
-    });
+    deleteAnalise.mutate(id);
   };
 
-  const handleFormSubmit = (e: React.FormEvent) => {
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast({
-      title: "Decisão registada",
-      description: "Decisão do Juiz Relator registada com sucesso!",
-    });
-    setActiveForm(null);
-    setFormData({
-      numeroProcesso: "",
-      juizRelator: "",
-      dataAnalise: "",
-      tipoDecisao: "",
-      fundamentacao: "",
-      observacoes: "",
-    });
+    try {
+      await createAnalise.mutateAsync({
+        juiz_relator: formData.juizRelator,
+        data_analise: formData.dataAnalise,
+        tipo_decisao: formData.tipoDecisao,
+        valor_original: formData.valorOriginal ? parseFloat(formData.valorOriginal) : undefined,
+        valor_deferido: formData.valorDeferido ? parseFloat(formData.valorDeferido) : undefined,
+        fundamentacao: formData.fundamentacao,
+        observacoes: formData.observacoes,
+        status: "Em Análise",
+      });
+      setActiveForm(null);
+      setFormData({
+        numeroProcesso: "",
+        juizRelator: "",
+        dataAnalise: "",
+        tipoDecisao: "",
+        valorOriginal: "",
+        valorDeferido: "",
+        fundamentacao: "",
+        observacoes: "",
+      });
+    } catch (error) {
+      console.error("Erro ao criar análise:", error);
+    }
   };
 
-  // Dados mockados de análises e decisões
-  const analises = [
-    {
-      id: "1",
-      numeroProcesso: "PVST-2024-001",
-      juizRelator: "Dr. António Costa",
-      dataAnalise: "25/01/2024",
-      tipoDecisao: "Deferimento Parcial",
-      valorOriginal: "15.000,00 Db",
-      valorDeferido: "10.000,00 Db",
-      status: "Concluído",
-      prazoRestante: null,
-    },
-    {
-      id: "2",
-      numeroProcesso: "PVST-2024-002",
-      juizRelator: "Dra. Isabel Ferreira",
-      dataAnalise: "23/01/2024",
-      tipoDecisao: "Em Análise",
-      valorOriginal: "25.000,00 Db",
-      valorDeferido: "-",
-      status: "Em Análise",
-      prazoRestante: 5,
-    },
-    {
-      id: "3",
-      numeroProcesso: "PVST-2023-089",
-      juizRelator: "Dr. Manuel Sousa",
-      dataAnalise: "20/01/2024",
-      tipoDecisao: "Indeferimento",
-      valorOriginal: "10.000,00 Db",
-      valorDeferido: "-",
-      status: "Concluído",
-      prazoRestante: null,
-    },
-  ];
+  const analisesData = analises.length > 0 ? analises.map(a => ({
+    id: a.id,
+    numeroProcesso: a.processo_id || "-",
+    juizRelator: a.juiz_relator,
+    dataAnalise: new Date(a.data_analise).toLocaleDateString('pt-PT'),
+    tipoDecisao: a.tipo_decisao,
+    valorOriginal: a.valor_original ? `${a.valor_original.toLocaleString('pt-PT')} Db` : "-",
+    valorDeferido: a.valor_deferido ? `${a.valor_deferido.toLocaleString('pt-PT')} Db` : "-",
+    status: a.status || "Em Análise",
+    prazoRestante: a.prazo_restante,
+  })) : [];
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -188,7 +173,7 @@ export const AnaliseDecisaoJuizRelator = ({ onBack, onNavigate }: AnaliseDecisao
             <FileText className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-foreground">3</div>
+            <div className="text-2xl font-bold text-foreground">{isLoading ? <Skeleton className="h-8 w-12" /> : analisesData.length}</div>
             <p className="text-xs text-muted-foreground">No sistema</p>
           </CardContent>
         </Card>
@@ -199,7 +184,9 @@ export const AnaliseDecisaoJuizRelator = ({ onBack, onNavigate }: AnaliseDecisao
             <Clock className="h-4 w-4 text-blue-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-foreground">1</div>
+            <div className="text-2xl font-bold text-foreground">
+              {isLoading ? <Skeleton className="h-8 w-12" /> : analisesData.filter(a => a.status === "Em Análise").length}
+            </div>
             <p className="text-xs text-muted-foreground">Aguardando decisão</p>
           </CardContent>
         </Card>
@@ -210,7 +197,9 @@ export const AnaliseDecisaoJuizRelator = ({ onBack, onNavigate }: AnaliseDecisao
             <CheckCircle className="h-4 w-4 text-green-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-foreground">2</div>
+            <div className="text-2xl font-bold text-foreground">
+              {isLoading ? <Skeleton className="h-8 w-12" /> : analisesData.filter(a => a.status === "Concluído").length}
+            </div>
             <p className="text-xs text-muted-foreground">Decisões proferidas</p>
           </CardContent>
         </Card>
@@ -315,7 +304,20 @@ export const AnaliseDecisaoJuizRelator = ({ onBack, onNavigate }: AnaliseDecisao
               </TableRow>
             </TableHeader>
             <TableBody>
-              {analises.map((analise) => (
+              {isLoading ? (
+                <TableRow>
+                  <TableCell colSpan={8} className="text-center py-8">
+                    <Skeleton className="h-8 w-full" />
+                  </TableCell>
+                </TableRow>
+              ) : analisesData.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                    Nenhuma análise encontrada
+                  </TableCell>
+                </TableRow>
+              ) : (
+                analisesData.map((analise) => (
                 <TableRow key={analise.id}>
                   <TableCell className="font-medium">
                     {analise.numeroProcesso}
@@ -406,7 +408,7 @@ export const AnaliseDecisaoJuizRelator = ({ onBack, onNavigate }: AnaliseDecisao
                     </div>
                   </TableCell>
                 </TableRow>
-              ))}
+              )))}
             </TableBody>
           </Table>
         </CardContent>
