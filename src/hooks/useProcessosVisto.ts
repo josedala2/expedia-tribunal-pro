@@ -43,8 +43,21 @@ export const useProcessosVisto = () => {
 
   const createProcesso = useMutation({
     mutationFn: async (processo: Omit<ProcessoVisto, 'id' | 'criado_em' | 'atualizado_em'>) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Utilizador não autenticado");
+      console.log('Verificando autenticação do usuário...');
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      
+      if (authError) {
+        console.error('Erro ao verificar autenticação:', authError);
+        throw new Error("Erro ao verificar autenticação");
+      }
+      
+      if (!user) {
+        console.error('Usuário não autenticado');
+        throw new Error("Você precisa estar autenticado para criar um processo");
+      }
+      
+      console.log('Usuário autenticado:', user.id);
+      console.log('Inserindo processo na base de dados...');
 
       const { data, error } = await supabase
         .from("processos_visto")
@@ -52,15 +65,22 @@ export const useProcessosVisto = () => {
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Erro do Supabase ao inserir processo:', error);
+        throw error;
+      }
+      
+      console.log('Processo inserido com sucesso:', data);
       return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["processos-visto"] });
       toast.success("Processo criado com sucesso!");
     },
-    onError: (error) => {
-      toast.error(`Erro ao criar processo: ${error.message}`);
+    onError: (error: any) => {
+      console.error('Erro na mutation:', error);
+      const errorMessage = error?.message || "Erro desconhecido ao criar processo";
+      toast.error(`Erro ao criar processo: ${errorMessage}`);
     },
   });
 

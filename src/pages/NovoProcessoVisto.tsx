@@ -40,13 +40,15 @@ export const NovoProcessoVisto = ({ onBack }: NovoProcessoVistoProps) => {
   });
 
   const onSubmit = async (data: VistoForm) => {
+    console.log('Iniciando submissão do formulário', data);
     setIsSubmitting(true);
     
     try {
       // Gerar número do processo automaticamente
       const numeroProcesso = `VP-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 9999) + 1).padStart(4, '0')}`;
+      console.log('Número do processo gerado:', numeroProcesso);
       
-      await createProcesso.mutateAsync({
+      const processoData = {
         numero: numeroProcesso,
         tipo: data.tipoVisto === 'previo' ? 'Visto Prévio' : 'Visto Sucessivo',
         natureza: data.naturezaVisto,
@@ -58,11 +60,20 @@ export const NovoProcessoVisto = ({ onBack }: NovoProcessoVistoProps) => {
         observacoes: data.observacoes,
         status: 'Aguardando Análise',
         prioridade: 'Normal',
-      });
+      };
       
+      console.log('Dados do processo a criar:', processoData);
+      
+      await createProcesso.mutateAsync(processoData);
+      
+      console.log('Processo criado com sucesso');
       onBack();
-    } catch (error) {
-      console.error('Erro ao registar processo:', error);
+    } catch (error: any) {
+      console.error('Erro detalhado ao registar processo:', {
+        message: error?.message,
+        error: error,
+        stack: error?.stack
+      });
     } finally {
       setIsSubmitting(false);
     }
