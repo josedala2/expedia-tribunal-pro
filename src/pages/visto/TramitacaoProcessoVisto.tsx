@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { ArrowLeft, Search, Filter, Eye, Trash2, Edit } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -19,8 +20,10 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -31,9 +34,15 @@ interface TramitacaoProcessoVistoProps {
 }
 
 export const TramitacaoProcessoVisto = ({ onBack, onNavigate }: TramitacaoProcessoVistoProps) => {
+  const [processoSelecionado, setProcessoSelecionado] = useState<any>(null);
+  const [dialogAberto, setDialogAberto] = useState(false);
+
   const handleView = (id: string) => {
-    toast.info(`A visualizar processo ${id}`);
-    onNavigate?.("detalhe-visto");
+    const processo = processos.find(p => p.id === id);
+    if (processo) {
+      setProcessoSelecionado(processo);
+      setDialogAberto(true);
+    }
   };
 
   const handleChangeStatus = (id: string, newStatus: string) => {
@@ -264,6 +273,54 @@ export const TramitacaoProcessoVisto = ({ onBack, onNavigate }: TramitacaoProces
           </Table>
         </CardContent>
       </Card>
+
+      {processoSelecionado && (
+        <Dialog open={dialogAberto} onOpenChange={setDialogAberto}>
+          <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Detalhes do Processo {processoSelecionado.id}</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Número do Processo</Label>
+                  <p className="font-medium">{processoSelecionado.id}</p>
+                </div>
+                <div>
+                  <Label>Entidade</Label>
+                  <p className="font-medium">{processoSelecionado.entidade}</p>
+                </div>
+                <div>
+                  <Label>Valor do Contrato</Label>
+                  <p className="font-medium">{processoSelecionado.valorContrato}</p>
+                </div>
+                <div>
+                  <Label>Juiz Relator</Label>
+                  <p className="font-medium">{processoSelecionado.juizRelator}</p>
+                </div>
+                <div>
+                  <Label>Etapa Atual</Label>
+                  <p className="font-medium">{processoSelecionado.etapaAtual}</p>
+                </div>
+                <div>
+                  <Label>Prazo</Label>
+                  <p className="font-medium">{processoSelecionado.prazo}</p>
+                </div>
+                <div>
+                  <Label>Dias Restantes</Label>
+                  <p className="font-medium">{processoSelecionado.diasRestantes} dias</p>
+                </div>
+                <div>
+                  <Label>Status</Label>
+                  <Badge className={getStatusColor(processoSelecionado.diasRestantes)}>
+                    {processoSelecionado.status}
+                  </Badge>
+                </div>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 };
