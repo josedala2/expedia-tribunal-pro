@@ -5,6 +5,8 @@ import { Badge } from "@/components/ui/badge";
 import { Eye, FileText, CheckCircle, Clock, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
+import { DocumentViewer } from "@/components/documents/DocumentViewer";
+import { DespachoTemplate } from "@/components/documents/DespachoTemplate";
 
 interface Despacho {
   id: string;
@@ -82,6 +84,9 @@ export default function CumprimentoDespachos({ onNavigate }: CumprimentoDespacho
       prioridade: "Urgente",
     },
   ]);
+  
+  const [despachoSelecionado, setDespachoSelecionado] = useState<Despacho | null>(null);
+  const [dialogAberto, setDialogAberto] = useState(false);
 
   const statusColors = {
     Pendente: "bg-yellow-500",
@@ -108,8 +113,12 @@ export default function CumprimentoDespachos({ onNavigate }: CumprimentoDespacho
     toast.info(`Visualizando processo ${numero}`);
   };
 
-  const handleVerDespacho = (numero: string) => {
-    toast.info(`Visualizando despacho ${numero}`);
+  const handleVerDespacho = (id: string) => {
+    const despacho = despachos.find(d => d.id === id);
+    if (despacho) {
+      setDespachoSelecionado(despacho);
+      setDialogAberto(true);
+    }
   };
 
   const getDiasRestantes = (prazo: Date) => {
@@ -296,7 +305,7 @@ export default function CumprimentoDespachos({ onNavigate }: CumprimentoDespacho
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => handleVerDespacho(despacho.numero)}
+                            onClick={() => handleVerDespacho(despacho.id)}
                             title="Ver despacho"
                           >
                             <FileText className="h-4 w-4" />
@@ -364,6 +373,49 @@ export default function CumprimentoDespachos({ onNavigate }: CumprimentoDespacho
           </div>
         </CardContent>
       </Card>
+      
+      {despachoSelecionado && (
+        <DocumentViewer
+          isOpen={dialogAberto}
+          onClose={() => {
+            setDialogAberto(false);
+            setDespachoSelecionado(null);
+          }}
+          title={`Despacho ${despachoSelecionado.numero}`}
+        >
+          <DespachoTemplate
+            data={{
+              numero: despachoSelecionado.numero,
+              processo: despachoSelecionado.processo,
+              tipo: despachoSelecionado.tipoDespacho,
+              origem: "Tribunal de Contas",
+              destino: despachoSelecionado.entidade,
+              data: despachoSelecionado.dataDespacho,
+              conteudo: `No âmbito do processo ${despachoSelecionado.processo}, relativo à ${despachoSelecionado.entidade}, e após análise dos elementos constantes dos autos, emito o seguinte despacho:
+
+Considerando os elementos apresentados e a necessidade de cumprimento dos procedimentos legais estabelecidos, determino as seguintes providências para o devido seguimento do processo.`,
+              determinacoes: [
+                despachoSelecionado.tipoDespacho === "Geração de Cobrança" 
+                  ? "Proceda-se à emissão da guia de cobrança de emolumentos conforme tabela em vigor"
+                  : despachoSelecionado.tipoDespacho === "Solicitação de Elementos"
+                  ? "Solicite-se à entidade a apresentação dos elementos complementares necessários à instrução do processo"
+                  : despachoSelecionado.tipoDespacho === "Notificação à Entidade"
+                  ? "Notifique-se a entidade interessada sobre o conteúdo da presente decisão"
+                  : despachoSelecionado.tipoDespacho === "Termo de Vista ao MP"
+                  ? "Dê-se vista dos autos ao Ministério Público para emissão de parecer"
+                  : despachoSelecionado.tipoDespacho === "Ofício de Remessa"
+                  ? "Proceda-se à elaboração e envio de ofício de remessa"
+                  : "Prossiga-se conforme determinado",
+                "Junte-se aos autos o comprovativo de cumprimento",
+                "Intime-se a parte interessada do presente despacho",
+              ],
+              prazo: `${Math.ceil((despachoSelecionado.prazo.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} dias úteis`,
+              assinante: despachoSelecionado.juizRelator,
+              cargoAssinante: "Juiz Relator",
+            }}
+          />
+        </DocumentViewer>
+      )}
     </div>
   );
 }
