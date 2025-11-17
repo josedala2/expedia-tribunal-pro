@@ -5,13 +5,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useToast } from "@/hooks/use-toast";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useState } from "react";
 import { EntitySelector } from "@/components/ui/entity-selector";
 import { DocumentChecklist } from "@/components/ui/document-checklist";
+import { useProcessosVisto } from "@/hooks/useProcessosVisto";
 
 const vistoSchema = z.object({
   tipoVisto: z.string().min(1, "Tipo de visto é obrigatório"),
@@ -33,23 +33,39 @@ interface NovoProcessoVistoProps {
 }
 
 export const NovoProcessoVisto = ({ onBack }: NovoProcessoVistoProps) => {
-  const { toast } = useToast();
+  const { createProcesso } = useProcessosVisto();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm<VistoForm>({
     resolver: zodResolver(vistoSchema)
   });
 
-  const onSubmit = (data: VistoForm) => {
+  const onSubmit = async (data: VistoForm) => {
     setIsSubmitting(true);
     
-    setTimeout(() => {
-      toast({
-        title: "Pedido de Visto Registado!",
-        description: "O pedido de visto foi registado e será autuado pela Contadoria Geral.",
+    try {
+      // Gerar número do processo automaticamente
+      const numeroProcesso = `VP-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 9999) + 1).padStart(4, '0')}`;
+      
+      await createProcesso.mutateAsync({
+        numero: numeroProcesso,
+        tipo: data.tipoVisto === 'previo' ? 'Visto Prévio' : 'Visto Sucessivo',
+        natureza: data.naturezaVisto,
+        entidade_contratante: data.entidadeContratante,
+        entidade_adjudicataria: data.entidadeContratada,
+        objeto: data.objeto,
+        valor_contrato: parseFloat(data.valorContrato),
+        fonte_financiamento: data.fonteFinanciamento,
+        observacoes: data.observacoes,
+        status: 'Aguardando Análise',
+        prioridade: 'Normal',
       });
-      setIsSubmitting(false);
+      
       onBack();
-    }, 1500);
+    } catch (error) {
+      console.error('Erro ao registar processo:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
