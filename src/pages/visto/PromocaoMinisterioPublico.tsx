@@ -34,6 +34,8 @@ import {
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { PromocaoMPViewDialog } from "@/components/visto/ViewDialogs";
 import { useToast } from "@/hooks/use-toast";
+import { usePromocaoMP } from "@/hooks/usePromocaoMP";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface PromocaoMinisterioPublicoProps {
   onBack: () => void;
@@ -42,6 +44,7 @@ interface PromocaoMinisterioPublicoProps {
 
 export const PromocaoMinisterioPublico = ({ onBack, onNavigate }: PromocaoMinisterioPublicoProps) => {
   const { toast } = useToast();
+  const { promocoes, isLoading, createPromocao, updatePromocao, deletePromocao } = usePromocaoMP();
   const [activeForm, setActiveForm] = useState<string | null>(null);
   const [selectedPromocao, setSelectedPromocao] = useState<any>(null);
   const [showViewDialog, setShowViewDialog] = useState(false);
@@ -68,70 +71,48 @@ export const PromocaoMinisterioPublico = ({ onBack, onNavigate }: PromocaoMinist
   };
 
   const handleChangeStatus = (id: string, status: string) => {
-    toast({
-      title: "Status alterado",
-      description: `Status alterado para: ${status}`,
-    });
+    updatePromocao.mutate({ id, status });
   };
 
   const handleDelete = (id: string) => {
-    toast({
-      title: "Promoção eliminada",
-      description: "A promoção foi eliminada com sucesso.",
-      variant: "destructive",
-    });
+    deletePromocao.mutate(id);
   };
 
-  const handleFormSubmit = (e: React.FormEvent) => {
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast({
-      title: "Promoção registada",
-      description: "Promoção do Ministério Público registada com sucesso!",
-    });
-    setActiveForm(null);
-    setFormData({
-      numeroProcesso: "",
-      procurador: "",
-      dataPromocao: "",
-      tipoParecer: "",
-      fundamentacao: "",
-      recomendacoes: "",
-    });
+    try {
+      await createPromocao.mutateAsync({
+        procurador: formData.procurador,
+        data_promocao: formData.dataPromocao,
+        tipo_parecer: formData.tipoParecer,
+        fundamentacao: formData.fundamentacao,
+        recomendacoes: formData.recomendacoes,
+        status: "Em Análise",
+      });
+      setActiveForm(null);
+      setFormData({
+        numeroProcesso: "",
+        procurador: "",
+        dataPromocao: "",
+        tipoParecer: "",
+        fundamentacao: "",
+        recomendacoes: "",
+      });
+    } catch (error) {
+      console.error("Erro ao criar promoção:", error);
+    }
   };
 
-  // Dados mockados de promoções
-  const promocoes = [
-    {
-      id: "1",
-      numeroProcesso: "PVST-2024-001",
-      procurador: "Dr. Carlos Mendes - MP",
-      dataPromocao: "27/01/2024",
-      tipoParecer: "Concordância",
-      decisaoJuiz: "Deferimento Parcial",
-      status: "Concluído",
-      prazoRestante: null,
-    },
-    {
-      id: "2",
-      numeroProcesso: "PVST-2024-002",
-      procurador: "Dra. Ana Silva - MP",
-      dataPromocao: "26/01/2024",
-      tipoParecer: "Em Análise",
-      decisaoJuiz: "Deferimento Total",
-      status: "Em Análise",
-      prazoRestante: 3,
-    },
-    {
-      id: "3",
-      numeroProcesso: "PVST-2023-089",
-      procurador: "Dr. Paulo Santos - MP",
-      dataPromocao: "22/01/2024",
-      tipoParecer: "Discordância",
-      decisaoJuiz: "Indeferimento",
-      status: "Concluído",
-      prazoRestante: null,
-    },
-  ];
+  const promocoesData = promocoes.length > 0 ? promocoes.map(p => ({
+    id: p.id,
+    numeroProcesso: p.processo_id || "-",
+    procurador: p.procurador,
+    dataPromocao: new Date(p.data_promocao).toLocaleDateString('pt-PT'),
+    tipoParecer: p.tipo_parecer,
+    decisaoJuiz: p.decisao_juiz || "-",
+    status: p.status || "Em Análise",
+    prazoRestante: p.prazo_restante,
+  })) : [];
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -198,7 +179,7 @@ export const PromocaoMinisterioPublico = ({ onBack, onNavigate }: PromocaoMinist
             <FileText className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-foreground">3</div>
+            <div className="text-2xl font-bold text-foreground">{isLoading ? <Skeleton className="h-8 w-12" /> : promocoesData.length}</div>
             <p className="text-xs text-muted-foreground">No sistema</p>
           </CardContent>
         </Card>
@@ -209,7 +190,9 @@ export const PromocaoMinisterioPublico = ({ onBack, onNavigate }: PromocaoMinist
             <Clock className="h-4 w-4 text-blue-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-foreground">1</div>
+            <div className="text-2xl font-bold text-foreground">
+              {isLoading ? <Skeleton className="h-8 w-12" /> : promocoesData.filter(p => p.status === "Em Análise").length}
+            </div>
             <p className="text-xs text-muted-foreground">Aguardando parecer</p>
           </CardContent>
         </Card>
@@ -220,7 +203,9 @@ export const PromocaoMinisterioPublico = ({ onBack, onNavigate }: PromocaoMinist
             <CheckCircle className="h-4 w-4 text-green-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-foreground">2</div>
+            <div className="text-2xl font-bold text-foreground">
+              {isLoading ? <Skeleton className="h-8 w-12" /> : promocoesData.filter(p => p.status === "Concluído").length}
+            </div>
             <p className="text-xs text-muted-foreground">Pareceres emitidos</p>
           </CardContent>
         </Card>
@@ -324,7 +309,20 @@ export const PromocaoMinisterioPublico = ({ onBack, onNavigate }: PromocaoMinist
               </TableRow>
             </TableHeader>
             <TableBody>
-              {promocoes.map((promocao) => (
+              {isLoading ? (
+                <TableRow>
+                  <TableCell colSpan={8} className="text-center py-8">
+                    <Skeleton className="h-8 w-full" />
+                  </TableCell>
+                </TableRow>
+              ) : promocoesData.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                    Nenhuma promoção encontrada
+                  </TableCell>
+                </TableRow>
+              ) : (
+                promocoesData.map((promocao) => (
                 <TableRow key={promocao.id}>
                   <TableCell className="font-medium">
                     {promocao.numeroProcesso}
@@ -412,7 +410,7 @@ export const PromocaoMinisterioPublico = ({ onBack, onNavigate }: PromocaoMinist
                     </div>
                   </TableCell>
                 </TableRow>
-              ))}
+              )))}
             </TableBody>
           </Table>
         </CardContent>

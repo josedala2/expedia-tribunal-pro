@@ -9,6 +9,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Search, Eye, FileText, Calendar, AlertTriangle, Clock, Filter } from "lucide-react";
 import { useState } from "react";
+import { useRecursosOrdinarios } from "@/hooks/useRecursosOrdinarios";
+import { Skeleton } from "@/components/ui/skeleton";
 
 type RecursoAtivo = {
   id: string;
@@ -25,55 +27,30 @@ type RecursoAtivo = {
 };
 
 export default function RecursosAtivos() {
+  const { recursos, isLoading } = useRecursosOrdinarios();
   const [searchTerm, setSearchTerm] = useState("");
   const [filterTipo, setFilterTipo] = useState("todos");
   const [filterPrioridade, setFilterPrioridade] = useState("todos");
   const [selectedRecurso, setSelectedRecurso] = useState<RecursoAtivo | null>(null);
   const [showDetailDialog, setShowDetailDialog] = useState(false);
 
-  const recursosAtivos: RecursoAtivo[] = [
-    {
-      id: "1",
-      numeroRecurso: "RO-2024-001",
-      tipoRecurso: "ordinario",
-      processoOriginal: "PV-2024-123",
-      recorrente: "Ministério Público",
-      dataInterposicao: "2024-10-15",
-      estado: "plenario",
-      prazoLimite: "2024-12-15",
-      diasRestantes: 12,
-      decisaoOriginal: "Recusa de Visto",
-      prioridade: "alta",
-    },
-    {
-      id: "2",
-      numeroRecurso: "RO-2024-002",
-      tipoRecurso: "ordinario",
-      processoOriginal: "PV-2024-098",
-      recorrente: "Entidade Pública",
-      dataInterposicao: "2024-10-20",
-      estado: "projeto",
-      prazoLimite: "2024-12-20",
-      diasRestantes: 17,
-      decisaoOriginal: "Concessão de Visto",
-      prioridade: "media",
-    },
-    {
-      id: "3",
-      numeroRecurso: "REI-2024-001",
-      tipoRecurso: "inconstitucionalidade",
-      processoOriginal: "PV-2024-045",
-      recorrente: "Ministério Público",
-      dataInterposicao: "2024-11-10",
-      estado: "analise",
-      prazoLimite: "2024-12-25",
-      diasRestantes: 22,
-      decisaoOriginal: "Recusa de Visto",
-      prioridade: "alta",
-    },
-  ];
+  const recursosAtivos: RecursoAtivo[] = recursos.map(r => ({
+    id: r.id,
+    numeroRecurso: r.numero_recurso,
+    tipoRecurso: "ordinario" as const,
+    processoOriginal: r.processo_original,
+    recorrente: r.recorrente,
+    dataInterposicao: r.data_interposicao,
+    estado: r.estado || "analise",
+    prazoLimite: new Date(new Date(r.data_interposicao).getTime() + 60 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+    diasRestantes: Math.floor((new Date(new Date(r.data_interposicao).getTime() + 60 * 24 * 60 * 60 * 1000).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)),
+    decisaoOriginal: "Recusa de Visto",
+    prioridade: "media" as const,
+  }));
 
-  const filteredRecursos = recursosAtivos.filter(recurso => {
+  const recursosAtivosCombined: RecursoAtivo[] = [...recursosAtivos];
+
+  const filteredRecursos = recursosAtivosCombined.filter(recurso => {
     const matchesSearch =
       recurso.numeroRecurso.toLowerCase().includes(searchTerm.toLowerCase()) ||
       recurso.processoOriginal.toLowerCase().includes(searchTerm.toLowerCase()) ||

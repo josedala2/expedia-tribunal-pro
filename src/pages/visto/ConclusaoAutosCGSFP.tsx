@@ -34,6 +34,8 @@ import {
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ConclusaoAutosViewDialog } from "@/components/visto/ViewDialogs";
 import { useToast } from "@/hooks/use-toast";
+import { useConclusaoAutos } from "@/hooks/useConclusaoAutos";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface ConclusaoAutosCGSFPProps {
   onBack: () => void;
@@ -42,19 +44,22 @@ interface ConclusaoAutosCGSFPProps {
 
 export const ConclusaoAutosCGSFP = ({ onBack, onNavigate }: ConclusaoAutosCGSFPProps) => {
   const { toast } = useToast();
+  const { conclusoes, isLoading, createConclusao, updateConclusao, deleteConclusao } = useConclusaoAutos();
   const [activeForm, setActiveForm] = useState<string | null>(null);
   const [selectedTermo, setSelectedTermo] = useState<any>(null);
   const [showViewDialog, setShowViewDialog] = useState(false);
   const [formData, setFormData] = useState({
     numeroProcesso: "",
+    numeroTermo: "",
     escrivao: "",
     dataConclusao: "",
     destinatario: "",
+    motivo: "",
     observacoes: "",
   });
 
   const handleView = (id: string) => {
-    const termo = termos.find(t => t.id === id);
+    const termo = conclusoes.find(t => t.id === id);
     if (termo) {
       setSelectedTermo(termo);
       setShowViewDialog(true);
@@ -67,72 +72,51 @@ export const ConclusaoAutosCGSFP = ({ onBack, onNavigate }: ConclusaoAutosCGSFPP
   };
 
   const handleChangeStatus = (id: string, status: string) => {
-    toast({
-      title: "Status alterado",
-      description: `Status alterado para: ${status}`,
-    });
+    updateConclusao.mutate({ id, status });
   };
 
   const handleDelete = (id: string) => {
-    toast({
-      title: "Termo eliminado",
-      description: "O termo foi eliminado com sucesso.",
-      variant: "destructive",
-    });
+    deleteConclusao.mutate(id);
   };
 
-  const handleFormSubmit = (e: React.FormEvent) => {
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast({
-      title: "Termo registado",
-      description: "Termo de Conclusão elaborado com sucesso!",
-    });
-    setActiveForm(null);
-    setFormData({
-      numeroProcesso: "",
-      escrivao: "",
-      dataConclusao: "",
-      destinatario: "",
-      observacoes: "",
-    });
+    try {
+      await createConclusao.mutateAsync({
+        numero_termo: formData.numeroTermo || `TC-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 9999) + 1).padStart(3, '0')}`,
+        escrivao: formData.escrivao,
+        destinatario: formData.destinatario,
+        data_conclusao: formData.dataConclusao,
+        motivo: formData.motivo,
+        observacoes: formData.observacoes,
+        status: "Pendente",
+      });
+      setActiveForm(null);
+      setFormData({
+        numeroProcesso: "",
+        numeroTermo: "",
+        escrivao: "",
+        dataConclusao: "",
+        destinatario: "",
+        motivo: "",
+        observacoes: "",
+      });
+    } catch (error) {
+      console.error("Erro ao criar termo:", error);
+    }
   };
 
-  // Dados mockados de termos de conclusão
-  const termos = [
-    {
-      id: "1",
-      numeroProcesso: "PVST-2024-001",
-      numeroTermo: "TC-2024-001",
-      escrivao: "João Silva",
-      destinatario: "Juiz Relator - Dr. António Costa",
-      dataConclusao: "20/01/2024",
-      tipoDocumento: "Termo de Conclusão",
-      status: "Concluído",
-      motivo: "Remessa ao Juiz Relator para despacho",
-    },
-    {
-      id: "2",
-      numeroProcesso: "PVST-2024-002",
-      numeroTermo: "TC-2024-002",
-      escrivao: "Maria Santos",
-      destinatario: "Juiz Relator - Dra. Isabel Ferreira",
-      dataConclusao: "22/01/2024",
-      tipoDocumento: "Termo de Conclusão",
-      status: "Pendente",
-      motivo: "Aguardando apreciação",
-    },
-    {
-      id: "3",
-      numeroProcesso: "PVST-2023-089",
-      numeroTermo: "TC-2024-003",
-      escrivao: "Pedro Oliveira",
-      destinatario: "Juiz Relator - Dr. Manuel Sousa",
-      dataConclusao: "18/01/2024",
-      tipoDocumento: "Termo de Conclusão",
-      status: "Arquivado",
-      motivo: "Processo arquivado",
-    },
-  ];
+  const termos = conclusoes.length > 0 ? conclusoes.map(c => ({
+    id: c.id,
+    numeroProcesso: c.processo_id || "-",
+    numeroTermo: c.numero_termo,
+    escrivao: c.escrivao,
+    destinatario: c.destinatario,
+    dataConclusao: new Date(c.data_conclusao).toLocaleDateString('pt-PT'),
+    tipoDocumento: "Termo de Conclusão",
+    status: c.status || "Pendente",
+    motivo: c.motivo || "-",
+  })) : [];
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -179,7 +163,7 @@ export const ConclusaoAutosCGSFP = ({ onBack, onNavigate }: ConclusaoAutosCGSFPP
             <FileText className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-foreground">3</div>
+            <div className="text-2xl font-bold text-foreground">{isLoading ? <Skeleton className="h-8 w-12" /> : termos.length}</div>
             <p className="text-xs text-muted-foreground">Elaborados no sistema</p>
           </CardContent>
         </Card>
@@ -190,7 +174,9 @@ export const ConclusaoAutosCGSFP = ({ onBack, onNavigate }: ConclusaoAutosCGSFPP
             <Clock className="h-4 w-4 text-yellow-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-foreground">1</div>
+            <div className="text-2xl font-bold text-foreground">
+              {isLoading ? <Skeleton className="h-8 w-12" /> : termos.filter(t => t.status === "Pendente").length}
+            </div>
             <p className="text-xs text-muted-foreground">Aguardando apreciação</p>
           </CardContent>
         </Card>
@@ -201,7 +187,9 @@ export const ConclusaoAutosCGSFP = ({ onBack, onNavigate }: ConclusaoAutosCGSFPP
             <CheckCircle className="h-4 w-4 text-green-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-foreground">1</div>
+            <div className="text-2xl font-bold text-foreground">
+              {isLoading ? <Skeleton className="h-8 w-12" /> : termos.filter(t => t.status === "Concluído").length}
+            </div>
             <p className="text-xs text-muted-foreground">Termos finalizados</p>
           </CardContent>
         </Card>
@@ -305,7 +293,20 @@ export const ConclusaoAutosCGSFP = ({ onBack, onNavigate }: ConclusaoAutosCGSFPP
               </TableRow>
             </TableHeader>
             <TableBody>
-              {termos.map((termo) => (
+              {isLoading ? (
+                <TableRow>
+                  <TableCell colSpan={7} className="text-center py-8">
+                    <Skeleton className="h-8 w-full" />
+                  </TableCell>
+                </TableRow>
+              ) : termos.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                    Nenhum termo encontrado
+                  </TableCell>
+                </TableRow>
+              ) : (
+                termos.map((termo) => (
                 <TableRow key={termo.id}>
                   <TableCell className="font-medium">
                     {termo.numeroProcesso}
@@ -392,7 +393,7 @@ export const ConclusaoAutosCGSFP = ({ onBack, onNavigate }: ConclusaoAutosCGSFPP
                     </div>
                   </TableCell>
                 </TableRow>
-              ))}
+              )))}
             </TableBody>
           </Table>
         </CardContent>
