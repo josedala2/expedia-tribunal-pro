@@ -8,21 +8,32 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { EntitySelector } from "@/components/ui/entity-selector";
 import { DocumentChecklist } from "@/components/ui/document-checklist";
+import { CurrencyInput } from "@/components/ui/currency-input";
 import { useProcessosVisto } from "@/hooks/useProcessosVisto";
+import { generateContractNumber, validateName, validateNIF, validateDateNotFuture } from "@/lib/validations";
+import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 const vistoSchema = z.object({
-  tipoVisto: z.string().min(1, "Tipo de visto é obrigatório"),
-  naturezaVisto: z.string().min(1, "Natureza do visto é obrigatória"),
-  entidadeContratante: z.string().min(1, "Entidade contratante é obrigatória"),
-  entidadeContratada: z.string().min(1, "Entidade contratada é obrigatória"),
-  objeto: z.string().min(1, "Objeto do contrato é obrigatório"),
-  valorContrato: z.string().min(1, "Valor do contrato é obrigatório"),
-  fonteFinanciamento: z.string().min(1, "Fonte de financiamento é obrigatória"),
+  tipoVisto: z.string().min(1, "O tipo de visto é obrigatório"),
+  naturezaVisto: z.string().min(1, "A natureza do visto é obrigatória"),
+  entidadeContratante: z.string().min(1, "A entidade contratante é obrigatória"),
+  entidadeContratada: z.string().min(2, "O nome da entidade contratada deve ter pelo menos 2 caracteres")
+    .refine((val) => validateName(val).valid, {
+      message: "Nome da entidade inválido. Não são permitidos valores como 'null' ou apenas números."
+    }),
+  nifContratada: z.string().regex(/^\d{9}$/, "O NIF deve ter exactamente 9 dígitos"),
+  objecto: z.string().min(10, "O objecto do contrato deve ter pelo menos 10 caracteres"),
+  valorContrato: z.string().min(1, "O valor do contrato é obrigatório"),
+  fonteFinanciamento: z.string().min(1, "A fonte de financiamento é obrigatória"),
   numeroContrato: z.string().optional(),
-  dataContrato: z.string().min(1, "Data do contrato é obrigatória"),
+  dataContrato: z.string().min(1, "A data do contrato é obrigatória")
+    .refine((val) => validateDateNotFuture(val).valid, {
+      message: "A data do contrato não pode ser superior à data actual"
+    }),
   observacoes: z.string().optional(),
 });
 
@@ -35,18 +46,25 @@ interface NovoProcessoVistoProps {
 export const NovoProcessoVisto = ({ onBack }: NovoProcessoVistoProps) => {
   const { createProcesso } = useProcessosVisto();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm<VistoForm>({
-    resolver: zodResolver(vistoSchema)
+  const [numeroContratoGerado, setNumeroContratoGerado] = useState("");
+  
+  const { register, handleSubmit, formState: { errors }, setValue, watch, trigger } = useForm<VistoForm>({
+    resolver: zodResolver(vistoSchema),
+    mode: "onBlur"
   });
 
+  // Gerar número de contrato automaticamente
+  useEffect(() => {
+    const numero = generateContractNumber();
+    setNumeroContratoGerado(numero);
+    setValue("numeroContrato", numero);
+  }, [setValue]);
+
   const onSubmit = async (data: VistoForm) => {
-    console.log('Iniciando submissão do formulário', data);
     setIsSubmitting(true);
     
     try {
-      // Gerar número do processo automaticamente
       const numeroProcesso = `VP-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 9999) + 1).padStart(4, '0')}`;
-      console.log('Número do processo gerado:', numeroProcesso);
       
       const processoData = {
         numero: numeroProcesso,
@@ -54,7 +72,7 @@ export const NovoProcessoVisto = ({ onBack }: NovoProcessoVistoProps) => {
         natureza: data.naturezaVisto,
         entidade_contratante: data.entidadeContratante,
         entidade_adjudicataria: data.entidadeContratada,
-        objeto: data.objeto,
+        objeto: data.objecto,
         valor_contrato: parseFloat(data.valorContrato),
         fonte_financiamento: data.fonteFinanciamento,
         observacoes: data.observacoes,
@@ -62,27 +80,40 @@ export const NovoProcessoVisto = ({ onBack }: NovoProcessoVistoProps) => {
         prioridade: 'Normal',
       };
       
-      console.log('Dados do processo a criar:', processoData);
-      
       await createProcesso.mutateAsync(processoData);
       
-      console.log('Processo criado com sucesso');
+      toast.success("Pedido de visto submetido com sucesso!", {
+        description: `Número do processo: ${numeroProcesso}`,
+        action: {
+          label: "Ver Lista",
+          onClick: () => onBack()
+        }
+      });
+      
       onBack();
     } catch (error: any) {
-      console.error('Erro detalhado ao registar processo:', {
-        message: error?.message,
-        error: error,
-        stack: error?.stack
+      toast.error("Erro ao submeter o pedido", {
+        description: error?.message || "Ocorreu um erro inesperado. Tente novamente."
       });
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  const handleCancel = () => {
+    if (Object.keys(errors).length > 0 || watch("entidadeContratante") || watch("objecto")) {
+      if (window.confirm("Tem a certeza que deseja cancelar? Os dados introduzidos serão perdidos.")) {
+        onBack();
+      }
+    } else {
+      onBack();
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" onClick={onBack}>
+        <Button variant="ghost" size="icon" onClick={handleCancel}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <div>
@@ -94,6 +125,29 @@ export const NovoProcessoVisto = ({ onBack }: NovoProcessoVistoProps) => {
         </div>
       </div>
 
+      {/* Indicador de etapas fixo */}
+      <div className="sticky top-0 z-10 bg-background pb-4 pt-2 border-b">
+        <div className="flex items-center justify-between max-w-3xl mx-auto">
+          {["Tipo de Visto", "Partes", "Contrato", "Documentos"].map((step, index) => (
+            <div 
+              key={step} 
+              className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity group"
+            >
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-all group-hover:scale-110 ${
+                index === 0 ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+              }`}>
+                {index + 1}
+              </div>
+              <span className={`text-sm hidden sm:inline ${
+                index === 0 ? "text-primary font-medium" : "text-muted-foreground"
+              }`}>
+                {step}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <Card className="p-6">
           <h3 className="text-lg font-semibold mb-4 text-foreground">Tipo e Natureza do Visto</h3>
@@ -102,8 +156,8 @@ export const NovoProcessoVisto = ({ onBack }: NovoProcessoVistoProps) => {
             <div className="space-y-2">
               <Label htmlFor="tipoVisto">Tipo de Visto *</Label>
               <Select onValueChange={(value) => setValue("tipoVisto", value)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione o tipo" />
+                <SelectTrigger className={errors.tipoVisto ? "border-destructive" : ""}>
+                  <SelectValue placeholder="Seleccione o tipo" />
                 </SelectTrigger>
                 <SelectContent className="bg-card z-50">
                   <SelectItem value="previo">Visto Prévio</SelectItem>
@@ -116,13 +170,13 @@ export const NovoProcessoVisto = ({ onBack }: NovoProcessoVistoProps) => {
             <div className="space-y-2">
               <Label htmlFor="naturezaVisto">Natureza do Visto *</Label>
               <Select onValueChange={(value) => setValue("naturezaVisto", value)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione a natureza" />
+                <SelectTrigger className={errors.naturezaVisto ? "border-destructive" : ""}>
+                  <SelectValue placeholder="Seleccione a natureza" />
                 </SelectTrigger>
                 <SelectContent className="bg-card z-50">
                   <SelectItem value="normal">Visto Normal (30 dias)</SelectItem>
                   <SelectItem value="urgencia">Visto Simplificado de Urgência (10 dias)</SelectItem>
-                  <SelectItem value="urgente">Visto de Caráter Urgente (5 dias)</SelectItem>
+                  <SelectItem value="urgente">Visto de Carácter Urgente (5 dias)</SelectItem>
                 </SelectContent>
               </Select>
               {errors.naturezaVisto && <p className="text-sm text-destructive">{errors.naturezaVisto.message}</p>}
@@ -142,14 +196,29 @@ export const NovoProcessoVisto = ({ onBack }: NovoProcessoVistoProps) => {
               error={errors.entidadeContratante?.message}
             />
 
-            <div className="space-y-2">
-              <Label htmlFor="entidadeContratada">Entidade Contratada *</Label>
-              <Input
-                id="entidadeContratada"
-                {...register("entidadeContratada")}
-                placeholder="Nome da empresa ou entidade contratada"
-              />
-              {errors.entidadeContratada && <p className="text-sm text-destructive">{errors.entidadeContratada.message}</p>}
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="entidadeContratada">Entidade Contratada *</Label>
+                <Input
+                  id="entidadeContratada"
+                  {...register("entidadeContratada")}
+                  placeholder="Nome da empresa ou entidade contratada"
+                  className={errors.entidadeContratada ? "border-destructive" : ""}
+                />
+                {errors.entidadeContratada && <p className="text-sm text-destructive">{errors.entidadeContratada.message}</p>}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="nifContratada">NIF da Entidade Contratada *</Label>
+                <Input
+                  id="nifContratada"
+                  {...register("nifContratada")}
+                  placeholder="000000000"
+                  maxLength={9}
+                  className={errors.nifContratada ? "border-destructive" : ""}
+                />
+                {errors.nifContratada && <p className="text-sm text-destructive">{errors.nifContratada.message}</p>}
+              </div>
             </div>
           </div>
         </Card>
@@ -159,35 +228,38 @@ export const NovoProcessoVisto = ({ onBack }: NovoProcessoVistoProps) => {
           
           <div className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="objeto">Objeto do Contrato *</Label>
+              <Label htmlFor="objecto">Objecto do Contrato *</Label>
               <Textarea
-                id="objeto"
-                {...register("objeto")}
-                placeholder="Descreva o objeto do contrato..."
-                className="min-h-[100px]"
+                id="objecto"
+                {...register("objecto")}
+                placeholder="Descreva o objecto do contrato..."
+                className={`min-h-[100px] ${errors.objecto ? "border-destructive" : ""}`}
               />
-              {errors.objeto && <p className="text-sm text-destructive">{errors.objeto.message}</p>}
+              {errors.objecto && <p className="text-sm text-destructive">{errors.objecto.message}</p>}
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="space-y-2">
-                <Label htmlFor="valorContrato">Valor do Contrato (Kz) *</Label>
-                <Input
+                <Label htmlFor="valorContrato">Valor do Contrato *</Label>
+                <CurrencyInput
                   id="valorContrato"
-                  {...register("valorContrato")}
-                  placeholder="Ex: 150.000.000"
-                  type="text"
+                  value={watch("valorContrato")}
+                  onChange={(value) => setValue("valorContrato", value)}
+                  placeholder="0"
+                  className={errors.valorContrato ? "border-destructive" : ""}
                 />
                 {errors.valorContrato && <p className="text-sm text-destructive">{errors.valorContrato.message}</p>}
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="numeroContrato">Nº do Contrato</Label>
+                <Label htmlFor="numeroContrato">Nº do Contrato (Automático)</Label>
                 <Input
                   id="numeroContrato"
-                  {...register("numeroContrato")}
-                  placeholder="Ex: CT/2024/001"
+                  value={numeroContratoGerado}
+                  disabled
+                  className="bg-muted"
                 />
+                <p className="text-xs text-muted-foreground">Gerado automaticamente pelo sistema</p>
               </div>
 
               <div className="space-y-2">
@@ -196,6 +268,8 @@ export const NovoProcessoVisto = ({ onBack }: NovoProcessoVistoProps) => {
                   id="dataContrato"
                   {...register("dataContrato")}
                   type="date"
+                  max={new Date().toISOString().split('T')[0]}
+                  className={errors.dataContrato ? "border-destructive" : ""}
                 />
                 {errors.dataContrato && <p className="text-sm text-destructive">{errors.dataContrato.message}</p>}
               </div>
@@ -204,8 +278,8 @@ export const NovoProcessoVisto = ({ onBack }: NovoProcessoVistoProps) => {
             <div className="space-y-2">
               <Label htmlFor="fonteFinanciamento">Fonte de Financiamento *</Label>
               <Select onValueChange={(value) => setValue("fonteFinanciamento", value)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione a fonte" />
+                <SelectTrigger className={errors.fonteFinanciamento ? "border-destructive" : ""}>
+                  <SelectValue placeholder="Seleccione a fonte" />
                 </SelectTrigger>
                 <SelectContent className="bg-card z-50">
                   <SelectItem value="oge">Orçamento Geral do Estado (OGE)</SelectItem>
@@ -232,9 +306,13 @@ export const NovoProcessoVisto = ({ onBack }: NovoProcessoVistoProps) => {
               "Proposta de Adjudicação / Despacho de Adjudicação",
               "Programa de Concurso / Caderno de Encargos",
               "Documentos de Habilitação da Empresa",
-              "Certidão negativa de dívidas fiscais",
-              "Declaração de regularidade com Segurança Social",
-              "Outros documentos específicos do contrato"
+              "Certidão Negativa de Dívidas Fiscais",
+              "Declaração de Regularidade com Segurança Social",
+            ]}
+            requiredDocuments={[
+              "Ofício de Solicitação de Visto",
+              "Minuta do Contrato",
+              "Cabimento Orçamental",
             ]}
             label="Documentação Anexa ao Pedido de Visto"
           />
@@ -254,8 +332,8 @@ export const NovoProcessoVisto = ({ onBack }: NovoProcessoVistoProps) => {
           </div>
         </Card>
 
-        <div className="flex gap-4 justify-end">
-          <Button type="button" variant="outline" onClick={onBack}>
+        <div className="flex gap-4 justify-end sticky bottom-4 bg-background py-4 border-t">
+          <Button type="button" variant="outline" onClick={handleCancel}>
             Cancelar
           </Button>
           <Button type="submit" disabled={isSubmitting} className="gap-2">
