@@ -39,6 +39,8 @@ const demoUsers = [
   { email: 'juiz.adjunto@tc.gov.ao', nome: 'Juiz Adjunto', password: 'demo123', categoria: 'Magistrados' },
   { email: 'mp@tc.gov.ao', nome: 'Ministério Público', password: 'demo123', categoria: 'Magistrados' },
   { email: 'dst@tc.gov.ao', nome: 'Director Serv. Técnicos', password: 'demo123', categoria: 'Direcção' },
+  { email: 'secretaria.geral@tc.gov.ao', nome: 'Secretaria Geral', password: 'demo123', categoria: 'Direcção' },
+  { email: 'gabinete.juridico@tc.gov.ao', nome: 'Gabinete Jurídico', password: 'demo123', categoria: 'Direcção' },
   { email: 'chefe.sg@tc.gov.ao', nome: 'Chefe SG', password: 'demo123', categoria: 'Direcção' },
   { email: 'chefe.divisao@tc.gov.ao', nome: 'Chefe de Divisão', password: 'demo123', categoria: 'Direcção' },
   { email: 'chefe.seccao@tc.gov.ao', nome: 'Chefe de Secção', password: 'demo123', categoria: 'Direcção' },
