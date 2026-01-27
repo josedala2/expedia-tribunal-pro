@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
-import { Loader2, Mail, Lock } from "lucide-react";
+import { Loader2, Mail, Lock, UserCheck } from "lucide-react";
 
 const loginSchema = z.object({
   email: z
@@ -34,10 +34,16 @@ export const LoginForm = ({ onSuccess }: LoginFormProps) => {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
   });
+
+  const fillTestCredentials = () => {
+    setValue("email", "teste@tc.gov.ao");
+    setValue("password", "teste123");
+  };
 
   const onSubmit = async (data: LoginFormData) => {
     setIsLoading(true);
@@ -102,16 +108,29 @@ export const LoginForm = ({ onSuccess }: LoginFormProps) => {
         )}
       </div>
 
-      <Button type="submit" className="w-full" disabled={isLoading}>
-        {isLoading ? (
-          <>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            A iniciar sessão...
-          </>
-        ) : (
-          "Iniciar Sessão"
-        )}
-      </Button>
+      <div className="flex flex-col gap-2">
+        <Button type="submit" className="w-full" disabled={isLoading}>
+          {isLoading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              A iniciar sessão...
+            </>
+          ) : (
+            "Iniciar Sessão"
+          )}
+        </Button>
+        
+        <Button 
+          type="button" 
+          variant="outline" 
+          className="w-full text-muted-foreground" 
+          onClick={fillTestCredentials}
+          disabled={isLoading}
+        >
+          <UserCheck className="mr-2 h-4 w-4" />
+          Preencher com utilizador de teste
+        </Button>
+      </div>
     </form>
   );
 };
