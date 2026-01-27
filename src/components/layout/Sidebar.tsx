@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { useState } from "react";
+import { useModulosAtivos } from "@/hooks/useModulosAtivos";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -208,8 +209,12 @@ const menuGroups = [
 ];
 
 export const Sidebar = ({ isOpen, currentView, onNavigate }: SidebarProps) => {
+  const { isGrupoMenuVisivel, isLoading } = useModulosAtivos();
   const [expandedGroups, setExpandedGroups] = useState<string[]>(["dashboard-group", "portal-intranet-group", "expedientes-group", "prestacao-contas-group", "visto-group", "fiscalizacao-group", "multas-group", "admin-config-group"]);
   const [expandedMenus, setExpandedMenus] = useState<string[]>(["portal-intranet", "gestao-rh", "prestacao-contas", "visto", "fiscalizacao", "recurso-ordinario", "recurso-inconstitucionalidade", "admin-config"]);
+
+  // Filtra os grupos de menu com base nos módulos ativos
+  const filteredMenuGroups = menuGroups.filter(group => isGrupoMenuVisivel(group.id));
 
   const toggleGroup = (groupId: string) => {
     setExpandedGroups(prev => 
@@ -257,7 +262,7 @@ export const Sidebar = ({ isOpen, currentView, onNavigate }: SidebarProps) => {
       >
         <div className="h-full overflow-y-auto scrollbar-thin">
         <nav className="p-3 sm:p-4 pt-6 sm:pt-8 space-y-2 sm:space-y-3">
-          {menuGroups.map((group) => {
+          {filteredMenuGroups.map((group) => {
             const isActive = isGroupActive(group.items);
             const isExpanded = expandedGroups.includes(group.id);
             
