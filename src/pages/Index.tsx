@@ -121,6 +121,22 @@ const Index = () => {
     }
   }, []);
 
+  // Auto-close sidebar when viewport shrinks below lg breakpoint
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 1024 && isSidebarOpen) {
+        setIsSidebarOpen(false);
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    
+    // Check on initial load
+    handleResize();
+
+    return () => window.removeEventListener('resize', handleResize);
+  }, [isSidebarOpen]);
+
   const handleTourComplete = () => {
     localStorage.setItem("hasSeenTour", "true");
     setRunTour(false);
