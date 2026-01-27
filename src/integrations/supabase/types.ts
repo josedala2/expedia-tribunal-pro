@@ -2407,6 +2407,42 @@ export type Database = {
           },
         ]
       }
+      tipos_expediente: {
+        Row: {
+          ativo: boolean
+          atualizado_em: string
+          categoria: string
+          codigo: string
+          criado_em: string
+          criado_por: string | null
+          descricao: string | null
+          id: string
+          nome: string
+        }
+        Insert: {
+          ativo?: boolean
+          atualizado_em?: string
+          categoria?: string
+          codigo: string
+          criado_em?: string
+          criado_por?: string | null
+          descricao?: string | null
+          id?: string
+          nome: string
+        }
+        Update: {
+          ativo?: boolean
+          atualizado_em?: string
+          categoria?: string
+          codigo?: string
+          criado_em?: string
+          criado_por?: string | null
+          descricao?: string | null
+          id?: string
+          nome?: string
+        }
+        Relationships: []
+      }
       tramitacao_processos: {
         Row: {
           atualizado_em: string | null
