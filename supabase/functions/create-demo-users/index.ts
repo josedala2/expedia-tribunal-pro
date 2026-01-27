@@ -14,6 +14,8 @@ const demoUsers = [
   { email: 'juiz.adjunto@tc.gov.ao', nome: 'Juiz Adjunto Demo', perfil: 'Juiz Adjunto' },
   { email: 'mp@tc.gov.ao', nome: 'Ministério Público Demo', perfil: 'Ministério Público' },
   { email: 'dst@tc.gov.ao', nome: 'Director Serviços Técnicos', perfil: 'Director dos Serviços Técnicos (DST)' },
+  { email: 'secretaria.geral@tc.gov.ao', nome: 'Secretaria Geral Demo', perfil: 'Secretaria Geral' },
+  { email: 'gabinete.juridico@tc.gov.ao', nome: 'Gabinete Jurídico Demo', perfil: 'Gabinete Jurídico' },
   { email: 'chefe.sg@tc.gov.ao', nome: 'Chefe da Secretaria Geral', perfil: 'Chefe SG' },
   { email: 'chefe.divisao@tc.gov.ao', nome: 'Chefe de Divisão Demo', perfil: 'Chefe de Divisão' },
   { email: 'chefe.seccao@tc.gov.ao', nome: 'Chefe de Secção Demo', perfil: 'Chefe de Secção' },
