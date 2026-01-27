@@ -20,6 +20,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 const expedienteSchema = z.object({
   natureza: z.enum(["interno", "externo", "sociedade_civil"]),
+  categoriaSociedadeCivil: z.string().optional(),
   tipo: z.string().min(1, "Tipo é obrigatório"),
   assunto: z.string().min(5, "Assunto deve ter no mínimo 5 caracteres").max(200, "Assunto muito longo"),
   origem: z.string().min(1, "Origem é obrigatória"),
@@ -31,6 +32,14 @@ const expedienteSchema = z.object({
   emailExterno: z.string().email("Email inválido").optional().or(z.literal("")),
   telefoneExterno: z.string().optional(),
 });
+
+const categoriasSociedadeCivil = [
+  { value: "fundacoes", label: "Fundações e Fundos de Solidariedade" },
+  { value: "organizacoes_massas", label: "Organizações de Massas" },
+  { value: "sindicatos", label: "Sindicatos" },
+  { value: "associacoes_ongs", label: "Associações e ONGs" },
+  { value: "outras", label: "Outras" },
+];
 
 type ExpedienteForm = z.infer<typeof expedienteSchema>;
 
@@ -274,6 +283,25 @@ export const NovoExpediente = ({ onBack }: NovoExpedienteProps) => {
                 ? "Comunicação com entidades externas ao Tribunal de Contas"
                 : "Comunicação com organizações da sociedade civil (ONGs, associações, fundações, etc.)"}
             </p>
+
+            {/* Categoria de Sociedade Civil */}
+            {natureza === "sociedade_civil" && (
+              <div className="space-y-2 mt-4">
+                <Label className="font-medium">Categoria da Entidade *</Label>
+                <Select onValueChange={(value) => setValue("categoriaSociedadeCivil", value)}>
+                  <SelectTrigger className="bg-background">
+                    <SelectValue placeholder="Selecione a categoria" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-popover z-50">
+                    {categoriasSociedadeCivil.map((cat) => (
+                      <SelectItem key={cat.value} value={cat.value}>
+                        {cat.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
           </div>
 
           {/* É Resposta a Expediente? */}
