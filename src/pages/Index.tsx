@@ -111,7 +111,13 @@ type View = "dashboard" | "portal-intranet" | "meu-perfil" | "assiduidade" | "fe
 const Index = () => {
   const [currentView, setCurrentView] = useState<View>("dashboard");
   const [selectedProcessId, setSelectedProcessId] = useState<string | null>(null);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  // Initialize sidebar state based on viewport - closed on mobile/tablet, open on desktop
+  const [isSidebarOpen, setIsSidebarOpen] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return window.innerWidth >= 1024;
+    }
+    return true;
+  });
   const [runTour, setRunTour] = useState(false);
 
   useEffect(() => {
@@ -124,18 +130,14 @@ const Index = () => {
   // Auto-close sidebar when viewport shrinks below lg breakpoint
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth < 1024 && isSidebarOpen) {
-        setIsSidebarOpen(false);
-      }
+      const isDesktop = window.innerWidth >= 1024;
+      setIsSidebarOpen(isDesktop);
     };
 
     window.addEventListener('resize', handleResize);
-    
-    // Check on initial load
-    handleResize();
 
     return () => window.removeEventListener('resize', handleResize);
-  }, [isSidebarOpen]);
+  }, []);
 
   const handleTourComplete = () => {
     localStorage.setItem("hasSeenTour", "true");
