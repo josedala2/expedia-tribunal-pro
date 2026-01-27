@@ -381,7 +381,7 @@ export const NovoExpediente = ({ onBack }: NovoExpedienteProps) => {
           </div>
 
           {/* Campos específicos para Expediente Externo */}
-          {(natureza === "externo" || natureza === "sociedade_civil") && (
+          {natureza === "externo" && (
             <div className="space-y-4 p-4 bg-accent/10 border border-accent rounded-lg">
               <h3 className="font-semibold text-accent">Dados da Entidade Externa</h3>
               
