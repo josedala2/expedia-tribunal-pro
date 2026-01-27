@@ -1,9 +1,9 @@
-import { LayoutDashboard, FileText, FolderCheck, Eye, FileBarChart, DollarSign, Users, Inbox, ChevronDown, ChevronRight, CheckCircle, Settings } from "lucide-react";
+import { LayoutDashboard, FileText, FolderCheck, Eye, FileBarChart, DollarSign, Users, Inbox, ChevronDown, ChevronRight, CheckCircle, Settings, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { useState } from "react";
 import { useModulosAtivos } from "@/hooks/useModulosAtivos";
+import { useMenuAccess } from "@/hooks/useMenuAccess";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -209,12 +209,27 @@ const menuGroups = [
 ];
 
 export const Sidebar = ({ isOpen, currentView, onNavigate }: SidebarProps) => {
-  const { isGrupoMenuVisivel, isLoading } = useModulosAtivos();
+  const { isGrupoMenuVisivel, isLoading: isLoadingModulos } = useModulosAtivos();
+  const { canAccessGroup, canAccessItem, filterSubmenuItems, isLoading: isLoadingPermissions, userId } = useMenuAccess();
+  
   const [expandedGroups, setExpandedGroups] = useState<string[]>(["dashboard-group", "portal-intranet-group", "expedientes-group", "prestacao-contas-group", "visto-group", "fiscalizacao-group", "multas-group", "admin-config-group"]);
   const [expandedMenus, setExpandedMenus] = useState<string[]>(["portal-intranet", "gestao-rh", "prestacao-contas", "visto", "fiscalizacao", "recurso-ordinario", "recurso-inconstitucionalidade", "admin-config"]);
 
-  // Filtra os grupos de menu com base nos módulos ativos
-  const filteredMenuGroups = menuGroups.filter(group => isGrupoMenuVisivel(group.id));
+  // Filtra os grupos de menu com base nos módulos ativos E permissões do utilizador
+  const filteredMenuGroups = menuGroups
+    .filter(group => isGrupoMenuVisivel(group.id))
+    .filter(group => canAccessGroup(group.id))
+    .map(group => ({
+      ...group,
+      items: group.items
+        .filter(item => canAccessItem(item.id))
+        .map(item => ({
+          ...item,
+          submenu: item.submenu ? filterSubmenuItems(item.submenu) : undefined
+        }))
+        .filter(item => !item.submenu || item.submenu.length > 0) // Remove itens com submenu vazio
+    }))
+    .filter(group => group.items.length > 0); // Remove grupos sem itens
 
   const toggleGroup = (groupId: string) => {
     setExpandedGroups(prev => 
@@ -242,6 +257,8 @@ export const Sidebar = ({ isOpen, currentView, onNavigate }: SidebarProps) => {
     );
   };
 
+  const isLoading = isLoadingModulos || isLoadingPermissions;
+
   return (
     <>
       {/* Overlay for mobile - with click to close */}
@@ -265,6 +282,11 @@ export const Sidebar = ({ isOpen, currentView, onNavigate }: SidebarProps) => {
         )}
       >
         <div className="h-full overflow-y-auto scrollbar-thin">
+        {isLoading ? (
+          <div className="flex items-center justify-center py-12">
+            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+          </div>
+        ) : (
         <nav className="p-3 sm:p-4 pt-6 sm:pt-8 space-y-2 sm:space-y-3">
           {filteredMenuGroups.map((group) => {
             const isActive = isGroupActive(group.items);
@@ -362,6 +384,7 @@ export const Sidebar = ({ isOpen, currentView, onNavigate }: SidebarProps) => {
             );
           })}
         </nav>
+        )}
       </div>
     </aside>
     </>
