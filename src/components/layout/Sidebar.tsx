@@ -239,22 +239,24 @@ export const Sidebar = ({ isOpen, currentView, onNavigate }: SidebarProps) => {
 
   return (
     <>
-      {/* Overlay for mobile */}
+      {/* Overlay for mobile - with click to close */}
       {isOpen && (
         <div 
           className="fixed inset-0 bg-black/50 z-30 lg:hidden"
-          onClick={() => {}} 
+          onClick={() => onNavigate(currentView)} 
         />
       )}
       
       <aside
         className={cn(
-          "sidebar-section fixed left-0 top-[8rem] md:top-[12rem] h-[calc(100vh-8rem)] md:h-[calc(100vh-12rem)] bg-card border-r border-border transition-all duration-300 z-40 shadow-lg",
-          isOpen ? "w-72 md:w-80 translate-x-0" : "w-0 -translate-x-full"
+          "sidebar-section fixed left-0 bg-card border-r border-border transition-all duration-300 z-40 shadow-lg scrollbar-thin",
+          "top-[6.5rem] sm:top-[7.5rem] md:top-[11rem] lg:top-[12.5rem]",
+          "h-[calc(100vh-6.5rem)] sm:h-[calc(100vh-7.5rem)] md:h-[calc(100vh-11rem)] lg:h-[calc(100vh-12.5rem)]",
+          isOpen ? "w-[85vw] sm:w-72 md:w-80 translate-x-0" : "w-0 -translate-x-full"
         )}
       >
-        <div className="h-full overflow-y-auto">
-        <nav className="p-4 pt-8 space-y-3">
+        <div className="h-full overflow-y-auto scrollbar-thin">
+        <nav className="p-3 sm:p-4 pt-6 sm:pt-8 space-y-2 sm:space-y-3">
           {menuGroups.map((group) => {
             const isActive = isGroupActive(group.items);
             const isExpanded = expandedGroups.includes(group.id);

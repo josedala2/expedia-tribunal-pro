@@ -38,20 +38,20 @@ const stats = [
 
 export const StatsCards = () => {
   return (
-    <div className="stats-cards grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+    <div className="stats-cards grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 xs:gap-3 sm:gap-4 md:gap-6">
       {stats.map((stat) => {
         const Icon = stat.icon;
         return (
           <Card key={stat.title} className="border-border hover:shadow-md transition-shadow">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <p className="text-sm font-medium text-muted-foreground">{stat.title}</p>
-                  <p className="text-3xl font-bold text-foreground">{stat.value}</p>
-                  <p className="text-sm text-muted-foreground">{stat.change} vs mês anterior</p>
+            <CardContent className="p-3 xs:p-4 sm:p-5 md:p-6">
+              <div className="flex items-start xs:items-center justify-between gap-2">
+                <div className="space-y-0.5 xs:space-y-1 min-w-0 flex-1">
+                  <p className="text-[10px] xs:text-xs sm:text-sm font-medium text-muted-foreground truncate">{stat.title}</p>
+                  <p className="text-lg xs:text-xl sm:text-2xl md:text-3xl font-bold text-foreground">{stat.value}</p>
+                  <p className="text-[9px] xs:text-[10px] sm:text-xs md:text-sm text-muted-foreground truncate">{stat.change} vs mês anterior</p>
                 </div>
-                <div className={`${stat.bgColor} ${stat.color} p-3 rounded-lg`}>
-                  <Icon className="h-6 w-6" />
+                <div className={`${stat.bgColor} ${stat.color} p-2 xs:p-2.5 sm:p-3 rounded-lg shrink-0`}>
+                  <Icon className="h-4 w-4 xs:h-5 xs:w-5 sm:h-6 sm:w-6" />
                 </div>
               </div>
             </CardContent>
