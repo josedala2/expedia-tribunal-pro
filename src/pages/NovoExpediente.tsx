@@ -19,7 +19,7 @@ import { DocumentChecklist } from "@/components/ui/document-checklist";
 import { supabase } from "@/integrations/supabase/client";
 
 const expedienteSchema = z.object({
-  natureza: z.enum(["interno", "externo"]),
+  natureza: z.enum(["interno", "externo", "sociedade_civil"]),
   tipo: z.string().min(1, "Tipo é obrigatório"),
   assunto: z.string().min(5, "Assunto deve ter no mínimo 5 caracteres").max(200, "Assunto muito longo"),
   origem: z.string().min(1, "Origem é obrigatória"),
@@ -40,7 +40,7 @@ interface NovoExpedienteProps {
 
 export const NovoExpediente = ({ onBack }: NovoExpedienteProps) => {
   const { toast } = useToast();
-  const [natureza, setNatureza] = useState<"interno" | "externo">("interno");
+  const [natureza, setNatureza] = useState<"interno" | "externo" | "sociedade_civil">("interno");
   const [isResposta, setIsResposta] = useState(false);
   const [showActa, setShowActa] = useState(false);
   const [actaData, setActaData] = useState<ActaRecepcaoData | ActaRecepcaoInternaData | null>(null);
@@ -125,12 +125,15 @@ export const NovoExpediente = ({ onBack }: NovoExpedienteProps) => {
       
       setActaData(novaActa);
     } else {
-      // Acta para expediente externo
+      // Acta para expediente externo ou sociedade civil
+      const tipoEntidade = data.natureza === "sociedade_civil" 
+        ? "Entidade da Sociedade Civil" 
+        : "Entidade Externa";
       const novaActa: ActaRecepcaoData = {
         numeroExpediente,
         tipo: data.tipo,
         assunto: data.assunto,
-        entidade: data.entidadeExterna || "Entidade Externa",
+        entidade: data.entidadeExterna || tipoEntidade,
         dataEmissao: new Date().toISOString(),
         numeroPaginas: "1",
         responsavelEntregaNome: data.origem,
@@ -141,7 +144,9 @@ export const NovoExpediente = ({ onBack }: NovoExpedienteProps) => {
         responsavelRecepcaoDepartamento: data.destino,
         dataRecepcao: new Date().toISOString(),
         local: "Luanda, Tribunal de Contas da República de Angola",
-        observacoes: "Documento recebido e registado no sistema de gestão documental.",
+        observacoes: data.natureza === "sociedade_civil"
+          ? "Documento de entidade da sociedade civil recebido e registado no sistema."
+          : "Documento recebido e registado no sistema de gestão documental.",
       };
       
       setActaData(novaActa);
@@ -243,11 +248,11 @@ export const NovoExpediente = ({ onBack }: NovoExpedienteProps) => {
             <Label className="text-base font-semibold">Natureza do Expediente *</Label>
             <RadioGroup
               value={natureza}
-              onValueChange={(value: "interno" | "externo") => {
+              onValueChange={(value: "interno" | "externo" | "sociedade_civil") => {
                 setNatureza(value);
                 setValue("natureza", value);
               }}
-              className="flex gap-6"
+              className="flex flex-wrap gap-4 md:gap-6"
             >
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="interno" id="interno" />
@@ -257,11 +262,17 @@ export const NovoExpediente = ({ onBack }: NovoExpedienteProps) => {
                 <RadioGroupItem value="externo" id="externo" />
                 <Label htmlFor="externo" className="cursor-pointer font-normal">Expediente Externo</Label>
               </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="sociedade_civil" id="sociedade_civil" />
+                <Label htmlFor="sociedade_civil" className="cursor-pointer font-normal">Outras Entidades da Sociedade Civil</Label>
+              </div>
             </RadioGroup>
             <p className="text-sm text-muted-foreground">
               {natureza === "interno" 
                 ? "Comunicação entre departamentos do Tribunal de Contas" 
-                : "Comunicação com entidades externas ao Tribunal de Contas"}
+                : natureza === "externo"
+                ? "Comunicação com entidades externas ao Tribunal de Contas"
+                : "Comunicação com organizações da sociedade civil (ONGs, associações, fundações, etc.)"}
             </p>
           </div>
 
@@ -342,7 +353,7 @@ export const NovoExpediente = ({ onBack }: NovoExpedienteProps) => {
           </div>
 
           {/* Campos específicos para Expediente Externo */}
-          {natureza === "externo" && (
+          {(natureza === "externo" || natureza === "sociedade_civil") && (
             <div className="space-y-4 p-4 bg-accent/10 border border-accent rounded-lg">
               <h3 className="font-semibold text-accent">Dados da Entidade Externa</h3>
               
