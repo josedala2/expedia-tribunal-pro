@@ -7,7 +7,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
-import { Loader2, Mail, Lock, UserCheck } from "lucide-react";
+import { Loader2, Mail, Lock, UserCheck, ChevronDown, ChevronUp } from "lucide-react";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 const loginSchema = z.object({
   email: z
@@ -27,8 +29,44 @@ interface LoginFormProps {
   onSuccess: () => void;
 }
 
+// Lista de utilizadores demo disponíveis
+const demoUsers = [
+  { email: 'teste@tc.gov.ao', nome: 'Utilizador de Teste', password: 'teste123', categoria: 'Geral' },
+  { email: 'presidente.tc@tc.gov.ao', nome: 'Presidente do TC', password: 'demo123', categoria: 'Presidência' },
+  { email: 'presidente.1camara@tc.gov.ao', nome: 'Presidente 1ª Câmara', password: 'demo123', categoria: 'Presidência' },
+  { email: 'presidente.2camara@tc.gov.ao', nome: 'Presidente 2ª Câmara', password: 'demo123', categoria: 'Presidência' },
+  { email: 'juiz.relator@tc.gov.ao', nome: 'Juiz Relator', password: 'demo123', categoria: 'Magistrados' },
+  { email: 'juiz.adjunto@tc.gov.ao', nome: 'Juiz Adjunto', password: 'demo123', categoria: 'Magistrados' },
+  { email: 'mp@tc.gov.ao', nome: 'Ministério Público', password: 'demo123', categoria: 'Magistrados' },
+  { email: 'dst@tc.gov.ao', nome: 'Director Serv. Técnicos', password: 'demo123', categoria: 'Direcção' },
+  { email: 'chefe.sg@tc.gov.ao', nome: 'Chefe SG', password: 'demo123', categoria: 'Direcção' },
+  { email: 'chefe.divisao@tc.gov.ao', nome: 'Chefe de Divisão', password: 'demo123', categoria: 'Direcção' },
+  { email: 'chefe.seccao@tc.gov.ao', nome: 'Chefe de Secção', password: 'demo123', categoria: 'Direcção' },
+  { email: 'contadoria@tc.gov.ao', nome: 'Contadoria Geral', password: 'demo123', categoria: 'Departamentos' },
+  { email: 'tecnico@tc.gov.ao', nome: 'Técnico', password: 'demo123', categoria: 'Técnicos' },
+  { email: 'tecnico.sg@tc.gov.ao', nome: 'Técnico SG', password: 'demo123', categoria: 'Técnicos' },
+  { email: 'oficial@tc.gov.ao', nome: 'Oficial de Diligências', password: 'demo123', categoria: 'Técnicos' },
+  { email: '1divisao@tc.gov.ao', nome: '1ª Divisão', password: 'demo123', categoria: 'Divisões' },
+  { email: '2divisao@tc.gov.ao', nome: '2ª Divisão', password: 'demo123', categoria: 'Divisões' },
+  { email: '3divisao@tc.gov.ao', nome: '3ª Divisão (OGE)', password: 'demo123', categoria: 'Divisões' },
+  { email: 'fiscalizacao@tc.gov.ao', nome: 'Dept. Fiscalização', password: 'demo123', categoria: 'Fiscalização' },
+  { email: 'fisc.preventiva@tc.gov.ao', nome: 'Fisc. Preventiva', password: 'demo123', categoria: 'Fiscalização' },
+  { email: 'fisc.sucessiva@tc.gov.ao', nome: 'Fisc. Sucessiva', password: 'demo123', categoria: 'Fiscalização' },
+  { email: 'entidade@tc.gov.ao', nome: 'Repr. Entidade', password: 'demo123', categoria: 'Externos' },
+];
+
+// Agrupar por categoria
+const groupedUsers = demoUsers.reduce((acc, user) => {
+  if (!acc[user.categoria]) {
+    acc[user.categoria] = [];
+  }
+  acc[user.categoria].push(user);
+  return acc;
+}, {} as Record<string, typeof demoUsers>);
+
 export const LoginForm = ({ onSuccess }: LoginFormProps) => {
   const [isLoading, setIsLoading] = useState(false);
+  const [showDemoUsers, setShowDemoUsers] = useState(false);
   const { signIn } = useAuth();
 
   const {
@@ -40,9 +78,10 @@ export const LoginForm = ({ onSuccess }: LoginFormProps) => {
     resolver: zodResolver(loginSchema),
   });
 
-  const fillTestCredentials = () => {
-    setValue("email", "teste@tc.gov.ao");
-    setValue("password", "teste123");
+  const fillCredentials = (email: string, password: string) => {
+    setValue("email", email);
+    setValue("password", password);
+    setShowDemoUsers(false);
   };
 
   const onSubmit = async (data: LoginFormData) => {
@@ -120,16 +159,57 @@ export const LoginForm = ({ onSuccess }: LoginFormProps) => {
           )}
         </Button>
         
-        <Button 
-          type="button" 
-          variant="outline" 
-          className="w-full text-muted-foreground h-9 xs:h-10 text-xs xs:text-sm" 
-          onClick={fillTestCredentials}
-          disabled={isLoading}
-        >
-          <UserCheck className="mr-1.5 xs:mr-2 h-3.5 w-3.5 xs:h-4 xs:w-4" />
-          Preencher com utilizador de teste
-        </Button>
+        <Collapsible open={showDemoUsers} onOpenChange={setShowDemoUsers}>
+          <CollapsibleTrigger asChild>
+            <Button 
+              type="button" 
+              variant="outline" 
+              className="w-full text-muted-foreground h-9 xs:h-10 text-xs xs:text-sm" 
+              disabled={isLoading}
+            >
+              <UserCheck className="mr-1.5 xs:mr-2 h-3.5 w-3.5 xs:h-4 xs:w-4" />
+              Utilizadores Demo
+              {showDemoUsers ? (
+                <ChevronUp className="ml-auto h-4 w-4" />
+              ) : (
+                <ChevronDown className="ml-auto h-4 w-4" />
+              )}
+            </Button>
+          </CollapsibleTrigger>
+          <CollapsibleContent className="mt-2">
+            <div className="border rounded-lg p-2 bg-muted/30">
+              <ScrollArea className="h-[280px] pr-3">
+                <div className="space-y-3">
+                  {Object.entries(groupedUsers).map(([categoria, users]) => (
+                    <div key={categoria}>
+                      <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1.5 px-1">
+                        {categoria}
+                      </h4>
+                      <div className="grid grid-cols-2 gap-1.5">
+                        {users.map((user) => (
+                          <Button
+                            key={user.email}
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="h-auto py-1.5 px-2 text-left justify-start hover:bg-primary/10 text-xs"
+                            onClick={() => fillCredentials(user.email, user.password)}
+                            disabled={isLoading}
+                          >
+                            <span className="truncate">{user.nome}</span>
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </ScrollArea>
+              <p className="text-[10px] text-muted-foreground mt-2 text-center">
+                Password padrão: <code className="bg-muted px-1 rounded">demo123</code> (ou <code className="bg-muted px-1 rounded">teste123</code> para teste)
+              </p>
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
       </div>
     </form>
   );
