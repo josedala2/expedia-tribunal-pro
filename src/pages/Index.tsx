@@ -184,8 +184,7 @@ const Index = () => {
         />
         
         <main className={cn(
-          "flex-1 transition-all duration-300 min-w-0",
-          isSidebarOpen ? 'lg:ml-80' : 'ml-0'
+          "flex-1 transition-all duration-300 min-w-0"
         )}>
           <div className="container mx-auto px-3 py-4 sm:px-4 sm:py-5 md:px-6 md:py-6 max-w-full">
             {currentView === "dashboard" && <Dashboard onNavigate={handleNavigate} />}

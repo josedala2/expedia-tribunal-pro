@@ -254,10 +254,12 @@ export const Sidebar = ({ isOpen, currentView, onNavigate }: SidebarProps) => {
       
       <aside
         className={cn(
-          "sidebar-section fixed left-0 bg-card border-r border-border transition-all duration-300 z-40 shadow-lg scrollbar-thin",
-          "top-[6.5rem] sm:top-[7.5rem] md:top-[11rem] lg:top-[12.5rem]",
-          "h-[calc(100vh-6.5rem)] sm:h-[calc(100vh-7.5rem)] md:h-[calc(100vh-11rem)] lg:h-[calc(100vh-12.5rem)]",
-          isOpen ? "w-[85vw] sm:w-72 md:w-80 translate-x-0" : "w-0 -translate-x-full"
+          "sidebar-section bg-card border-r border-border transition-all duration-300 z-40 shadow-lg scrollbar-thin",
+          // Mobile/tablet: fixed position (overlay drawer)
+          "fixed left-0 top-[6.5rem] sm:top-[7.5rem] md:top-[11rem] h-[calc(100vh-6.5rem)] sm:h-[calc(100vh-7.5rem)] md:h-[calc(100vh-11rem)]",
+          // Desktop: sticky position (scrolls with content)
+          "lg:sticky lg:top-0 lg:h-screen lg:self-start",
+          isOpen ? "w-[85vw] sm:w-72 md:w-80 translate-x-0" : "w-0 -translate-x-full lg:w-0"
         )}
       >
         <div className="h-full overflow-y-auto scrollbar-thin">
