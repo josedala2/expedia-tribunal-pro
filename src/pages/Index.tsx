@@ -183,9 +183,7 @@ const Index = () => {
           }}
         />
         
-        <main className={cn(
-          "flex-1 transition-all duration-300 min-w-0"
-        )}>
+        <main className="flex-1 transition-all duration-300 min-w-0">
           <div className="container mx-auto px-3 py-4 sm:px-4 sm:py-5 md:px-6 md:py-6 max-w-full">
             {currentView === "dashboard" && <Dashboard onNavigate={handleNavigate} />}
         {currentView === "portal-intranet" && <PortalIntranet onNavigate={handleNavigate} />}

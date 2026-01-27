@@ -257,9 +257,11 @@ export const Sidebar = ({ isOpen, currentView, onNavigate }: SidebarProps) => {
           "sidebar-section bg-card border-r border-border transition-all duration-300 z-40 shadow-lg scrollbar-thin",
           // Mobile/tablet: fixed position (overlay drawer)
           "fixed left-0 top-[6.5rem] sm:top-[7.5rem] md:top-[11rem] h-[calc(100vh-6.5rem)] sm:h-[calc(100vh-7.5rem)] md:h-[calc(100vh-11rem)]",
-          // Desktop: sticky position with ~1cm (2.5rem/40px) gap from header
-          "lg:sticky lg:top-0 lg:mt-10 lg:h-[calc(100vh-2.5rem)] lg:self-start",
-          isOpen ? "w-[85vw] sm:w-72 md:w-80 translate-x-0" : "w-0 -translate-x-full lg:w-0"
+          // Desktop: sticky position, flex-shrink-0 to maintain width
+          "lg:relative lg:top-0 lg:mt-0 lg:h-auto lg:min-h-[calc(100vh-12.5rem)] lg:flex-shrink-0",
+          isOpen 
+            ? "w-[85vw] sm:w-72 md:w-80 lg:w-80 translate-x-0" 
+            : "w-0 -translate-x-full lg:translate-x-0 lg:w-0 lg:min-w-0 lg:overflow-hidden"
         )}
       >
         <div className="h-full overflow-y-auto scrollbar-thin">
