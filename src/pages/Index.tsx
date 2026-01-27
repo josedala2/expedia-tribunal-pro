@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { cn } from "@/lib/utils";
 import { Header } from "@/components/layout/Header";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Dashboard } from "@/components/dashboard/Dashboard";
@@ -140,7 +141,7 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background overflow-x-hidden">
       <TourGuide run={runTour} onComplete={handleTourComplete} />
       
       <Header 
@@ -150,15 +151,24 @@ const Index = () => {
         onNavigate={handleNavigate}
       />
       
-      <div className="flex">
+      <div className="flex relative">
         <Sidebar 
           isOpen={isSidebarOpen}
           currentView={currentView}
-          onNavigate={handleNavigate}
+          onNavigate={(view) => {
+            handleNavigate(view);
+            // Close sidebar on mobile after navigation
+            if (window.innerWidth < 1024) {
+              setIsSidebarOpen(false);
+            }
+          }}
         />
         
-        <main className={`flex-1 transition-all duration-300 ${isSidebarOpen ? 'lg:ml-80' : 'ml-0'}`}>
-          <div className="container mx-auto p-3 md:p-6">
+        <main className={cn(
+          "flex-1 transition-all duration-300 min-w-0",
+          isSidebarOpen ? 'lg:ml-80' : 'ml-0'
+        )}>
+          <div className="container mx-auto px-3 py-4 sm:px-4 sm:py-5 md:px-6 md:py-6 max-w-full">
             {currentView === "dashboard" && <Dashboard onNavigate={handleNavigate} />}
         {currentView === "portal-intranet" && <PortalIntranet onNavigate={handleNavigate} />}
         {currentView === "meu-perfil" && <MeuPerfil onBack={() => handleNavigate("portal-intranet")} />}

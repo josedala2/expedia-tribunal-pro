@@ -71,48 +71,48 @@ export const LoginForm = ({ onSuccess }: LoginFormProps) => {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      <div className="space-y-2">
-        <Label htmlFor="email">Email</Label>
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-3 xs:space-y-4">
+      <div className="space-y-1.5 xs:space-y-2">
+        <Label htmlFor="email" className="text-xs xs:text-sm">Email</Label>
         <div className="relative">
-          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Mail className="absolute left-2.5 xs:left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 xs:h-4 xs:w-4 text-muted-foreground" />
           <Input
             id="email"
             type="email"
             placeholder="seu.email@tc.gov.ao"
-            className="pl-9"
+            className="pl-8 xs:pl-9 text-sm xs:text-base h-9 xs:h-10"
             {...register("email")}
             disabled={isLoading}
           />
         </div>
         {errors.email && (
-          <p className="text-sm text-destructive">{errors.email.message}</p>
+          <p className="text-xs xs:text-sm text-destructive">{errors.email.message}</p>
         )}
       </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="password">Password</Label>
+      <div className="space-y-1.5 xs:space-y-2">
+        <Label htmlFor="password" className="text-xs xs:text-sm">Password</Label>
         <div className="relative">
-          <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Lock className="absolute left-2.5 xs:left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 xs:h-4 xs:w-4 text-muted-foreground" />
           <Input
             id="password"
             type="password"
             placeholder="••••••••"
-            className="pl-9"
+            className="pl-8 xs:pl-9 text-sm xs:text-base h-9 xs:h-10"
             {...register("password")}
             disabled={isLoading}
           />
         </div>
         {errors.password && (
-          <p className="text-sm text-destructive">{errors.password.message}</p>
+          <p className="text-xs xs:text-sm text-destructive">{errors.password.message}</p>
         )}
       </div>
 
-      <div className="flex flex-col gap-2">
-        <Button type="submit" className="w-full" disabled={isLoading}>
+      <div className="flex flex-col gap-2 pt-1 xs:pt-2">
+        <Button type="submit" className="w-full h-9 xs:h-10 text-sm xs:text-base" disabled={isLoading}>
           {isLoading ? (
             <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              <Loader2 className="mr-2 h-3.5 w-3.5 xs:h-4 xs:w-4 animate-spin" />
               A iniciar sessão...
             </>
           ) : (
@@ -123,11 +123,11 @@ export const LoginForm = ({ onSuccess }: LoginFormProps) => {
         <Button 
           type="button" 
           variant="outline" 
-          className="w-full text-muted-foreground" 
+          className="w-full text-muted-foreground h-9 xs:h-10 text-xs xs:text-sm" 
           onClick={fillTestCredentials}
           disabled={isLoading}
         >
-          <UserCheck className="mr-2 h-4 w-4" />
+          <UserCheck className="mr-1.5 xs:mr-2 h-3.5 w-3.5 xs:h-4 xs:w-4" />
           Preencher com utilizador de teste
         </Button>
       </div>

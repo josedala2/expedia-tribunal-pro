@@ -13,25 +13,26 @@ const data = [
 export const ProcessChart = () => {
   return (
     <Card className="border-border">
-      <CardHeader>
-        <CardTitle className="text-foreground">Processos por Tipo</CardTitle>
-        <p className="text-sm text-muted-foreground">Últimos 6 meses</p>
+      <CardHeader className="p-3 xs:p-4 sm:p-6">
+        <CardTitle className="text-foreground text-sm xs:text-base sm:text-lg">Processos por Tipo</CardTitle>
+        <p className="text-xs xs:text-sm text-muted-foreground">Últimos 6 meses</p>
       </CardHeader>
-      <CardContent>
-        <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={data}>
+      <CardContent className="p-2 xs:p-3 sm:p-6 pt-0">
+        <ResponsiveContainer width="100%" height={200} className="sm:!h-[250px] md:!h-[300px]">
+          <BarChart data={data} margin={{ top: 5, right: 5, left: -20, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
-            <XAxis dataKey="month" className="text-muted-foreground" />
-            <YAxis className="text-muted-foreground" />
+            <XAxis dataKey="month" className="text-muted-foreground" tick={{ fontSize: 10 }} />
+            <YAxis className="text-muted-foreground" tick={{ fontSize: 10 }} width={35} />
             <Tooltip 
               contentStyle={{ 
                 backgroundColor: 'hsl(var(--card))', 
                 border: '1px solid hsl(var(--border))',
-                borderRadius: '6px'
+                borderRadius: '6px',
+                fontSize: '12px'
               }}
             />
-            <Legend />
-            <Bar dataKey="prestacao" name="Prestação de Contas" fill="hsl(217, 91%, 60%)" />
+            <Legend wrapperStyle={{ fontSize: '10px' }} />
+            <Bar dataKey="prestacao" name="Prestação" fill="hsl(217, 91%, 60%)" />
             <Bar dataKey="visto" name="Visto" fill="hsl(142, 71%, 45%)" />
             <Bar dataKey="fiscalizacao" name="Fiscalização" fill="hsl(262, 83%, 58%)" />
             <Bar dataKey="multa" name="Multa" fill="hsl(0, 84%, 60%)" />
