@@ -1,4 +1,4 @@
-import { ArrowLeft, Settings, User, Bell, Shield, Database } from "lucide-react";
+import { ArrowLeft, Settings, User, Bell, Shield, Database, Package, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -11,6 +11,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 const passwordSchema = z.object({
   senhaAtual: z.string().min(6, "Senha deve ter no mínimo 6 caracteres"),
@@ -31,12 +32,63 @@ interface ConfiguracoesProps {
   onBack: () => void;
 }
 
+interface Modulo {
+  id: string;
+  codigo: string;
+  nome: string;
+  descricao: string | null;
+  icone: string | null;
+  ativo: boolean;
+  ordem: number;
+}
+
 export const Configuracoes = ({ onBack }: ConfiguracoesProps) => {
   const { theme, setTheme } = useTheme();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   
   const { register, handleSubmit, formState: { errors }, reset } = useForm<PasswordForm>({
     resolver: zodResolver(passwordSchema)
+  });
+
+  // Query para buscar módulos
+  const { data: modulos = [], isLoading: isLoadingModulos } = useQuery({
+    queryKey: ['modulos-sistema'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('modulos_sistema')
+        .select('*')
+        .order('ordem');
+      
+      if (error) throw error;
+      return data as Modulo[];
+    }
+  });
+
+  // Mutation para atualizar estado do módulo
+  const toggleModuloMutation = useMutation({
+    mutationFn: async ({ id, ativo }: { id: string; ativo: boolean }) => {
+      const { error } = await supabase
+        .from('modulos_sistema')
+        .update({ ativo })
+        .eq('id', id);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['modulos-sistema'] });
+      toast({
+        title: "Módulo atualizado",
+        description: "O estado do módulo foi alterado com sucesso.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Erro ao atualizar módulo",
+        description: error.message || "Não foi possível alterar o estado do módulo.",
+        variant: "destructive"
+      });
+    }
   });
 
   const onPasswordSubmit = async (data: PasswordForm) => {
@@ -76,11 +128,12 @@ export const Configuracoes = ({ onBack }: ConfiguracoesProps) => {
       </div>
 
       <Tabs defaultValue="perfil" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="perfil" className="font-bold">Perfil</TabsTrigger>
           <TabsTrigger value="notificacoes" className="font-bold">Notificações</TabsTrigger>
           <TabsTrigger value="seguranca" className="font-bold">Segurança</TabsTrigger>
           <TabsTrigger value="sistema" className="font-bold">Sistema</TabsTrigger>
+          <TabsTrigger value="modulos" className="font-bold">Módulos</TabsTrigger>
         </TabsList>
 
         <TabsContent value="perfil">
@@ -272,6 +325,42 @@ export const Configuracoes = ({ onBack }: ConfiguracoesProps) => {
                 <Switch defaultChecked />
               </div>
             </div>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="modulos">
+          <Card className="p-6">
+            <div className="flex items-center gap-4 mb-6">
+              <Package className="h-8 w-8 text-primary" />
+              <div>
+                <h2 className="text-xl font-bold">Gestão de Módulos</h2>
+                <p className="text-sm text-muted-foreground">Ativar ou desativar módulos do sistema</p>
+              </div>
+            </div>
+
+            {isLoadingModulos ? (
+              <div className="flex items-center justify-center py-8">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {modulos.map((modulo) => (
+                  <div key={modulo.id} className="flex items-center justify-between p-4 border rounded-lg">
+                    <div className="space-y-0.5">
+                      <Label className="text-base font-medium">{modulo.nome}</Label>
+                      <p className="text-sm text-muted-foreground">{modulo.descricao}</p>
+                    </div>
+                    <Switch
+                      checked={modulo.ativo}
+                      onCheckedChange={(checked) => 
+                        toggleModuloMutation.mutate({ id: modulo.id, ativo: checked })
+                      }
+                      disabled={toggleModuloMutation.isPending}
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
           </Card>
         </TabsContent>
       </Tabs>
