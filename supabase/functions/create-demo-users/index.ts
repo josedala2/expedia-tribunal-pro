@@ -8,6 +8,7 @@ const corsHeaders = {
 // Lista de utilizadores demo a criar
 const demoUsers = [
   { email: 'presidente.tc@tc.gov.ao', nome: 'Presidente do TC', perfil: 'Presidente do TC' },
+  { email: 'secretaria.jp@tc.gov.ao', nome: 'Secretaria do Juiz Presidente', perfil: 'Secretaria do Juiz Presidente' },
   { email: 'presidente.1camara@tc.gov.ao', nome: 'Presidente da 1ª Câmara', perfil: 'Presidente da 1.ª Câmara' },
   { email: 'presidente.2camara@tc.gov.ao', nome: 'Presidente da 2ª Câmara', perfil: 'Presidente da 2.ª Câmara' },
   { email: 'juiz.relator@tc.gov.ao', nome: 'Juiz Relator Demo', perfil: 'Juiz Relator' },
