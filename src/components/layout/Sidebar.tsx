@@ -1,9 +1,8 @@
-import { LayoutDashboard, FileText, FolderCheck, Eye, FileBarChart, DollarSign, Users, Inbox, ChevronDown, ChevronRight, CheckCircle, Settings, Loader2 } from "lucide-react";
+import { LayoutDashboard, FileText, FolderCheck, Eye, FileBarChart, DollarSign, Users, Inbox, ChevronDown, ChevronRight, CheckCircle, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { useState } from "react";
-import { useModulosAtivos } from "@/hooks/useModulosAtivos";
-import { useMenuAccess } from "@/hooks/useMenuAccess";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -209,27 +208,8 @@ const menuGroups = [
 ];
 
 export const Sidebar = ({ isOpen, currentView, onNavigate }: SidebarProps) => {
-  const { isGrupoMenuVisivel, isLoading: isLoadingModulos } = useModulosAtivos();
-  const { canAccessGroup, canAccessItem, filterSubmenuItems, isLoading: isLoadingPermissions, userId } = useMenuAccess();
-  
   const [expandedGroups, setExpandedGroups] = useState<string[]>(["dashboard-group", "portal-intranet-group", "expedientes-group", "prestacao-contas-group", "visto-group", "fiscalizacao-group", "multas-group", "admin-config-group"]);
   const [expandedMenus, setExpandedMenus] = useState<string[]>(["portal-intranet", "gestao-rh", "prestacao-contas", "visto", "fiscalizacao", "recurso-ordinario", "recurso-inconstitucionalidade", "admin-config"]);
-
-  // Filtra os grupos de menu com base nos módulos ativos E permissões do utilizador
-  const filteredMenuGroups = menuGroups
-    .filter(group => isGrupoMenuVisivel(group.id))
-    .filter(group => canAccessGroup(group.id))
-    .map(group => ({
-      ...group,
-      items: group.items
-        .filter(item => canAccessItem(item.id))
-        .map(item => ({
-          ...item,
-          submenu: item.submenu ? filterSubmenuItems(item.submenu) : undefined
-        }))
-        .filter(item => !item.submenu || item.submenu.length > 0) // Remove itens com submenu vazio
-    }))
-    .filter(group => group.items.length > 0); // Remove grupos sem itens
 
   const toggleGroup = (groupId: string) => {
     setExpandedGroups(prev => 
@@ -257,38 +237,25 @@ export const Sidebar = ({ isOpen, currentView, onNavigate }: SidebarProps) => {
     );
   };
 
-  const isLoading = isLoadingModulos || isLoadingPermissions;
-
   return (
     <>
-      {/* Overlay for mobile - with click to close */}
+      {/* Overlay for mobile */}
       {isOpen && (
         <div 
           className="fixed inset-0 bg-black/50 z-30 lg:hidden"
-          onClick={() => onNavigate(currentView)} 
+          onClick={() => {}} 
         />
       )}
       
       <aside
         className={cn(
-          "sidebar-section bg-card border-r border-border transition-all duration-300 z-40 shadow-lg scrollbar-thin",
-          // Mobile/tablet: fixed position (overlay drawer)
-          "fixed left-0 top-[6.5rem] sm:top-[7.5rem] md:top-[11rem] h-[calc(100vh-6.5rem)] sm:h-[calc(100vh-7.5rem)] md:h-[calc(100vh-11rem)]",
-          // Desktop: sticky position, flex-shrink-0 to maintain width
-          "lg:relative lg:top-0 lg:mt-0 lg:h-auto lg:min-h-[calc(100vh-12.5rem)] lg:flex-shrink-0",
-          isOpen 
-            ? "w-[85vw] sm:w-72 md:w-80 lg:w-80 translate-x-0" 
-            : "w-0 -translate-x-full lg:translate-x-0 lg:w-0 lg:min-w-0 lg:overflow-hidden"
+          "sidebar-section fixed left-0 top-[8rem] md:top-[12rem] h-[calc(100vh-8rem)] md:h-[calc(100vh-12rem)] bg-card border-r border-border transition-all duration-300 z-40 shadow-lg",
+          isOpen ? "w-72 md:w-80 translate-x-0" : "w-0 -translate-x-full"
         )}
       >
-        <div className="h-full overflow-y-auto scrollbar-thin">
-        {isLoading ? (
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-          </div>
-        ) : (
-        <nav className="p-3 sm:p-4 pt-6 sm:pt-8 space-y-2 sm:space-y-3">
-          {filteredMenuGroups.map((group) => {
+        <div className="h-full overflow-y-auto">
+        <nav className="p-4 pt-8 space-y-3">
+          {menuGroups.map((group) => {
             const isActive = isGroupActive(group.items);
             const isExpanded = expandedGroups.includes(group.id);
             
@@ -384,7 +351,6 @@ export const Sidebar = ({ isOpen, currentView, onNavigate }: SidebarProps) => {
             );
           })}
         </nav>
-        )}
       </div>
     </aside>
     </>

@@ -21,7 +21,7 @@ export const Auth = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-accent/20 p-4">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-accent/20">
         <p className="text-muted-foreground">A carregar...</p>
       </div>
     );
@@ -29,12 +29,12 @@ export const Auth = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-accent/20 p-4">
-      <Card className="w-full max-w-md p-6 sm:p-8">
+      <Card className="w-full max-w-md p-8">
         <div className="flex flex-col items-center mb-6">
           <div className="mb-4">
-            <img src={logoTC} alt="Tribunal de Contas" className="h-20 sm:h-24 w-auto" />
+            <img src={logoTC} alt="Tribunal de Contas" className="h-24 w-auto" />
           </div>
-          <h1 className="text-xl sm:text-2xl font-bold text-foreground mb-2 text-center">
+          <h1 className="text-2xl font-bold text-foreground mb-2">
             Tribunal de Contas
           </h1>
           <p className="text-sm text-muted-foreground text-center">

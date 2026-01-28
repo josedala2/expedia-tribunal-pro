@@ -1,15 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight, Eye } from "lucide-react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { ArrowRight, FileText } from "lucide-react";
 
 interface RecentProcessesProps {
   onNavigate: (view: string) => void;
@@ -60,66 +52,55 @@ const statusColors: Record<string, string> = {
 export const RecentProcesses = ({ onNavigate }: RecentProcessesProps) => {
   return (
     <Card className="border-border">
-      <CardHeader className="flex flex-row items-center justify-between p-4 sm:p-6">
+      <CardHeader className="flex flex-row items-center justify-between">
         <div>
-          <CardTitle className="text-foreground text-base sm:text-lg">Processos Recentes</CardTitle>
-          <p className="text-xs sm:text-sm text-muted-foreground mt-1">Últimas atualizações</p>
+          <CardTitle className="text-foreground">Processos Recentes</CardTitle>
+          <p className="text-sm text-muted-foreground mt-1">Últimas atualizações</p>
         </div>
         <Button 
           variant="outline" 
           size="sm"
-          className="text-xs sm:text-sm"
+          className="quick-actions"
           onClick={() => onNavigate("processes")}
         >
           Ver Todos
           <ArrowRight className="ml-2 h-4 w-4" />
         </Button>
       </CardHeader>
-      <CardContent className="p-0 sm:p-6 sm:pt-0">
-        <div className="rounded-md border border-border overflow-hidden">
-          <Table>
-            <TableHeader>
-              <TableRow className="bg-muted/50">
-                <TableHead className="font-semibold text-xs sm:text-sm">Processo</TableHead>
-                <TableHead className="font-semibold text-xs sm:text-sm hidden sm:table-cell">Tipo</TableHead>
-                <TableHead className="font-semibold text-xs sm:text-sm">Entidade</TableHead>
-                <TableHead className="font-semibold text-xs sm:text-sm">Estado</TableHead>
-                <TableHead className="font-semibold text-xs sm:text-sm hidden md:table-cell">Data</TableHead>
-                <TableHead className="font-semibold text-xs sm:text-sm text-right">Ação</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {recentProcesses.map((process) => (
-                <TableRow key={process.id} className="hover:bg-secondary/50 cursor-pointer">
-                  <TableCell className="font-medium text-xs sm:text-sm py-3">{process.id}</TableCell>
-                  <TableCell className="text-xs sm:text-sm hidden sm:table-cell">
+      <CardContent>
+        <div className="space-y-4">
+          {recentProcesses.map((process) => (
+            <div
+              key={process.id}
+              className="flex items-center justify-between p-4 rounded-lg border border-border hover:bg-secondary/50 transition-colors cursor-pointer"
+            >
+              <div className="flex items-center gap-4">
+                <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <FileText className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <p className="font-semibold text-foreground">{process.id}</p>
                     <Badge variant="outline" className="text-xs">
                       {process.type}
                     </Badge>
-                  </TableCell>
-                  <TableCell className="text-xs sm:text-sm max-w-[150px] truncate">{process.entity}</TableCell>
-                  <TableCell>
-                    <Badge className={`${statusColors[process.status]} text-xs`}>
-                      {process.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-xs sm:text-sm text-muted-foreground hidden md:table-cell">
-                    {process.date}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-8 w-8 p-0"
-                      onClick={() => onNavigate("processes")}
-                    >
-                      <Eye className="h-4 w-4" />
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+                  </div>
+                  <p className="text-sm text-muted-foreground">{process.entity}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-4">
+                <div className="text-right">
+                  <Badge className={statusColors[process.status]}>
+                    {process.status}
+                  </Badge>
+                  <p className="text-xs text-muted-foreground mt-1">{process.date}</p>
+                </div>
+                <Button variant="ghost" size="icon" className="hover:bg-secondary">
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          ))}
         </div>
       </CardContent>
     </Card>

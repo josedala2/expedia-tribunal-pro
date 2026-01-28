@@ -1,6 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Settings, Calendar, GitBranch, Users, Clock, DollarSign, FileText, Bell, Archive, Plug, Flag, FolderOpen } from "lucide-react";
+import { ArrowLeft, Settings, Calendar, GitBranch, Users, Clock, DollarSign, FileText, Bell, Archive, Plug, Flag } from "lucide-react";
 
 interface AdminConfigMenuProps {
   onBack: () => void;
@@ -9,7 +9,6 @@ interface AdminConfigMenuProps {
 
 export const menuItems = [
   { id: "admin-settings", title: "Configurações Gerais", description: "Gerir configurações do sistema", icon: Settings },
-  { id: "tipos-expediente", title: "Tipos de Expediente", description: "Cadastrar tipos de expediente", icon: FolderOpen },
   { id: "calendario-judicial", title: "Calendário Judicial", description: "Gerir feriados e dias não úteis", icon: Calendar },
   { id: "regras-distribuicao", title: "Regras de Distribuição", description: "Configurar distribuição de processos", icon: GitBranch },
   { id: "mapa-letra-juiz", title: "Mapa Letra de Juiz", description: "Atribuição de letras aos juízes", icon: Users },

@@ -1,7 +1,9 @@
-import { createContext, useContext, useEffect, useState, ReactNode, useRef, useCallback } from "react";
+import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { User, Session, AuthError } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { useAuthAudit } from "@/hooks/useAuthAudit";
 
 interface AuthContextType {
   user: User | null;
@@ -18,66 +20,90 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const initializedRef = useRef(false);
-  const lastSessionIdRef = useRef<string | null>(null);
+  const { logAuthEvent, registerActiveSession, endSession, updateSessionActivity } = useAuthAudit();
 
   useEffect(() => {
-    // Prevent double initialization in React StrictMode
-    if (initializedRef.current) return;
-    initializedRef.current = true;
-
-    // Set up auth state listener FIRST
+    // Configurar listener de mudanças de autenticação PRIMEIRO
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, currentSession) => {
-        // Only update state if session actually changed
-        const newSessionId = currentSession?.access_token || null;
-        if (lastSessionIdRef.current === newSessionId && event !== 'SIGNED_OUT') {
-          return;
-        }
-        lastSessionIdRef.current = newSessionId;
-
-        setSession(currentSession);
-        setUser(currentSession?.user ?? null);
+      (event, session) => {
+        setSession(session);
+        setUser(session?.user ?? null);
         setIsLoading(false);
+
+        // Registar eventos de autenticação (sem await para não bloquear)
+        setTimeout(() => {
+          if (event === "SIGNED_IN" && session?.user) {
+            logAuthEvent({
+              evento: "login",
+              sucesso: true,
+              userId: session.user.id,
+              email: session.user.email,
+            });
+            registerActiveSession(session.user.id, session.access_token);
+          } else if (event === "SIGNED_OUT") {
+            if (session?.access_token) {
+              endSession(session.access_token);
+            }
+          } else if (event === "TOKEN_REFRESHED" && session) {
+            updateSessionActivity(session.access_token);
+          }
+        }, 0);
       }
     );
 
-    // THEN check for existing session
-    supabase.auth.getSession().then(({ data: { session: existingSession } }) => {
-      const sessionId = existingSession?.access_token || null;
-      if (lastSessionIdRef.current !== sessionId) {
-        lastSessionIdRef.current = sessionId;
-        setSession(existingSession);
-        setUser(existingSession?.user ?? null);
-      }
+    // DEPOIS verificar sessão existente
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
       setIsLoading(false);
+
+      // Actualizar actividade se já tiver sessão
+      if (session?.access_token) {
+        setTimeout(() => {
+          updateSessionActivity(session.access_token);
+        }, 0);
+      }
     });
 
     return () => subscription.unsubscribe();
   }, []);
 
-  const signIn = useCallback(async (email: string, password: string) => {
+  const signIn = async (email: string, password: string) => {
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { error, data } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
       if (error) {
+        // Registar falha de login
+        await logAuthEvent({
+          evento: "login",
+          sucesso: false,
+          email: email,
+          detalhes: { erro: error.message },
+        });
         return { error };
       }
 
+      // Sucesso é registado no onAuthStateChange
       return { error: null };
     } catch (error: any) {
+      await logAuthEvent({
+        evento: "login",
+        sucesso: false,
+        email: email,
+        detalhes: { erro: error.message },
+      });
       return { error };
     }
-  }, []);
+  };
 
-  const signUp = useCallback(async (email: string, password: string, nomeCompleto: string) => {
+  const signUp = async (email: string, password: string, nomeCompleto: string) => {
     try {
       const redirectUrl = `${window.location.origin}/`;
       
-      const { error } = await supabase.auth.signUp({
+      const { error, data } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -89,28 +115,73 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       });
 
       if (error) {
+        await logAuthEvent({
+          evento: "signup",
+          sucesso: false,
+          email: email,
+          detalhes: { erro: error.message },
+        });
         return { error };
       }
 
+      // Registar sucesso de registo
+      await logAuthEvent({
+        evento: "signup",
+        sucesso: true,
+        userId: data.user?.id,
+        email: email,
+      });
+
       return { error: null };
     } catch (error: any) {
+      await logAuthEvent({
+        evento: "signup",
+        sucesso: false,
+        email: email,
+        detalhes: { erro: error.message },
+      });
       return { error };
     }
-  }, []);
+  };
 
-  const signOut = useCallback(async () => {
+  const signOut = async () => {
     try {
+      const currentSession = session;
       const { error } = await supabase.auth.signOut();
       
       if (error) {
         toast.error("Erro ao terminar sessão");
+        await logAuthEvent({
+          evento: "logout",
+          sucesso: false,
+          userId: user?.id,
+          email: user?.email,
+          detalhes: { erro: error.message },
+        });
       } else {
         toast.success("Sessão terminada com sucesso");
+        await logAuthEvent({
+          evento: "logout",
+          sucesso: true,
+          userId: user?.id,
+          email: user?.email,
+        });
+        
+        if (currentSession?.access_token) {
+          await endSession(currentSession.access_token);
+        }
       }
     } catch (error: any) {
       toast.error("Erro ao terminar sessão");
+      await logAuthEvent({
+        evento: "logout",
+        sucesso: false,
+        userId: user?.id,
+        email: user?.email,
+        detalhes: { erro: error.message },
+      });
     }
-  }, []);
+  };
 
   const value = {
     user,

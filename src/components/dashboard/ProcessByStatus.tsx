@@ -11,20 +11,20 @@ const data = [
 export const ProcessByStatus = () => {
   return (
     <Card className="border-border">
-      <CardHeader className="p-3 xs:p-4 sm:p-6">
-        <CardTitle className="text-foreground text-sm xs:text-base sm:text-lg">Processos por Estado</CardTitle>
-        <p className="text-xs xs:text-sm text-muted-foreground">Distribuição atual</p>
+      <CardHeader>
+        <CardTitle className="text-foreground">Processos por Estado</CardTitle>
+        <p className="text-sm text-muted-foreground">Distribuição atual</p>
       </CardHeader>
-      <CardContent className="p-2 xs:p-3 sm:p-6 pt-0">
-        <ResponsiveContainer width="100%" height={200} className="sm:!h-[250px] md:!h-[300px]">
+      <CardContent>
+        <ResponsiveContainer width="100%" height={300}>
           <PieChart>
             <Pie
               data={data}
               cx="50%"
               cy="50%"
               labelLine={false}
-              label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
-              outerRadius="70%"
+              label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+              outerRadius={100}
               fill="#8884d8"
               dataKey="value"
             >
@@ -36,11 +36,10 @@ export const ProcessByStatus = () => {
               contentStyle={{ 
                 backgroundColor: 'hsl(var(--card))', 
                 border: '1px solid hsl(var(--border))',
-                borderRadius: '6px',
-                fontSize: '12px'
+                borderRadius: '6px'
               }}
             />
-            <Legend wrapperStyle={{ fontSize: '10px' }} />
+            <Legend />
           </PieChart>
         </ResponsiveContainer>
       </CardContent>

@@ -1140,42 +1140,6 @@ export type Database = {
           },
         ]
       }
-      modulos_sistema: {
-        Row: {
-          ativo: boolean
-          atualizado_em: string
-          codigo: string
-          criado_em: string
-          descricao: string | null
-          icone: string | null
-          id: string
-          nome: string
-          ordem: number | null
-        }
-        Insert: {
-          ativo?: boolean
-          atualizado_em?: string
-          codigo: string
-          criado_em?: string
-          descricao?: string | null
-          icone?: string | null
-          id?: string
-          nome: string
-          ordem?: number | null
-        }
-        Update: {
-          ativo?: boolean
-          atualizado_em?: string
-          codigo?: string
-          criado_em?: string
-          descricao?: string | null
-          icone?: string | null
-          id?: string
-          nome?: string
-          ordem?: number | null
-        }
-        Relationships: []
-      }
       movimentacoes_funcionarios: {
         Row: {
           aprovado_por: string | null
@@ -2442,42 +2406,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
-      }
-      tipos_expediente: {
-        Row: {
-          ativo: boolean
-          atualizado_em: string
-          categoria: string
-          codigo: string
-          criado_em: string
-          criado_por: string | null
-          descricao: string | null
-          id: string
-          nome: string
-        }
-        Insert: {
-          ativo?: boolean
-          atualizado_em?: string
-          categoria?: string
-          codigo: string
-          criado_em?: string
-          criado_por?: string | null
-          descricao?: string | null
-          id?: string
-          nome: string
-        }
-        Update: {
-          ativo?: boolean
-          atualizado_em?: string
-          categoria?: string
-          codigo?: string
-          criado_em?: string
-          criado_por?: string | null
-          descricao?: string | null
-          id?: string
-          nome?: string
-        }
-        Relationships: []
       }
       tramitacao_processos: {
         Row: {

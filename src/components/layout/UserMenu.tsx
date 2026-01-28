@@ -28,21 +28,21 @@ export const UserMenu = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="relative h-7 w-7 xs:h-8 xs:w-8 sm:h-9 sm:w-9 md:h-10 md:w-10 rounded-full touch-target">
-          <Avatar className="h-7 w-7 xs:h-8 xs:w-8 sm:h-9 sm:w-9 md:h-10 md:w-10">
-            <AvatarFallback className="bg-primary text-primary-foreground text-[10px] xs:text-xs sm:text-sm">
+        <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+          <Avatar className="h-10 w-10">
+            <AvatarFallback className="bg-primary text-primary-foreground">
               {iniciais}
             </AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-64 xs:w-72 sm:w-80" align="end">
+      <DropdownMenuContent className="w-80" align="end">
         <DropdownMenuLabel>
-          <div className="flex flex-col space-y-1 xs:space-y-2">
-            <p className="text-xs xs:text-sm font-medium leading-none truncate">
+          <div className="flex flex-col space-y-2">
+            <p className="text-sm font-medium leading-none">
               {user.user_metadata?.nome_completo || "Utilizador"}
             </p>
-            <p className="text-[10px] xs:text-xs leading-none text-muted-foreground truncate">
+            <p className="text-xs leading-none text-muted-foreground">
               {user.email}
             </p>
           </div>
@@ -50,43 +50,43 @@ export const UserMenu = () => {
 
         <DropdownMenuSeparator />
 
-        <div className="px-2 py-1.5 xs:py-2">
-          <p className="text-[10px] xs:text-xs font-medium text-muted-foreground mb-1.5 xs:mb-2">Perfis Activos</p>
-          <div className="flex flex-wrap gap-1 xs:gap-2">
+        <div className="px-2 py-2">
+          <p className="text-xs font-medium text-muted-foreground mb-2">Perfis Activos</p>
+          <div className="flex flex-wrap gap-2">
             {isAdmin ? (
-              <Badge variant="default" className="gap-1 text-[10px] xs:text-xs">
-                <Shield className="h-2.5 w-2.5 xs:h-3 xs:w-3" />
+              <Badge variant="default" className="gap-1">
+                <Shield className="h-3 w-3" />
                 Administrador
               </Badge>
             ) : perfis.length > 0 ? (
               perfis.map((perfil) => (
-                <Badge key={perfil.id} variant="outline" className="gap-1 text-[10px] xs:text-xs">
-                  <Shield className="h-2.5 w-2.5 xs:h-3 xs:w-3" />
+                <Badge key={perfil.id} variant="outline" className="gap-1">
+                  <Shield className="h-3 w-3" />
                   {perfil.nome_perfil}
                 </Badge>
               ))
             ) : (
-              <p className="text-[10px] xs:text-xs text-muted-foreground">Sem perfis atribuídos</p>
+              <p className="text-xs text-muted-foreground">Sem perfis atribuídos</p>
             )}
           </div>
         </div>
 
         <DropdownMenuSeparator />
 
-        <DropdownMenuItem className="text-xs xs:text-sm">
-          <User className="mr-1.5 xs:mr-2 h-3.5 w-3.5 xs:h-4 xs:w-4" />
+        <DropdownMenuItem>
+          <User className="mr-2 h-4 w-4" />
           <span>Perfil</span>
         </DropdownMenuItem>
 
-        <DropdownMenuItem className="text-xs xs:text-sm">
-          <Settings className="mr-1.5 xs:mr-2 h-3.5 w-3.5 xs:h-4 xs:w-4" />
+        <DropdownMenuItem>
+          <Settings className="mr-2 h-4 w-4" />
           <span>Definições</span>
         </DropdownMenuItem>
 
         <DropdownMenuSeparator />
 
-        <DropdownMenuItem onClick={signOut} className="text-destructive focus:text-destructive text-xs xs:text-sm">
-          <LogOut className="mr-1.5 xs:mr-2 h-3.5 w-3.5 xs:h-4 xs:w-4" />
+        <DropdownMenuItem onClick={signOut} className="text-destructive focus:text-destructive">
+          <LogOut className="mr-2 h-4 w-4" />
           <span>Terminar Sessão</span>
         </DropdownMenuItem>
       </DropdownMenuContent>

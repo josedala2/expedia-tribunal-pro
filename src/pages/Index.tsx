@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { cn } from "@/lib/utils";
 import { Header } from "@/components/layout/Header";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Dashboard } from "@/components/dashboard/Dashboard";
@@ -105,20 +104,13 @@ import EmolumentosTabela from "@/pages/admin/EmolumentosTabela";
 import DocTemplates from "@/pages/admin/DocTemplates";
 import SLARegras from "@/pages/admin/SLARegras";
 import IntegrationConfig from "@/pages/admin/IntegrationConfig";
-import TiposExpediente from "@/pages/admin/TiposExpediente";
 
-type View = "dashboard" | "portal-intranet" | "meu-perfil" | "assiduidade" | "ferias" | "aprovacao-ferias-chefia" | "remuneracoes" | "documentos-oficiais" | "gestao-noticias" | "gestao-rh" | "rh-cadastro-funcionarios" | "rh-gestao-contratos" | "rh-assiduidade-pontualidade" | "rh-gestao-ferias-licencas" | "rh-formacao-desenvolvimento" | "rh-gestao-remuneracoes" | "rh-gestao-documental-rh" | "rh-gestao-pensionistas" | "rh-relatorios-estatisticas-rh" | "rh-solicitacoes-declaracoes" | "processes" | "process-detail" | "prestacao-contas" | "visto" | "fiscalizacao" | "multas" | "novo-processo-multa" | "usuarios" | "relatorios" | "documentos" | "configuracoes" | "comunicacoes-internas" | "expedientes" | "novo-expediente" | "detalhe-expediente" | "novo-prestacao" | "detalhe-prestacao" | "novo-visto" | "detalhe-visto" | "novo-fiscalizacao" | "detalhe-fiscalizacao" | "detalhe-multa" | "expediente-processual" | "tramitacao-visto" | "cumprimento-despachos" | "saida-expediente-visto" | "interposicao-recurso" | "pedido-reducao-emolumentos" | "conclusao-autos-cgsfp" | "analise-decisao-juiz" | "promocao-mp" | "analise-decisao-final-juiz" | "cumprimento-despacho-adfjr" | "expediente-prestacao" | "tramitacao-prestacao" | "cumprimento-despachos-prestacao" | "cobranca-emolumentos-prestacao" | "despacho-promocao-prestacao" | "oficios-remessa-prestacao" | "novo-oficio-remessa-prestacao" | "saida-expediente-prestacao" | "prestacao-soberania" | "expediente-fiscalizacao" | "tramitacao-fiscalizacao" | "parecer-trimestral" | "saida-expediente-fiscalizacao" | "cobranca-emolumentos" | "nova-guia-cobranca" | "despacho-promocao" | "novo-despacho-promocao" | "cumprimento-despachos-geral" | "cumprimento-despacho-detail" | "oficios-remessa" | "novo-oficio-remessa" | "expedientes-saida" | "novo-expediente-saida" | "recurso-ordinario" | "recurso-ordinario-registo" | "recurso-ordinario-plenario" | "recurso-ordinario-projeto" | "recurso-ordinario-vista" | "recurso-ordinario-resolucao" | "recurso-ordinario-notificacao" | "recurso-inconstitucionalidade" | "recurso-inconstitucionalidade-apresentacao" | "recurso-inconstitucionalidade-analise" | "recursos-ativos" | "desencadear-multa" | "requerimento-inicial-multa" | "notificacao-demandado" | "pagamento-voluntario-multa" | "pagamento-prestacoes" | "contestacao-multa" | "constituicao-advogado" | "confianca-processo" | "audiencia-julgamento-multa" | "acordao-multa" | "notificacao-acordao" | "pedido-aclaracao" | "cobranca-coerciva" | "admin-config" | "admin-settings" | "calendario-judicial" | "regras-distribuicao" | "mapa-letra-juiz" | "sla-regras" | "emolumentos-tabela" | "doc-templates" | "notificacao-templates" | "retencao-regras" | "integration-config" | "feature-flags" | "tipos-expediente";
+type View = "dashboard" | "portal-intranet" | "meu-perfil" | "assiduidade" | "ferias" | "aprovacao-ferias-chefia" | "remuneracoes" | "documentos-oficiais" | "gestao-noticias" | "gestao-rh" | "rh-cadastro-funcionarios" | "rh-gestao-contratos" | "rh-assiduidade-pontualidade" | "rh-gestao-ferias-licencas" | "rh-formacao-desenvolvimento" | "rh-gestao-remuneracoes" | "rh-gestao-documental-rh" | "rh-gestao-pensionistas" | "rh-relatorios-estatisticas-rh" | "rh-solicitacoes-declaracoes" | "processes" | "process-detail" | "prestacao-contas" | "visto" | "fiscalizacao" | "multas" | "novo-processo-multa" | "usuarios" | "relatorios" | "documentos" | "configuracoes" | "comunicacoes-internas" | "expedientes" | "novo-expediente" | "detalhe-expediente" | "novo-prestacao" | "detalhe-prestacao" | "novo-visto" | "detalhe-visto" | "novo-fiscalizacao" | "detalhe-fiscalizacao" | "detalhe-multa" | "expediente-processual" | "tramitacao-visto" | "cumprimento-despachos" | "saida-expediente-visto" | "interposicao-recurso" | "pedido-reducao-emolumentos" | "conclusao-autos-cgsfp" | "analise-decisao-juiz" | "promocao-mp" | "analise-decisao-final-juiz" | "cumprimento-despacho-adfjr" | "expediente-prestacao" | "tramitacao-prestacao" | "cumprimento-despachos-prestacao" | "cobranca-emolumentos-prestacao" | "despacho-promocao-prestacao" | "oficios-remessa-prestacao" | "novo-oficio-remessa-prestacao" | "saida-expediente-prestacao" | "prestacao-soberania" | "expediente-fiscalizacao" | "tramitacao-fiscalizacao" | "parecer-trimestral" | "saida-expediente-fiscalizacao" | "cobranca-emolumentos" | "nova-guia-cobranca" | "despacho-promocao" | "novo-despacho-promocao" | "cumprimento-despachos-geral" | "cumprimento-despacho-detail" | "oficios-remessa" | "novo-oficio-remessa" | "expedientes-saida" | "novo-expediente-saida" | "recurso-ordinario" | "recurso-ordinario-registo" | "recurso-ordinario-plenario" | "recurso-ordinario-projeto" | "recurso-ordinario-vista" | "recurso-ordinario-resolucao" | "recurso-ordinario-notificacao" | "recurso-inconstitucionalidade" | "recurso-inconstitucionalidade-apresentacao" | "recurso-inconstitucionalidade-analise" | "recursos-ativos" | "desencadear-multa" | "requerimento-inicial-multa" | "notificacao-demandado" | "pagamento-voluntario-multa" | "pagamento-prestacoes" | "contestacao-multa" | "constituicao-advogado" | "confianca-processo" | "audiencia-julgamento-multa" | "acordao-multa" | "notificacao-acordao" | "pedido-aclaracao" | "cobranca-coerciva" | "admin-config" | "admin-settings" | "calendario-judicial" | "regras-distribuicao" | "mapa-letra-juiz" | "sla-regras" | "emolumentos-tabela" | "doc-templates" | "notificacao-templates" | "retencao-regras" | "integration-config" | "feature-flags";
 
 const Index = () => {
   const [currentView, setCurrentView] = useState<View>("dashboard");
   const [selectedProcessId, setSelectedProcessId] = useState<string | null>(null);
-  // Initialize sidebar state based on viewport - closed on mobile/tablet, open on desktop
-  const [isSidebarOpen, setIsSidebarOpen] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return window.innerWidth >= 1024;
-    }
-    return true;
-  });
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [runTour, setRunTour] = useState(false);
 
   useEffect(() => {
@@ -126,18 +118,6 @@ const Index = () => {
     if (!hasSeenTour) {
       setTimeout(() => setRunTour(true), 1000);
     }
-  }, []);
-
-  // Auto-close sidebar when viewport shrinks below lg breakpoint
-  useEffect(() => {
-    const handleResize = () => {
-      const isDesktop = window.innerWidth >= 1024;
-      setIsSidebarOpen(isDesktop);
-    };
-
-    window.addEventListener('resize', handleResize);
-
-    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   const handleTourComplete = () => {
@@ -160,7 +140,7 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background overflow-x-hidden">
+    <div className="min-h-screen bg-background">
       <TourGuide run={runTour} onComplete={handleTourComplete} />
       
       <Header 
@@ -170,21 +150,15 @@ const Index = () => {
         onNavigate={handleNavigate}
       />
       
-      <div className="flex relative">
+      <div className="flex">
         <Sidebar 
           isOpen={isSidebarOpen}
           currentView={currentView}
-          onNavigate={(view) => {
-            handleNavigate(view);
-            // Close sidebar on mobile after navigation
-            if (window.innerWidth < 1024) {
-              setIsSidebarOpen(false);
-            }
-          }}
+          onNavigate={handleNavigate}
         />
         
-        <main className="flex-1 transition-all duration-300 min-w-0">
-          <div className="container mx-auto px-3 py-4 sm:px-4 sm:py-5 md:px-6 md:py-6 max-w-full">
+        <main className={`flex-1 transition-all duration-300 ${isSidebarOpen ? 'lg:ml-80' : 'ml-0'}`}>
+          <div className="container mx-auto p-3 md:p-6">
             {currentView === "dashboard" && <Dashboard onNavigate={handleNavigate} />}
         {currentView === "portal-intranet" && <PortalIntranet onNavigate={handleNavigate} />}
         {currentView === "meu-perfil" && <MeuPerfil onBack={() => handleNavigate("portal-intranet")} />}
@@ -297,7 +271,6 @@ const Index = () => {
             {currentView === "doc-templates" && <DocTemplates onBack={() => handleNavigate("admin-config")} />}
             {currentView === "sla-regras" && <SLARegras onBack={() => handleNavigate("admin-config")} />}
             {currentView === "integration-config" && <IntegrationConfig onBack={() => handleNavigate("admin-config")} />}
-            {currentView === "tipos-expediente" && <TiposExpediente onBack={() => handleNavigate("admin-config")} />}
           </div>
         </main>
       </div>
