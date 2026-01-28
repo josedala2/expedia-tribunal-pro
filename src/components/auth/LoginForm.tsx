@@ -33,6 +33,7 @@ interface LoginFormProps {
 const demoUsers = [
   { email: 'teste@tc.gov.ao', nome: 'Utilizador de Teste', password: 'teste123', categoria: 'Geral' },
   { email: 'presidente.tc@tc.gov.ao', nome: 'Presidente do TC', password: 'demo123', categoria: 'Presidência' },
+  { email: 'secretaria.jp@tc.gov.ao', nome: 'Secretaria Juiz Presidente', password: 'demo123', categoria: 'Presidência' },
   { email: 'presidente.1camara@tc.gov.ao', nome: 'Presidente 1ª Câmara', password: 'demo123', categoria: 'Presidência' },
   { email: 'presidente.2camara@tc.gov.ao', nome: 'Presidente 2ª Câmara', password: 'demo123', categoria: 'Presidência' },
   { email: 'juiz.relator@tc.gov.ao', nome: 'Juiz Relator', password: 'demo123', categoria: 'Magistrados' },
