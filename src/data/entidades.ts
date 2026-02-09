@@ -255,6 +255,283 @@ export const entidadesPorCategoria = {
       "Conselho de Segurança Nacional",
       "Provedoria de Justiça"
     ]
+  },
+  "G": {
+    nome: "Governos Provinciais",
+    hasSubcategories: true,
+    subcategorias: {
+      "luanda": {
+        nome: "Governo Provincial de Luanda",
+        entidades: [
+          "Governo Provincial de Luanda",
+          "Administração Municipal de Belas",
+          "Administração Municipal de Cacuaco",
+          "Administração Municipal de Cazenga",
+          "Administração Municipal de Icolo e Bengo",
+          "Administração Municipal de Kilamba Kiaxi",
+          "Administração Municipal de Luanda",
+          "Administração Municipal de Quiçama",
+          "Administração Municipal de Talatona",
+          "Administração Municipal de Viana"
+        ]
+      },
+      "benguela": {
+        nome: "Governo Provincial de Benguela",
+        entidades: [
+          "Governo Provincial de Benguela",
+          "Administração Municipal de Balombo",
+          "Administração Municipal de Baía Farta",
+          "Administração Municipal de Benguela",
+          "Administração Municipal de Bocoio",
+          "Administração Municipal de Caimbambo",
+          "Administração Municipal de Catumbela",
+          "Administração Municipal de Chongoroi",
+          "Administração Municipal de Cubal",
+          "Administração Municipal de Ganda",
+          "Administração Municipal de Lobito"
+        ]
+      },
+      "huila": {
+        nome: "Governo Provincial da Huíla",
+        entidades: [
+          "Governo Provincial da Huíla",
+          "Administração Municipal de Caconda",
+          "Administração Municipal de Cacula",
+          "Administração Municipal de Caluquembe",
+          "Administração Municipal de Chibia",
+          "Administração Municipal de Chicomba",
+          "Administração Municipal de Chipindo",
+          "Administração Municipal de Cuvango",
+          "Administração Municipal de Gambos",
+          "Administração Municipal de Humpata",
+          "Administração Municipal de Jamba",
+          "Administração Municipal de Lubango",
+          "Administração Municipal de Matala",
+          "Administração Municipal de Quilengues",
+          "Administração Municipal de Quipungo"
+        ]
+      },
+      "huambo": {
+        nome: "Governo Provincial do Huambo",
+        entidades: [
+          "Governo Provincial do Huambo",
+          "Administração Municipal de Bailundo",
+          "Administração Municipal de Cachiungo",
+          "Administração Municipal de Caála",
+          "Administração Municipal de Ecunha",
+          "Administração Municipal de Huambo",
+          "Administração Municipal de Londuimbali",
+          "Administração Municipal de Longonjo",
+          "Administração Municipal de Mungo",
+          "Administração Municipal de Tchicala-Tcholoanga",
+          "Administração Municipal de Tchindjenje",
+          "Administração Municipal de Ucuma"
+        ]
+      },
+      "bie": {
+        nome: "Governo Provincial do Bié",
+        entidades: [
+          "Governo Provincial do Bié",
+          "Administração Municipal de Andulo",
+          "Administração Municipal de Camacupa",
+          "Administração Municipal de Catabola",
+          "Administração Municipal de Chinguar",
+          "Administração Municipal de Chitembo",
+          "Administração Municipal de Cuemba",
+          "Administração Municipal de Cunhinga",
+          "Administração Municipal de Cuíto",
+          "Administração Municipal de Nharea"
+        ]
+      },
+      "uige": {
+        nome: "Governo Provincial do Uíge",
+        entidades: [
+          "Governo Provincial do Uíge",
+          "Administração Municipal de Alto Cauale",
+          "Administração Municipal de Ambuíla",
+          "Administração Municipal de Bembe",
+          "Administração Municipal de Buengas",
+          "Administração Municipal de Bungo",
+          "Administração Municipal de Damba",
+          "Administração Municipal de Maquela do Zombo",
+          "Administração Municipal de Mucaba",
+          "Administração Municipal de Negage",
+          "Administração Municipal de Puri",
+          "Administração Municipal de Quimbele",
+          "Administração Municipal de Quitexe",
+          "Administração Municipal de Sanza Pombo",
+          "Administração Municipal de Songo",
+          "Administração Municipal de Uíge"
+        ]
+      },
+      "zaire": {
+        nome: "Governo Provincial do Zaire",
+        entidades: [
+          "Governo Provincial do Zaire",
+          "Administração Municipal de Cuimba",
+          "Administração Municipal de M'Banza Kongo",
+          "Administração Municipal de Nóqui",
+          "Administração Municipal de N'Zeto",
+          "Administração Municipal de Soyo",
+          "Administração Municipal de Tomboco"
+        ]
+      },
+      "cabinda": {
+        nome: "Governo Provincial de Cabinda",
+        entidades: [
+          "Governo Provincial de Cabinda",
+          "Administração Municipal de Belize",
+          "Administração Municipal de Buco-Zau",
+          "Administração Municipal de Cabinda",
+          "Administração Municipal de Cacongo"
+        ]
+      },
+      "malanje": {
+        nome: "Governo Provincial de Malanje",
+        entidades: [
+          "Governo Provincial de Malanje",
+          "Administração Municipal de Cacuso",
+          "Administração Municipal de Calandula",
+          "Administração Municipal de Cambundi-Catembo",
+          "Administração Municipal de Cangandala",
+          "Administração Municipal de Caombo",
+          "Administração Municipal de Cuaba Nzogo",
+          "Administração Municipal de Cunda-Dia-Baze",
+          "Administração Municipal de Luquembo",
+          "Administração Municipal de Malanje",
+          "Administração Municipal de Marimba",
+          "Administração Municipal de Massango",
+          "Administração Municipal de Mucari",
+          "Administração Municipal de Quela",
+          "Administração Municipal de Quirima"
+        ]
+      },
+      "kwanza_norte": {
+        nome: "Governo Provincial do Kwanza Norte",
+        entidades: [
+          "Governo Provincial do Kwanza Norte",
+          "Administração Municipal de Ambaca",
+          "Administração Municipal de Banga",
+          "Administração Municipal de Bolongongo",
+          "Administração Municipal de Cambambe",
+          "Administração Municipal de Cazengo",
+          "Administração Municipal de Golungo Alto",
+          "Administração Municipal de Gonguembo",
+          "Administração Municipal de Lucala",
+          "Administração Municipal de Quiculungo",
+          "Administração Municipal de Samba Caju"
+        ]
+      },
+      "kwanza_sul": {
+        nome: "Governo Provincial do Kwanza Sul",
+        entidades: [
+          "Governo Provincial do Kwanza Sul",
+          "Administração Municipal de Amboim",
+          "Administração Municipal de Cassongue",
+          "Administração Municipal de Cela",
+          "Administração Municipal de Conda",
+          "Administração Municipal de Ebo",
+          "Administração Municipal de Libolo",
+          "Administração Municipal de Mussende",
+          "Administração Municipal de Porto Amboim",
+          "Administração Municipal de Quibala",
+          "Administração Municipal de Quilenda",
+          "Administração Municipal de Seles",
+          "Administração Municipal de Sumbe"
+        ]
+      },
+      "bengo": {
+        nome: "Governo Provincial do Bengo",
+        entidades: [
+          "Governo Provincial do Bengo",
+          "Administração Municipal de Ambriz",
+          "Administração Municipal de Bula Atumba",
+          "Administração Municipal de Dande",
+          "Administração Municipal de Dembos",
+          "Administração Municipal de Nambuangongo",
+          "Administração Municipal de Pango Aluquém"
+        ]
+      },
+      "lunda_norte": {
+        nome: "Governo Provincial da Lunda Norte",
+        entidades: [
+          "Governo Provincial da Lunda Norte",
+          "Administração Municipal de Cambulo",
+          "Administração Municipal de Capenda-Camulemba",
+          "Administração Municipal de Caungula",
+          "Administração Municipal de Chitato",
+          "Administração Municipal de Cuango",
+          "Administração Municipal de Cuílo",
+          "Administração Municipal de Lóvua",
+          "Administração Municipal de Lubalo",
+          "Administração Municipal de Lucapa",
+          "Administração Municipal de Xá-Muteba"
+        ]
+      },
+      "lunda_sul": {
+        nome: "Governo Provincial da Lunda Sul",
+        entidades: [
+          "Governo Provincial da Lunda Sul",
+          "Administração Municipal de Cacolo",
+          "Administração Municipal de Dala",
+          "Administração Municipal de Muconda",
+          "Administração Municipal de Saurimo"
+        ]
+      },
+      "moxico": {
+        nome: "Governo Provincial do Moxico",
+        entidades: [
+          "Governo Provincial do Moxico",
+          "Administração Municipal de Alto Zambeze",
+          "Administração Municipal de Bundas",
+          "Administração Municipal de Camanongue",
+          "Administração Municipal de Léua",
+          "Administração Municipal de Luacano",
+          "Administração Municipal de Luau",
+          "Administração Municipal de Luchazes",
+          "Administração Municipal de Lumeje",
+          "Administração Municipal de Moxico"
+        ]
+      },
+      "cuando_cubango": {
+        nome: "Governo Provincial do Cuando Cubango",
+        entidades: [
+          "Governo Provincial do Cuando Cubango",
+          "Administração Municipal de Calai",
+          "Administração Municipal de Cuangar",
+          "Administração Municipal de Cuchi",
+          "Administração Municipal de Cuito Cuanavale",
+          "Administração Municipal de Dirico",
+          "Administração Municipal de Mavinga",
+          "Administração Municipal de Menongue",
+          "Administração Municipal de Nancova",
+          "Administração Municipal de Rivungo"
+        ]
+      },
+      "cunene": {
+        nome: "Governo Provincial do Cunene",
+        entidades: [
+          "Governo Provincial do Cunene",
+          "Administração Municipal de Cahama",
+          "Administração Municipal de Cuanhama",
+          "Administração Municipal de Curoca",
+          "Administração Municipal de Cuvelai",
+          "Administração Municipal de Namacunde",
+          "Administração Municipal de Ombadja"
+        ]
+      },
+      "namibe": {
+        nome: "Governo Provincial do Namibe",
+        entidades: [
+          "Governo Provincial do Namibe",
+          "Administração Municipal de Bibala",
+          "Administração Municipal de Camucuio",
+          "Administração Municipal de Moçâmedes",
+          "Administração Municipal de Tômbwa",
+          "Administração Municipal de Virei"
+        ]
+      }
+    }
   }
 };
 
