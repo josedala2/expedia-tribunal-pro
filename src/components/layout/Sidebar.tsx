@@ -1,4 +1,4 @@
-import { LayoutDashboard, FileText, FolderCheck, Eye, FileBarChart, DollarSign, Users, Inbox, ChevronDown, ChevronRight, CheckCircle, Settings } from "lucide-react";
+import { LayoutDashboard, FileText, FolderCheck, Eye, FileBarChart, DollarSign, Users, Inbox, ChevronDown, ChevronRight, CheckCircle, Settings, Building2, ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -205,10 +205,17 @@ const menuGroups = [
       },
     ]
   },
+  {
+    id: "portal-entidades-group",
+    title: "Portal das Entidades",
+    items: [
+      { id: "portal-entidades-link", label: "Aceder ao Portal das Entidades", icon: Building2 },
+    ]
+  },
 ];
 
 export const Sidebar = ({ isOpen, currentView, onNavigate }: SidebarProps) => {
-  const [expandedGroups, setExpandedGroups] = useState<string[]>(["dashboard-group", "portal-intranet-group", "expedientes-group", "prestacao-contas-group", "visto-group", "fiscalizacao-group", "multas-group", "admin-config-group"]);
+  const [expandedGroups, setExpandedGroups] = useState<string[]>(["dashboard-group", "portal-intranet-group", "expedientes-group", "prestacao-contas-group", "visto-group", "fiscalizacao-group", "multas-group", "admin-config-group", "portal-entidades-group"]);
   const [expandedMenus, setExpandedMenus] = useState<string[]>(["portal-intranet", "gestao-rh", "prestacao-contas", "visto", "fiscalizacao", "recurso-ordinario", "recurso-inconstitucionalidade", "admin-config"]);
 
   const toggleGroup = (groupId: string) => {
@@ -296,7 +303,9 @@ export const Sidebar = ({ isOpen, currentView, onNavigate }: SidebarProps) => {
                         <div key={item.id} className="space-y-1">
                           <button
                             onClick={() => {
-                              if (hasSubmenu) {
+                              if (item.id === "portal-entidades-link") {
+                                window.open("/portal-entidades", "_blank");
+                              } else if (hasSubmenu) {
                                 toggleSubmenu(item.id);
                               } else {
                                 onNavigate(item.id);
@@ -311,6 +320,9 @@ export const Sidebar = ({ isOpen, currentView, onNavigate }: SidebarProps) => {
                           >
                             <Icon className="h-4 w-4 flex-shrink-0" strokeWidth={2.5} />
                             <span className="flex-1">{item.label}</span>
+                            {item.id === "portal-entidades-link" && (
+                              <ExternalLink className="h-3 w-3 flex-shrink-0" strokeWidth={2.5} />
+                            )}
                             {hasSubmenu && (
                               isSubmenuExpanded ? (
                                 <ChevronDown className="h-3 w-3 flex-shrink-0" strokeWidth={2.5} />
