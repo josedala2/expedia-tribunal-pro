@@ -1,9 +1,13 @@
-import { ArrowLeft, Plus, Search, Filter, Inbox, Clock, CheckCircle, XCircle } from "lucide-react";
+import { useState, useEffect } from "react";
+import { ArrowLeft, Plus, Search, Filter, Inbox, Clock, CheckCircle, XCircle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { supabase } from "@/integrations/supabase/client";
+import { format } from "date-fns";
+import { pt } from "date-fns/locale";
 
 interface ExpedientesProps {
   onBack: () => void;
@@ -11,52 +15,49 @@ interface ExpedientesProps {
 }
 
 export const Expedientes = ({ onBack, onNavigate }: ExpedientesProps) => {
-  const expedientes = [
-    { 
-      numero: "EXP/2024/001", 
-      tipo: "Memorando", 
-      assunto: "Solicitação de Documentos", 
-      origem: "Gabinete do Presidente",
-      destino: "Departamento Jurídico",
-      status: "Em Tramitação",
-      prioridade: "Normal",
-      data: "15/01/2024"
-    },
-    { 
-      numero: "EXP/2024/002", 
-      tipo: "Ofício", 
-      assunto: "Resposta ao Ministério das Finanças", 
-      origem: "Departamento de Fiscalização",
-      destino: "Gabinete do Presidente",
-      status: "Pendente",
-      prioridade: "Urgente",
-      data: "16/01/2024"
-    },
-    { 
-      numero: "EXP/2024/003", 
-      tipo: "Despacho", 
-      assunto: "Aprovação de Relatório Trimestral", 
-      origem: "Departamento de Auditoria",
-      destino: "Arquivo Geral",
-      status: "Concluído",
-      prioridade: "Normal",
-      data: "14/01/2024"
-    },
-    { 
-      numero: "EXP/2024/004", 
-      tipo: "Circular", 
-      assunto: "Normas de Procedimentos Internos", 
-      origem: "Recursos Humanos",
-      destino: "Todos os Departamentos",
-      status: "Em Tramitação",
-      prioridade: "Alta",
-      data: "17/01/2024"
-    },
-  ];
+  const [expedientes, setExpedientes] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  useEffect(() => {
+    loadExpedientes();
+  }, []);
+
+  const loadExpedientes = async () => {
+    setLoading(true);
+    const { data, error } = await supabase
+      .from("expedientes")
+      .select("*")
+      .order("criado_em", { ascending: false });
+    
+    if (!error && data) {
+      setExpedientes(data);
+    }
+    setLoading(false);
+  };
+
+  const filteredExpedientes = expedientes.filter((exp) => {
+    if (!searchTerm) return true;
+    const term = searchTerm.toLowerCase();
+    return (
+      exp.numero?.toLowerCase().includes(term) ||
+      exp.assunto?.toLowerCase().includes(term) ||
+      exp.origem?.toLowerCase().includes(term) ||
+      exp.destino?.toLowerCase().includes(term)
+    );
+  });
+
+  const stats = {
+    emTramitacao: expedientes.filter((e) => e.status === "Em Tramitação" || e.status === "Enviado").length,
+    pendentes: expedientes.filter((e) => e.status === "Pendente").length,
+    concluidos: expedientes.filter((e) => e.status === "Concluído" || e.status === "Recebido").length,
+    urgentes: expedientes.filter((e) => e.prioridade === "Urgente" || e.prioridade === "Alta").length,
+  };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
       case "Concluído":
+      case "Recebido":
         return <CheckCircle className="h-4 w-4" />;
       case "Pendente":
         return <XCircle className="h-4 w-4" />;
@@ -68,6 +69,7 @@ export const Expedientes = ({ onBack, onNavigate }: ExpedientesProps) => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "Concluído":
+      case "Recebido":
         return "bg-success";
       case "Pendente":
         return "bg-destructive";
@@ -114,28 +116,28 @@ export const Expedientes = ({ onBack, onNavigate }: ExpedientesProps) => {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card className="p-6 border-l-4 border-l-accent hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between mb-2">
-            <div className="text-2xl font-bold text-accent">24</div>
+            <div className="text-2xl font-bold text-accent">{stats.emTramitacao}</div>
             <Clock className="h-6 w-6 text-accent" />
           </div>
           <div className="text-sm text-muted-foreground">Em Tramitação</div>
         </Card>
         <Card className="p-6 border-l-4 border-l-destructive hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between mb-2">
-            <div className="text-2xl font-bold text-destructive">8</div>
+            <div className="text-2xl font-bold text-destructive">{stats.pendentes}</div>
             <XCircle className="h-6 w-6 text-destructive" />
           </div>
           <div className="text-sm text-muted-foreground">Pendentes</div>
         </Card>
         <Card className="p-6 border-l-4 border-l-success hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between mb-2">
-            <div className="text-2xl font-bold text-success">156</div>
+            <div className="text-2xl font-bold text-success">{stats.concluidos}</div>
             <CheckCircle className="h-6 w-6 text-success" />
           </div>
           <div className="text-sm text-muted-foreground">Concluídos</div>
         </Card>
         <Card className="p-6 border-l-4 border-l-warning hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between mb-2">
-            <div className="text-2xl font-bold text-warning">12</div>
+            <div className="text-2xl font-bold text-warning">{stats.urgentes}</div>
             <Inbox className="h-6 w-6 text-warning" />
           </div>
           <div className="text-sm text-muted-foreground">Urgentes</div>
@@ -146,7 +148,12 @@ export const Expedientes = ({ onBack, onNavigate }: ExpedientesProps) => {
         <div className="flex gap-4 mb-6">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input placeholder="Pesquisar por número, assunto ou departamento..." className="pl-9" />
+            <Input 
+              placeholder="Pesquisar por número, assunto ou departamento..." 
+              className="pl-9"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
           </div>
           <Button variant="outline" className="gap-2 border-border hover:bg-secondary">
             <Filter className="h-4 w-4" />
@@ -154,115 +161,80 @@ export const Expedientes = ({ onBack, onNavigate }: ExpedientesProps) => {
           </Button>
         </div>
 
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Nº Expediente</TableHead>
-              <TableHead>Tipo</TableHead>
-              <TableHead>Assunto</TableHead>
-              <TableHead>Origem</TableHead>
-              <TableHead>Destino</TableHead>
-              <TableHead>Prioridade</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Data</TableHead>
-              <TableHead>Acções</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {expedientes.map((expediente) => (
-              <TableRow key={expediente.numero}>
-                <TableCell className="font-medium">{expediente.numero}</TableCell>
-                <TableCell>
-                  <Badge variant="outline" className="border-primary text-primary">
-                    {expediente.tipo}
-                  </Badge>
-                </TableCell>
-                <TableCell className="max-w-xs truncate">{expediente.assunto}</TableCell>
-                <TableCell className="text-sm">{expediente.origem}</TableCell>
-                <TableCell className="text-sm">{expediente.destino}</TableCell>
-                <TableCell>
-                  <Badge variant="secondary" className={getPrioridadeColor(expediente.prioridade)}>
-                    {expediente.prioridade}
-                  </Badge>
-                </TableCell>
-                <TableCell>
-                  <Badge 
-                    variant="default" 
-                    className={`${getStatusColor(expediente.status)} gap-1`}
-                  >
-                    {getStatusIcon(expediente.status)}
-                    {expediente.status}
-                  </Badge>
-                </TableCell>
-                <TableCell className="text-sm">{expediente.data}</TableCell>
-                <TableCell>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="hover:bg-secondary"
-                    onClick={() => onNavigate?.("detalhe-expediente")}
-                  >
-                    Ver Detalhes
-                  </Button>
-                </TableCell>
+        {loading ? (
+          <div className="flex justify-center py-12">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          </div>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Nº Expediente</TableHead>
+                <TableHead>Tipo</TableHead>
+                <TableHead>Assunto</TableHead>
+                <TableHead>Origem</TableHead>
+                <TableHead>Destino</TableHead>
+                <TableHead>Prioridade</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Data</TableHead>
+                <TableHead>Acções</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {filteredExpedientes.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
+                    Nenhum expediente encontrado
+                  </TableCell>
+                </TableRow>
+              ) : (
+                filteredExpedientes.map((expediente) => (
+                  <TableRow key={expediente.id}>
+                    <TableCell className="font-medium">{expediente.numero}</TableCell>
+                    <TableCell>
+                      <Badge variant="outline" className="border-primary text-primary">
+                        {expediente.tipo}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="max-w-xs truncate">{expediente.assunto}</TableCell>
+                    <TableCell className="text-sm">{expediente.origem}</TableCell>
+                    <TableCell className="text-sm">{expediente.destino}</TableCell>
+                    <TableCell>
+                      <Badge variant="secondary" className={getPrioridadeColor(expediente.prioridade)}>
+                        {expediente.prioridade}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <Badge 
+                        variant="default" 
+                        className={`${getStatusColor(expediente.status)} gap-1`}
+                      >
+                        {getStatusIcon(expediente.status)}
+                        {expediente.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-sm">
+                      {expediente.criado_em 
+                        ? format(new Date(expediente.criado_em), "dd/MM/yyyy", { locale: pt }) 
+                        : "-"}
+                    </TableCell>
+                    <TableCell>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="hover:bg-secondary"
+                        onClick={() => onNavigate?.("detalhe-expediente")}
+                      >
+                        Ver Detalhes
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        )}
       </Card>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card className="p-6">
-          <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-            <Inbox className="h-5 w-5 text-primary" />
-            Tipos de Expediente
-          </h3>
-          <div className="space-y-3">
-            {[
-              { tipo: "Memorandos", quantidade: 45, cor: "bg-primary" },
-              { tipo: "Ofícios", quantidade: 32, cor: "bg-accent" },
-              { tipo: "Despachos", quantidade: 28, cor: "bg-success" },
-              { tipo: "Circulares", quantidade: 15, cor: "bg-warning" },
-            ].map((item) => (
-              <div key={item.tipo} className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className={`h-3 w-3 rounded-full ${item.cor}`}></div>
-                  <span className="text-sm">{item.tipo}</span>
-                </div>
-                <span className="text-sm font-semibold">{item.quantidade}</span>
-              </div>
-            ))}
-          </div>
-        </Card>
-
-        <Card className="p-6">
-          <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-            <Clock className="h-5 w-5 text-primary" />
-            Tempo Médio de Tramitação
-          </h3>
-          <div className="space-y-3">
-            {[
-              { tipo: "Memorando", tempo: "2 dias", progresso: 85 },
-              { tipo: "Ofício", tempo: "3 dias", progresso: 70 },
-              { tipo: "Despacho", tempo: "1 dia", progresso: 95 },
-              { tipo: "Circular", tempo: "4 dias", progresso: 60 },
-            ].map((item) => (
-              <div key={item.tipo} className="space-y-1">
-                <div className="flex items-center justify-between text-sm">
-                  <span>{item.tipo}</span>
-                  <span className="font-semibold">{item.tempo}</span>
-                </div>
-                <div className="w-full bg-secondary rounded-full h-2">
-                  <div 
-                    className="bg-primary rounded-full h-2 transition-all"
-                    style={{ width: `${item.progresso}%` }}
-                  ></div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </Card>
-      </div>
     </div>
   );
 };
