@@ -566,6 +566,78 @@ export type Database = {
         }
         Relationships: []
       }
+      entidades_externas: {
+        Row: {
+          aprovada_em: string | null
+          aprovada_por: string | null
+          atualizado_em: string
+          criado_em: string
+          email: string | null
+          endereco: string | null
+          id: string
+          motivo_rejeicao: string | null
+          municipio: string | null
+          nif: string | null
+          nome: string
+          provincia: string | null
+          responsavel_cargo: string | null
+          responsavel_email: string | null
+          responsavel_nome: string | null
+          responsavel_telefone: string | null
+          sigla: string | null
+          status: string
+          telefone: string | null
+          tipo_entidade: string
+          website: string | null
+        }
+        Insert: {
+          aprovada_em?: string | null
+          aprovada_por?: string | null
+          atualizado_em?: string
+          criado_em?: string
+          email?: string | null
+          endereco?: string | null
+          id?: string
+          motivo_rejeicao?: string | null
+          municipio?: string | null
+          nif?: string | null
+          nome: string
+          provincia?: string | null
+          responsavel_cargo?: string | null
+          responsavel_email?: string | null
+          responsavel_nome?: string | null
+          responsavel_telefone?: string | null
+          sigla?: string | null
+          status?: string
+          telefone?: string | null
+          tipo_entidade?: string
+          website?: string | null
+        }
+        Update: {
+          aprovada_em?: string | null
+          aprovada_por?: string | null
+          atualizado_em?: string
+          criado_em?: string
+          email?: string | null
+          endereco?: string | null
+          id?: string
+          motivo_rejeicao?: string | null
+          municipio?: string | null
+          nif?: string | null
+          nome?: string
+          provincia?: string | null
+          responsavel_cargo?: string | null
+          responsavel_email?: string | null
+          responsavel_nome?: string | null
+          responsavel_telefone?: string | null
+          sigla?: string | null
+          status?: string
+          telefone?: string | null
+          tipo_entidade?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
       expedientes: {
         Row: {
           aceito_destinatario: boolean | null
@@ -1313,6 +1385,53 @@ export type Database = {
         }
         Relationships: []
       }
+      notificacoes_entidade: {
+        Row: {
+          criado_em: string
+          entidade_id: string
+          id: string
+          lida: boolean | null
+          lida_em: string | null
+          lida_por: string | null
+          mensagem: string
+          processo_referencia: string | null
+          tipo: string
+          titulo: string
+        }
+        Insert: {
+          criado_em?: string
+          entidade_id: string
+          id?: string
+          lida?: boolean | null
+          lida_em?: string | null
+          lida_por?: string | null
+          mensagem: string
+          processo_referencia?: string | null
+          tipo?: string
+          titulo: string
+        }
+        Update: {
+          criado_em?: string
+          entidade_id?: string
+          id?: string
+          lida?: boolean | null
+          lida_em?: string | null
+          lida_por?: string | null
+          mensagem?: string
+          processo_referencia?: string | null
+          tipo?: string
+          titulo?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notificacoes_entidade_entidade_id_fkey"
+            columns: ["entidade_id"]
+            isOneToOne: false
+            referencedRelation: "entidades_externas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       oficio_anexos: {
         Row: {
           criado_em: string
@@ -1442,6 +1561,66 @@ export type Database = {
             columns: ["divisao_pai_id"]
             isOneToOne: false
             referencedRelation: "organizacao_estrutura"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pagamentos_entidade: {
+        Row: {
+          atualizado_em: string
+          comprovativo_url: string | null
+          criado_em: string
+          data_pagamento: string | null
+          data_vencimento: string | null
+          descricao: string
+          entidade_id: string
+          id: string
+          referencia_pagamento: string | null
+          status: string
+          submissao_id: string | null
+          valor: number
+        }
+        Insert: {
+          atualizado_em?: string
+          comprovativo_url?: string | null
+          criado_em?: string
+          data_pagamento?: string | null
+          data_vencimento?: string | null
+          descricao: string
+          entidade_id: string
+          id?: string
+          referencia_pagamento?: string | null
+          status?: string
+          submissao_id?: string | null
+          valor: number
+        }
+        Update: {
+          atualizado_em?: string
+          comprovativo_url?: string | null
+          criado_em?: string
+          data_pagamento?: string | null
+          data_vencimento?: string | null
+          descricao?: string
+          entidade_id?: string
+          id?: string
+          referencia_pagamento?: string | null
+          status?: string
+          submissao_id?: string | null
+          valor?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pagamentos_entidade_entidade_id_fkey"
+            columns: ["entidade_id"]
+            isOneToOne: false
+            referencedRelation: "entidades_externas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pagamentos_entidade_submissao_id_fkey"
+            columns: ["submissao_id"]
+            isOneToOne: false
+            referencedRelation: "submissoes_entidade"
             referencedColumns: ["id"]
           },
         ]
@@ -2443,6 +2622,65 @@ export type Database = {
           },
         ]
       }
+      submissoes_entidade: {
+        Row: {
+          assunto: string
+          atualizado_em: string
+          criado_em: string
+          descricao: string | null
+          documentos: Json | null
+          entidade_id: string
+          id: string
+          motivo_devolucao: string | null
+          numero_referencia: string
+          processo_interno_id: string | null
+          status: string
+          submetido_por: string
+          tipo_processo: string
+          valor_contrato: number | null
+        }
+        Insert: {
+          assunto: string
+          atualizado_em?: string
+          criado_em?: string
+          descricao?: string | null
+          documentos?: Json | null
+          entidade_id: string
+          id?: string
+          motivo_devolucao?: string | null
+          numero_referencia: string
+          processo_interno_id?: string | null
+          status?: string
+          submetido_por: string
+          tipo_processo: string
+          valor_contrato?: number | null
+        }
+        Update: {
+          assunto?: string
+          atualizado_em?: string
+          criado_em?: string
+          descricao?: string | null
+          documentos?: Json | null
+          entidade_id?: string
+          id?: string
+          motivo_devolucao?: string | null
+          numero_referencia?: string
+          processo_interno_id?: string | null
+          status?: string
+          submetido_por?: string
+          tipo_processo?: string
+          valor_contrato?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "submissoes_entidade_entidade_id_fkey"
+            columns: ["entidade_id"]
+            isOneToOne: false
+            referencedRelation: "entidades_externas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tipos_expediente: {
         Row: {
           ativo: boolean
@@ -2587,6 +2825,53 @@ export type Database = {
             columns: ["perfil_id"]
             isOneToOne: false
             referencedRelation: "perfis_utilizador"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      utilizadores_entidade: {
+        Row: {
+          activo: boolean | null
+          atualizado_em: string
+          cargo: string | null
+          criado_em: string
+          entidade_id: string
+          id: string
+          is_responsavel: boolean | null
+          nome_completo: string
+          telefone: string | null
+          user_id: string
+        }
+        Insert: {
+          activo?: boolean | null
+          atualizado_em?: string
+          cargo?: string | null
+          criado_em?: string
+          entidade_id: string
+          id?: string
+          is_responsavel?: boolean | null
+          nome_completo: string
+          telefone?: string | null
+          user_id: string
+        }
+        Update: {
+          activo?: boolean | null
+          atualizado_em?: string
+          cargo?: string | null
+          criado_em?: string
+          entidade_id?: string
+          id?: string
+          is_responsavel?: boolean | null
+          nome_completo?: string
+          telefone?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "utilizadores_entidade_entidade_id_fkey"
+            columns: ["entidade_id"]
+            isOneToOne: false
+            referencedRelation: "entidades_externas"
             referencedColumns: ["id"]
           },
         ]
