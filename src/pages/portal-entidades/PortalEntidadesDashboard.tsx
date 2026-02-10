@@ -76,7 +76,7 @@ export default function PortalEntidadesDashboard() {
     { id: "pagamentos" as const, label: "Emolumentos", icon: DollarSign, description: "Consultar e gerir pagamentos", color: "text-purple-600", bg: "bg-purple-50", badge: stats.pagamentosPendentes },
   ];
 
-  if (currentView === "submissoes") return <PortalEntidadesSubmissoes entidadeId={entidade.id} onBack={() => setCurrentView("dashboard")} />;
+  if (currentView === "submissoes") return <PortalEntidadesSubmissoes entidadeId={entidade.id} entidadeNome={entidade.nome} onBack={() => setCurrentView("dashboard")} />;
   if (currentView === "processos") return <PortalEntidadesProcessos entidadeId={entidade.id} onBack={() => setCurrentView("dashboard")} />;
   if (currentView === "notificacoes") return <PortalEntidadesNotificacoes entidadeId={entidade.id} onBack={() => setCurrentView("dashboard")} />;
   if (currentView === "pagamentos") return <PortalEntidadesPagamentos entidadeId={entidade.id} onBack={() => setCurrentView("dashboard")} />;

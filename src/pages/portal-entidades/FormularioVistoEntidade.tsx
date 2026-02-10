@@ -15,18 +15,19 @@ import { toast } from "sonner";
 
 interface Props {
   entidadeId: string;
+  entidadeNome: string;
   onBack: () => void;
   onSuccess: () => void;
 }
 
-export function FormularioVistoEntidade({ entidadeId, onBack, onSuccess }: Props) {
+export function FormularioVistoEntidade({ entidadeId, entidadeNome, onBack, onSuccess }: Props) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [numeroContratoGerado, setNumeroContratoGerado] = useState("");
 
   // Form state
   const [tipoVisto, setTipoVisto] = useState("");
   const [naturezaVisto, setNaturezaVisto] = useState("");
-  const [entidadeContratante, setEntidadeContratante] = useState("");
+  const [entidadeContratante, setEntidadeContratante] = useState(entidadeNome);
   const [entidadeContratada, setEntidadeContratada] = useState("");
   const [nifContratada, setNifContratada] = useState("");
   const [objeto, setObjeto] = useState("");
@@ -183,13 +184,15 @@ export function FormularioVistoEntidade({ entidadeId, onBack, onSuccess }: Props
           <Card className="p-6">
             <h3 className="text-lg font-semibold mb-4 text-foreground">Partes Contratantes</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <EntitySelector
-                value={entidadeContratante}
-                onChange={setEntidadeContratante}
-                label="Entidade Contratante (Pública)"
-                required
-                error={errors.entidadeContratante}
-              />
+              <div className="space-y-2">
+                <Label>Entidade Contratante (Pública) *</Label>
+                <Input
+                  value={entidadeContratante}
+                  disabled
+                  className="bg-muted"
+                />
+                <p className="text-xs text-muted-foreground">Preenchido automaticamente com a sua entidade</p>
+              </div>
 
               <div className="space-y-4">
                 <div className="space-y-2">

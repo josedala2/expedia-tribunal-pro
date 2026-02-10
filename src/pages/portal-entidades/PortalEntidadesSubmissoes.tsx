@@ -10,6 +10,7 @@ import { FormularioVistoEntidade } from "./FormularioVistoEntidade";
 
 interface Props {
   entidadeId: string;
+  entidadeNome: string;
   onBack: () => void;
 }
 
@@ -29,7 +30,7 @@ const statusLabels: Record<string, string> = {
   devolvido: "Devolvido",
 };
 
-export function PortalEntidadesSubmissoes({ entidadeId, onBack }: Props) {
+export function PortalEntidadesSubmissoes({ entidadeId, entidadeNome, onBack }: Props) {
   const [submissoes, setSubmissoes] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -53,6 +54,7 @@ export function PortalEntidadesSubmissoes({ entidadeId, onBack }: Props) {
     return (
       <FormularioVistoEntidade
         entidadeId={entidadeId}
+        entidadeNome={entidadeNome}
         onBack={() => setShowForm(false)}
         onSuccess={() => {
           setShowForm(false);
