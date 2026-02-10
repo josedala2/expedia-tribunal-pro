@@ -9,6 +9,9 @@ import { AuthGuard } from "@/components/auth/AuthGuard";
 import Index from "./pages/Index";
 import { Auth } from "./pages/Auth";
 import NotFound from "./pages/NotFound";
+import PortalEntidadesAuth from "./pages/portal-entidades/PortalEntidadesAuth";
+import PortalEntidadesPendente from "./pages/portal-entidades/PortalEntidadesPendente";
+import PortalEntidadesDashboard from "./pages/portal-entidades/PortalEntidadesDashboard";
 
 const queryClient = new QueryClient();
 
@@ -22,6 +25,9 @@ const App = () => (
           <BrowserRouter>
             <Routes>
               <Route path="/auth" element={<Auth />} />
+              <Route path="/portal-entidades" element={<PortalEntidadesAuth />} />
+              <Route path="/portal-entidades/pendente" element={<PortalEntidadesPendente />} />
+              <Route path="/portal-entidades/dashboard" element={<PortalEntidadesDashboard />} />
               <Route
                 path="/"
                 element={
