@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import logoTC from "@/assets/logo-tc.png";
-import { Loader2, Building2, CheckCircle } from "lucide-react";
+import { Loader2, Building2, CheckCircle, UserCircle } from "lucide-react";
 
 export default function PortalEntidadesAuth() {
   const navigate = useNavigate();
@@ -238,6 +238,21 @@ export default function PortalEntidadesAuth() {
                 {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
                 Entrar
               </Button>
+
+              <div className="border-t pt-3 mt-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setLoginEmail("entidade.demo@tc.gov.ao");
+                    setLoginPassword("demo123");
+                  }}
+                  className="w-full flex items-center gap-2 p-2 rounded-md border border-dashed border-muted-foreground/30 text-sm text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors"
+                >
+                  <UserCircle className="h-4 w-4 text-amber-600" />
+                  <span className="font-medium">Utilizador Demo:</span>
+                  <span>entidade.demo@tc.gov.ao</span>
+                </button>
+              </div>
             </form>
           </TabsContent>
 
