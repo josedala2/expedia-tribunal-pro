@@ -2917,6 +2917,7 @@ export type Database = {
         Args: { expediente_id: string; user_id: string }
         Returns: boolean
       }
+      user_entity_id: { Args: { _user_id: string }; Returns: string }
       user_has_permission: {
         Args: {
           _permission: Database["public"]["Enums"]["permissao_sistema"]
