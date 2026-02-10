@@ -1432,6 +1432,50 @@ export type Database = {
           },
         ]
       }
+      notificacoes_secretaria: {
+        Row: {
+          criado_em: string
+          id: string
+          lida: boolean | null
+          lida_em: string | null
+          lida_por: string | null
+          mensagem: string
+          submissao_id: string
+          tipo: string
+          titulo: string
+        }
+        Insert: {
+          criado_em?: string
+          id?: string
+          lida?: boolean | null
+          lida_em?: string | null
+          lida_por?: string | null
+          mensagem: string
+          submissao_id: string
+          tipo?: string
+          titulo: string
+        }
+        Update: {
+          criado_em?: string
+          id?: string
+          lida?: boolean | null
+          lida_em?: string | null
+          lida_por?: string | null
+          mensagem?: string
+          submissao_id?: string
+          tipo?: string
+          titulo?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notificacoes_secretaria_submissao_id_fkey"
+            columns: ["submissao_id"]
+            isOneToOne: false
+            referencedRelation: "submissoes_entidade"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       oficio_anexos: {
         Row: {
           criado_em: string
@@ -2627,48 +2671,78 @@ export type Database = {
           assunto: string
           atualizado_em: string
           criado_em: string
+          data_contrato: string | null
           descricao: string | null
           documentos: Json | null
+          entidade_contratada: string | null
+          entidade_contratante: string | null
           entidade_id: string
+          fonte_financiamento: string | null
           id: string
           motivo_devolucao: string | null
+          natureza_visto: string | null
+          nif_contratada: string | null
+          numero_contrato: string | null
           numero_referencia: string
+          objeto: string | null
+          observacoes: string | null
           processo_interno_id: string | null
           status: string
           submetido_por: string
           tipo_processo: string
+          tipo_visto: string | null
           valor_contrato: number | null
         }
         Insert: {
           assunto: string
           atualizado_em?: string
           criado_em?: string
+          data_contrato?: string | null
           descricao?: string | null
           documentos?: Json | null
+          entidade_contratada?: string | null
+          entidade_contratante?: string | null
           entidade_id: string
+          fonte_financiamento?: string | null
           id?: string
           motivo_devolucao?: string | null
+          natureza_visto?: string | null
+          nif_contratada?: string | null
+          numero_contrato?: string | null
           numero_referencia: string
+          objeto?: string | null
+          observacoes?: string | null
           processo_interno_id?: string | null
           status?: string
           submetido_por: string
           tipo_processo: string
+          tipo_visto?: string | null
           valor_contrato?: number | null
         }
         Update: {
           assunto?: string
           atualizado_em?: string
           criado_em?: string
+          data_contrato?: string | null
           descricao?: string | null
           documentos?: Json | null
+          entidade_contratada?: string | null
+          entidade_contratante?: string | null
           entidade_id?: string
+          fonte_financiamento?: string | null
           id?: string
           motivo_devolucao?: string | null
+          natureza_visto?: string | null
+          nif_contratada?: string | null
+          numero_contrato?: string | null
           numero_referencia?: string
+          objeto?: string | null
+          observacoes?: string | null
           processo_interno_id?: string | null
           status?: string
           submetido_por?: string
           tipo_processo?: string
+          tipo_visto?: string | null
           valor_contrato?: number | null
         }
         Relationships: [
@@ -2881,6 +2955,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      aceitar_submissao_entidade: {
+        Args: { _submissao_id: string; _user_id: string }
+        Returns: undefined
+      }
       cleanup_inactive_sessions: { Args: never; Returns: undefined }
       cleanup_old_auth_logs: { Args: never; Returns: undefined }
       get_user_permissions: {
