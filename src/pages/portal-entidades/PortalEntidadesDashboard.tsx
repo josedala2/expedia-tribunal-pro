@@ -77,7 +77,7 @@ export default function PortalEntidadesDashboard() {
   ];
 
   if (currentView === "submissoes") return <PortalEntidadesSubmissoes entidadeId={entidade.id} entidadeNome={entidade.nome} onBack={() => setCurrentView("dashboard")} />;
-  if (currentView === "processos") return <PortalEntidadesProcessos entidadeId={entidade.id} onBack={() => setCurrentView("dashboard")} />;
+  const showProcessosDialog = currentView === "processos";
   if (currentView === "notificacoes") return <PortalEntidadesNotificacoes entidadeId={entidade.id} onBack={() => setCurrentView("dashboard")} />;
   if (currentView === "pagamentos") return <PortalEntidadesPagamentos entidadeId={entidade.id} onBack={() => setCurrentView("dashboard")} />;
 
@@ -193,6 +193,11 @@ export default function PortalEntidadesDashboard() {
           })}
         </div>
       </div>
+      <PortalEntidadesProcessos
+        entidadeId={entidade.id}
+        open={showProcessosDialog}
+        onClose={() => setCurrentView("dashboard")}
+      />
     </div>
   );
 }
