@@ -6,13 +6,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { EntitySelector } from "@/components/ui/entity-selector";
 import { DocumentChecklist } from "@/components/ui/document-checklist";
 import { CurrencyInput } from "@/components/ui/currency-input";
 import { supabase } from "@/integrations/supabase/client";
 import { generateContractNumber, validateName, validateNIF, validateDateNotFuture } from "@/lib/validations";
 import { toast } from "sonner";
-
 interface Props {
   entidadeId: string;
   entidadeNome: string;
@@ -39,6 +37,24 @@ export function FormularioVistoEntidade({ entidadeId, entidadeNome, onBack, onSu
   // Validation errors
   const [errors, setErrors] = useState<Record<string, string>>({});
 
+  const DOCUMENTOS_DISPONIVEIS = [
+    "Ofício de Solicitação de Visto",
+    "Minuta do Contrato",
+    "Cabimento Orçamental",
+    "Proposta de Adjudicação / Despacho de Adjudicação",
+    "Programa de Concurso / Caderno de Encargos",
+    "Documentos de Habilitação da Empresa",
+    "Certidão Negativa de Dívidas Fiscais",
+    "Declaração de Regularidade com Segurança Social",
+  ] as const;
+
+  const DOCUMENTOS_OBRIGATORIOS = [
+    "Ofício de Solicitação de Visto",
+    "Minuta do Contrato",
+    "Cabimento Orçamental",
+  ] as const;
+
+  const [documentosFicheiros, setDocumentosFicheiros] = useState<Map<string, File>>(new Map());
   useEffect(() => {
     setNumeroContratoGerado(generateContractNumber());
   }, []);
@@ -75,6 +91,11 @@ export function FormularioVistoEntidade({ entidadeId, entidadeNome, onBack, onSu
       if (!dateVal.valid) newErrors.dataContrato = dateVal.message || "Data inválida";
     }
 
+    const missingRequired = DOCUMENTOS_OBRIGATORIOS.filter((doc) => !documentosFicheiros.has(doc));
+    if (missingRequired.length > 0) {
+      newErrors.documentos = "Anexe os documentos obrigatórios (PDF) antes de submeter.";
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -88,30 +109,84 @@ export function FormularioVistoEntidade({ entidadeId, entidadeNome, onBack, onSu
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) throw new Error("Sessão expirada");
 
+      const sanitizeFileName = (name: string) =>
+        name
+          .normalize("NFKD")
+          .replace(/[^\w.\-]+/g, "_")
+          .replace(/_+/g, "_")
+          .slice(0, 120);
+
       const numero = `SUB-VP-${Date.now().toString(36).toUpperCase()}`;
       const tipoLabel = tipoVisto === "previo" ? "Visto Prévio" : "Visto Sucessivo";
 
-      const { error } = await supabase.from("submissoes_entidade").insert({
-        entidade_id: entidadeId,
-        submetido_por: session.user.id,
-        tipo_processo: tipoLabel,
-        numero_referencia: numero,
-        assunto: objeto,
-        descricao: observacoes || null,
-        valor_contrato: valorContrato ? parseFloat(valorContrato) : null,
-        tipo_visto: tipoVisto,
-        natureza_visto: naturezaVisto,
-        entidade_contratante: entidadeContratante,
-        entidade_contratada: entidadeContratada,
-        nif_contratada: nifContratada,
-        objeto,
-        fonte_financiamento: fonteFinanciamento,
-        numero_contrato: numeroContratoGerado,
-        data_contrato: dataContrato,
-        observacoes: observacoes || null,
-      });
+      // 1) Criar a submissão
+      const { data: submissaoCriada, error: insertError } = await supabase
+        .from("submissoes_entidade")
+        .insert({
+          entidade_id: entidadeId,
+          submetido_por: session.user.id,
+          tipo_processo: tipoLabel,
+          numero_referencia: numero,
+          assunto: objeto,
+          descricao: observacoes || null,
+          valor_contrato: valorContrato ? parseFloat(valorContrato) : null,
+          tipo_visto: tipoVisto,
+          natureza_visto: naturezaVisto,
+          entidade_contratante: entidadeContratante,
+          entidade_contratada: entidadeContratada,
+          nif_contratada: nifContratada,
+          objeto,
+          fonte_financiamento: fonteFinanciamento,
+          numero_contrato: numeroContratoGerado,
+          data_contrato: dataContrato,
+          observacoes: observacoes || null,
+        })
+        .select("id")
+        .single();
 
-      if (error) throw error;
+      if (insertError) throw insertError;
+      if (!submissaoCriada?.id) throw new Error("Não foi possível criar a submissão");
+
+      // 2) Upload dos documentos (PDF)
+      const docsMeta: any[] = [];
+      const entries = Array.from(documentosFicheiros.entries());
+
+      for (const [etiqueta, file] of entries) {
+        const safeName = sanitizeFileName(file.name);
+        const storagePath = `${session.user.id}/${submissaoCriada.id}/${Date.now()}-${Math.random().toString(36).slice(2)}-${safeName}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from("processo-documentos")
+          .upload(storagePath, file, {
+            contentType: file.type,
+            upsert: false,
+          });
+
+        if (uploadError) {
+          toast.error("Erro ao anexar documento", {
+            description: `Não foi possível anexar "${file.name}".`,
+          });
+          continue;
+        }
+
+        docsMeta.push({
+          etiqueta,
+          nome: file.name,
+          tipo: file.type,
+          tamanho: file.size,
+          storage_path: storagePath,
+        });
+      }
+
+      // 3) Guardar metadados dos documentos na submissão
+      if (docsMeta.length > 0) {
+        const { error: docsError } = await supabase
+          .from("submissoes_entidade")
+          .update({ documentos: docsMeta })
+          .eq("id", submissaoCriada.id);
+
+        if (docsError) throw docsError;
+      }
 
       toast.success("Pedido de visto submetido com sucesso!", {
         description: `Referência: ${numero}. A Secretaria do Tribunal será notificada.`,
@@ -292,23 +367,15 @@ export function FormularioVistoEntidade({ entidadeId, entidadeNome, onBack, onSu
           {/* Documentação */}
           <Card className="p-6">
             <DocumentChecklist
-              documents={[
-                "Ofício de Solicitação de Visto",
-                "Minuta do Contrato",
-                "Cabimento Orçamental",
-                "Proposta de Adjudicação / Despacho de Adjudicação",
-                "Programa de Concurso / Caderno de Encargos",
-                "Documentos de Habilitação da Empresa",
-                "Certidão Negativa de Dívidas Fiscais",
-                "Declaração de Regularidade com Segurança Social",
-              ]}
-              requiredDocuments={[
-                "Ofício de Solicitação de Visto",
-                "Minuta do Contrato",
-                "Cabimento Orçamental",
-              ]}
+              documents={[...DOCUMENTOS_DISPONIVEIS]}
+              requiredDocuments={[...DOCUMENTOS_OBRIGATORIOS]}
+              selectedDocuments={[...DOCUMENTOS_OBRIGATORIOS]}
+              onFilesChange={setDocumentosFicheiros}
               label="Documentação Anexa ao Pedido de Visto"
             />
+            {errors.documentos && (
+              <p className="text-sm text-destructive mt-2">{errors.documentos}</p>
+            )}
           </Card>
 
           {/* Observações */}
