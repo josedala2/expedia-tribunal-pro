@@ -53,7 +53,7 @@ export const AceitarExpedienteDialog = ({
           assinatura_destinatario: assinaturaDigital,
           data_aceite_destinatario: dataAceite,
           nome_destinatario_assinatura: nomeResponsavel,
-          status: 'Recebido',
+          status: expediente.submissao_entidade_id ? 'Aguarda Validação Chefe de Secretaria' : 'Recebido',
         })
         .eq('id', expediente.id);
 
@@ -66,36 +66,8 @@ export const AceitarExpedienteDialog = ({
         return;
       }
 
-      // Se for expediente externo (do portal de entidades), chamar a função de aceitação
-      // para gerar a acta e actualizar a submissão no portal
-      if (expediente.submissao_entidade_id) {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session) {
-          await supabase.rpc('aceitar_submissao_entidade', {
-            _submissao_id: expediente.submissao_entidade_id,
-            _user_id: session.user.id,
-          });
-        }
-      } else if (expediente.numero?.startsWith('EXP-EXT/')) {
-        // Fallback: buscar submissão pelo assunto
-        const assuntoOriginal = expediente.assunto?.replace('Pedido de Visto - ', '') || '';
-        const { data: submissao } = await supabase
-          .from('submissoes_entidade')
-          .select('id')
-          .eq('assunto', assuntoOriginal)
-          .eq('status', 'submetido')
-          .maybeSingle();
-
-        if (submissao) {
-          const { data: { session } } = await supabase.auth.getSession();
-          if (session) {
-            await supabase.rpc('aceitar_submissao_entidade', {
-              _submissao_id: submissao.id,
-              _user_id: session.user.id,
-            });
-          }
-        }
-      }
+      // A sincronização com o portal é feita automaticamente pelo trigger 
+      // sync_expediente_to_submissao quando o status do expediente muda
 
       toast({
         title: "Expediente aceito com sucesso!",

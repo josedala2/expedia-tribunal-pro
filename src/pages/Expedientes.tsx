@@ -51,7 +51,7 @@ export const Expedientes = ({ onBack, onNavigate }: ExpedientesProps) => {
   });
 
   const stats = {
-    emTramitacao: expedientes.filter((e) => e.status === "Em Tramitação" || e.status === "Enviado").length,
+    emTramitacao: expedientes.filter((e) => e.status === "Em Tramitação" || e.status === "Enviado" || e.status === "Aguarda Validação Chefe de Secretaria").length,
     pendentes: expedientes.filter((e) => e.status === "Pendente").length,
     concluidos: expedientes.filter((e) => e.status === "Concluído" || e.status === "Recebido").length,
     urgentes: expedientes.filter((e) => e.prioridade === "Urgente" || e.prioridade === "Alta").length,
@@ -64,6 +64,8 @@ export const Expedientes = ({ onBack, onNavigate }: ExpedientesProps) => {
         return <CheckCircle className="h-4 w-4" />;
       case "Pendente":
         return <XCircle className="h-4 w-4" />;
+      case "Aguarda Validação Chefe de Secretaria":
+        return <Clock className="h-4 w-4" />;
       default:
         return <Clock className="h-4 w-4" />;
     }
@@ -76,6 +78,8 @@ export const Expedientes = ({ onBack, onNavigate }: ExpedientesProps) => {
         return "bg-success";
       case "Pendente":
         return "bg-destructive";
+      case "Aguarda Validação Chefe de Secretaria":
+        return "bg-warning";
       default:
         return "bg-accent";
     }
