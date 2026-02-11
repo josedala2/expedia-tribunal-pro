@@ -10,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CurrencyInput } from "@/components/ui/currency-input";
 import { supabase } from "@/integrations/supabase/client";
-import { Search, Loader2, FileText, Filter, Clock, CheckCircle, XCircle, ArrowLeft, Building, Calendar, User, FileCheck, Pencil, Save, DollarSign, Eye } from "lucide-react";
+import { Search, Loader2, FileText, Filter, Clock, CheckCircle, XCircle, ArrowLeft, Building, Calendar, User, FileCheck, Pencil, Save, DollarSign, Eye, Download, File } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { format } from "date-fns";
 import { pt } from "date-fns/locale";
@@ -252,10 +252,11 @@ function DetalheProcesso({ processo, onBack, onUpdated }: { processo: any; onBac
         </Card>
       </div>
 
-      {/* Tabs: Tramitação, Informações, Observações */}
+      {/* Tabs: Tramitação, Documentos, Informações, Observações */}
       <Tabs defaultValue="tramitacao" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="tramitacao" className="font-bold">Tramitação</TabsTrigger>
+          <TabsTrigger value="documentos" className="font-bold">Documentos</TabsTrigger>
           <TabsTrigger value="informacoes" className="font-bold">Informações</TabsTrigger>
           <TabsTrigger value="observacoes" className="font-bold">Observações</TabsTrigger>
         </TabsList>
@@ -320,6 +321,80 @@ function DetalheProcesso({ processo, onBack, onUpdated }: { processo: any; onBac
                     </div>
                   ))}
                 </div>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="documentos">
+          <div className="space-y-4">
+            {/* Acta de Recepção */}
+            {processo.numero_acta && (
+              <Card className="border-green-200">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm flex items-center gap-2 text-green-700">
+                    <FileCheck className="h-4 w-4" />
+                    Acta de Recepção
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <div className="h-10 w-10 rounded-lg bg-green-100 flex items-center justify-center">
+                        <FileText className="h-5 w-5 text-green-600" />
+                      </div>
+                      <div>
+                        <p className="font-medium text-sm">Acta de Recepção</p>
+                        <p className="text-xs text-muted-foreground">Nº {processo.numero_acta}</p>
+                      </div>
+                    </div>
+                    <Badge className="bg-green-100 text-green-700">Gerada</Badge>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Documentos Submetidos */}
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm flex items-center gap-2">
+                  <File className="h-4 w-4 text-primary" />
+                  Documentos Submetidos
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {processo.documentos && Array.isArray(processo.documentos) && processo.documentos.length > 0 ? (
+                  <div className="space-y-2">
+                    {processo.documentos.map((doc: any, index: number) => (
+                      <div key={index} className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50">
+                        <div className="flex items-center gap-3">
+                          <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                            <FileText className="h-5 w-5 text-primary" />
+                          </div>
+                          <div>
+                            <p className="font-medium text-sm">{doc.nome || doc.name || `Documento ${index + 1}`}</p>
+                            <p className="text-xs text-muted-foreground">
+                              {doc.tipo || doc.type || "Documento"} 
+                              {doc.tamanho ? ` • ${doc.tamanho}` : ""}
+                            </p>
+                          </div>
+                        </div>
+                        {doc.url && (
+                          <Button variant="ghost" size="sm" asChild>
+                            <a href={doc.url} target="_blank" rel="noopener noreferrer">
+                              <Download className="h-4 w-4" />
+                            </a>
+                          </Button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="py-8 text-center text-muted-foreground">
+                    <File className="h-10 w-10 mx-auto mb-2 opacity-30" />
+                    <p className="text-sm">Nenhum documento submetido</p>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>
