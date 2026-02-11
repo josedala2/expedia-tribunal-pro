@@ -478,41 +478,15 @@ function DetalheProcesso({ processo, onBack, onUpdated }: { processo: any; onBac
 
         <TabsContent value="documentos">
           <div className="space-y-4">
-            {/* Documentos Submetidos */}
+            {/* Lista de Documentos Submetidos e Gerados */}
             <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm flex items-center gap-2">
                   <File className="h-4 w-4 text-primary" />
-                  Documentos Submetidos
+                  Documentos do Processo
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
-                {editable && (
-                  <div className="space-y-3">
-                    <DocumentChecklist
-                      documents={[...DOCUMENTOS_DISPONIVEIS]}
-                      requiredDocuments={[...DOCUMENTOS_OBRIGATORIOS]}
-                      onFilesChange={setDocumentosFicheiros}
-                      label="Anexar Documentos (PDF)"
-                    />
-                    <div className="flex justify-end">
-                      <Button
-                        type="button"
-                        onClick={handleUploadDocumentos}
-                        disabled={documentosUploading}
-                        className="gap-2"
-                      >
-                        {documentosUploading ? (
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                        ) : (
-                          <Save className="h-4 w-4" />
-                        )}
-                        Anexar Documentos
-                      </Button>
-                    </div>
-                  </div>
-                )}
-
+              <CardContent>
                 {documentosLoading ? (
                   <div className="flex justify-center py-10">
                     <Loader2 className="h-6 w-6 animate-spin text-primary" />
@@ -528,11 +502,10 @@ function DetalheProcesso({ processo, onBack, onUpdated }: { processo: any; onBac
                           </div>
                           <div>
                             <p className="font-medium text-sm">
-                              {doc.etiqueta ? `${doc.etiqueta}: ` : ""}
-                              {doc.nome || doc.name || `Documento ${index + 1}`}
+                              {doc.etiqueta ? `${doc.etiqueta}` : (doc.nome || doc.name || `Documento ${index + 1}`)}
                             </p>
                             <p className="text-xs text-muted-foreground">
-                              {doc.tipo || doc.type || "Documento"} 
+                              {doc.nome || doc.name || "Documento"}
                               {doc.tamanho ? ` • ${(doc.tamanho / 1024).toFixed(0)} KB` : ""}
                               <Badge variant="outline" className="ml-2 text-[10px] py-0 px-1">Submetido</Badge>
                             </p>
@@ -574,13 +547,48 @@ function DetalheProcesso({ processo, onBack, onUpdated }: { processo: any; onBac
                     {documentos.length === 0 && !processo.numero_acta && (
                       <div className="py-8 text-center text-muted-foreground">
                         <File className="h-10 w-10 mx-auto mb-2 opacity-30" />
-                        <p className="text-sm">Nenhum documento submetido</p>
+                        <p className="text-sm">Nenhum documento associado a este processo</p>
                       </div>
                     )}
                   </div>
                 )}
               </CardContent>
             </Card>
+
+            {/* Formulário de upload — apenas para processos editáveis */}
+            {editable && (
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm flex items-center gap-2">
+                    <Save className="h-4 w-4 text-primary" />
+                    Anexar Novos Documentos
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <DocumentChecklist
+                    documents={[...DOCUMENTOS_DISPONIVEIS]}
+                    requiredDocuments={[...DOCUMENTOS_OBRIGATORIOS]}
+                    onFilesChange={setDocumentosFicheiros}
+                    label="Anexar Documentos (PDF)"
+                  />
+                  <div className="flex justify-end">
+                    <Button
+                      type="button"
+                      onClick={handleUploadDocumentos}
+                      disabled={documentosUploading}
+                      className="gap-2"
+                    >
+                      {documentosUploading ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Save className="h-4 w-4" />
+                      )}
+                      Anexar Documentos
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </div>
         </TabsContent>
 
