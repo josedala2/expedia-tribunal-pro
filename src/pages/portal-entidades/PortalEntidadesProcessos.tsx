@@ -6,10 +6,11 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CurrencyInput } from "@/components/ui/currency-input";
 import { supabase } from "@/integrations/supabase/client";
-import { Search, Loader2, FileText, Filter, Clock, CheckCircle, XCircle, ArrowLeft, Building, Calendar, User, FileCheck, Pencil, Save } from "lucide-react";
+import { Search, Loader2, FileText, Filter, Clock, CheckCircle, XCircle, ArrowLeft, Building, Calendar, User, FileCheck, Pencil, Save, DollarSign } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { format } from "date-fns";
@@ -52,7 +53,6 @@ function DetalheProcesso({ processo, onBack, onUpdated }: { processo: any; onBac
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
 
-  // Editable fields
   const [assunto, setAssunto] = useState(processo.assunto || "");
   const [tipoVisto, setTipoVisto] = useState(processo.tipo_visto || "");
   const [naturezaVisto, setNaturezaVisto] = useState(processo.natureza_visto || "");
@@ -113,238 +113,344 @@ function DetalheProcesso({ processo, onBack, onUpdated }: { processo: any; onBac
 
   const editable = canEdit(processo.status);
 
+  // Tramitação steps based on status
+  const getTramitacao = () => {
+    const steps = [
+      { etapa: "Submissão pelo Portal", status: "Concluído" as const, data: processo.criado_em ? format(new Date(processo.criado_em), "dd/MM/yyyy", { locale: pt }) : "-" },
+      { etapa: "Recepção pela Secretaria", status: processo.status === "submetido" ? "Pendente" as const : "Concluído" as const, data: processo.status !== "submetido" && processo.atualizado_em ? format(new Date(processo.atualizado_em), "dd/MM/yyyy", { locale: pt }) : "-" },
+      { etapa: "Geração da Acta de Recepção", status: processo.numero_acta ? "Concluído" as const : "Pendente" as const, data: processo.numero_acta ? format(new Date(processo.atualizado_em), "dd/MM/yyyy", { locale: pt }) : "-" },
+      { etapa: "Validação Chefe de Secretaria", status: processo.status === "aguarda_validacao_chefe" ? "Em Andamento" as const : (processo.status === "aceite" ? "Concluído" as const : "Pendente" as const), data: "-" },
+      { etapa: "Registo e Autuação", status: "Pendente" as const, data: "-" },
+      { etapa: "Análise Técnica", status: "Pendente" as const, data: "-" },
+      { etapa: "Decisão do Juiz Relator", status: "Pendente" as const, data: "-" },
+      { etapa: "Cobrança de Emolumentos", status: "Pendente" as const, data: "-" },
+      { etapa: "Saída de Expediente", status: "Pendente" as const, data: "-" },
+    ];
+    return steps;
+  };
+
+  const tramitacao = getTramitacao();
+  const etapaAtual = tramitacao.find(t => t.status === "Em Andamento")?.etapa || tramitacao.find(t => t.status === "Pendente")?.etapa || "Submissão";
+
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-3">
+      {/* Header like DetalheProcessoVisto */}
+      <div className="flex items-center gap-4">
         <Button variant="ghost" size="icon" onClick={onBack}>
-          <ArrowLeft className="h-4 w-4" />
+          <ArrowLeft className="h-5 w-5" />
         </Button>
-        <div>
-          <h3 className="text-lg font-bold text-foreground">{processo.numero_referencia}</h3>
-          <p className="text-sm text-muted-foreground">{processo.tipo_processo}</p>
+        <div className="flex-1">
+          <div className="flex items-center gap-3">
+            <h1 className="text-2xl font-bold text-foreground">
+              Processo {processo.numero_referencia}
+            </h1>
+            <Badge className={`${statusColors[processo.status] || "bg-muted"} gap-1`}>
+              {statusIcons[processo.status]}
+              {statusLabels[processo.status] || processo.status}
+            </Badge>
+          </div>
+          <p className="text-muted-foreground mt-1">
+            {processo.tipo_processo || "Pedido de Visto"}
+          </p>
         </div>
-        <Badge className={`${statusColors[processo.status] || "bg-muted"} gap-1 ml-auto`}>
-          {statusIcons[processo.status]}
-          {statusLabels[processo.status] || processo.status}
-        </Badge>
-      </div>
-
-      {editable && !editing && (
-        <div className="flex justify-end">
+        {editable && !editing && (
           <Button variant="outline" className="gap-2" onClick={() => setEditing(true)}>
             <Pencil className="h-4 w-4" />
-            Editar Pedido
+            Editar
           </Button>
-        </div>
-      )}
+        )}
+        {editing && (
+          <div className="flex gap-2">
+            <Button variant="ghost" onClick={handleCancel} disabled={saving}>Cancelar</Button>
+            <Button className="gap-2" onClick={handleSave} disabled={saving}>
+              {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+              Guardar
+            </Button>
+          </div>
+        )}
+      </div>
 
-      {editing && (
-        <div className="flex justify-end gap-2">
-          <Button variant="ghost" onClick={handleCancel} disabled={saving}>Cancelar</Button>
-          <Button className="gap-2" onClick={handleSave} disabled={saving}>
-            {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-            Guardar Alterações
-          </Button>
-        </div>
-      )}
-
-      <Separator />
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <FileCheck className="h-4 w-4 text-primary" />
-              Informações Gerais
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3 text-sm">
-            {editing ? (
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label>Assunto *</Label>
-                  <Input value={assunto} onChange={e => setAssunto(e.target.value)} />
-                </div>
-                <div className="space-y-2">
-                  <Label>Tipo de Visto *</Label>
-                  <Select value={tipoVisto} onValueChange={setTipoVisto}>
-                    <SelectTrigger><SelectValue placeholder="Seleccione" /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Visto Prévio">Visto Prévio</SelectItem>
-                      <SelectItem value="Visto Sucessivo">Visto Sucessivo</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label>Natureza *</Label>
-                  <Select value={naturezaVisto} onValueChange={setNaturezaVisto}>
-                    <SelectTrigger><SelectValue placeholder="Seleccione" /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Normal">Normal</SelectItem>
-                      <SelectItem value="Urgente">Urgente</SelectItem>
-                      <SelectItem value="Muito Urgente">Muito Urgente</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            ) : (
-              <>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Assunto</span>
-                  <span className="font-medium text-right max-w-[60%]">{assunto}</span>
-                </div>
-                <Separator />
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Tipo de Visto</span>
-                  <span className="font-medium">{tipoVisto || "-"}</span>
-                </div>
-                <Separator />
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Natureza</span>
-                  <span className="font-medium">{naturezaVisto || "-"}</span>
-                </div>
-                <Separator />
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Nº Contrato</span>
-                  <span className="font-medium">{processo.numero_contrato || "-"}</span>
-                </div>
-              </>
-            )}
-          </CardContent>
+      {/* 4 Top Info Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card className="p-4 border-l-4 border-l-primary">
+          <div className="flex items-center gap-3">
+            <Building className="h-8 w-8 text-primary" />
+            <div>
+              <p className="text-sm text-muted-foreground">Entidade Contratante</p>
+              <p className="font-semibold text-foreground text-sm">{processo.entidade_contratante || "-"}</p>
+            </div>
+          </div>
         </Card>
 
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <Building className="h-4 w-4 text-primary" />
-              Partes Contratantes
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3 text-sm">
-            {editing ? (
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label>Entidade Contratante</Label>
-                  <Input value={processo.entidade_contratante || "-"} disabled className="bg-muted" />
-                </div>
-                <div className="space-y-2">
-                  <Label>Entidade Contratada *</Label>
-                  <Input value={entidadeContratada} onChange={e => setEntidadeContratada(e.target.value)} />
-                </div>
-                <div className="space-y-2">
-                  <Label>NIF Contratada</Label>
-                  <Input value={nifContratada} onChange={e => setNifContratada(e.target.value)} />
-                </div>
-              </div>
-            ) : (
-              <>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Contratante</span>
-                  <span className="font-medium text-right max-w-[60%]">{processo.entidade_contratante || "-"}</span>
-                </div>
-                <Separator />
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Contratada</span>
-                  <span className="font-medium text-right max-w-[60%]">{entidadeContratada || "-"}</span>
-                </div>
-                <Separator />
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">NIF Contratada</span>
-                  <span className="font-medium">{nifContratada || "-"}</span>
-                </div>
-              </>
-            )}
-          </CardContent>
+        <Card className="p-4 border-l-4 border-l-green-500">
+          <div className="flex items-center gap-3">
+            <DollarSign className="h-8 w-8 text-green-500" />
+            <div>
+              <p className="text-sm text-muted-foreground">Valor do Contrato</p>
+              <p className="font-semibold text-foreground">{formatCurrency(processo.valor_contrato)}</p>
+            </div>
+          </div>
         </Card>
 
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <Calendar className="h-4 w-4 text-primary" />
-              Datas e Valores
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3 text-sm">
-            {editing ? (
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label>Data do Contrato</Label>
-                  <Input type="date" value={dataContrato} onChange={e => setDataContrato(e.target.value)} />
-                </div>
-                <div className="space-y-2">
-                  <Label>Valor do Contrato</Label>
-                  <CurrencyInput value={valorContrato} onChange={setValorContrato} />
-                </div>
-                <div className="space-y-2">
-                  <Label>Fonte de Financiamento</Label>
-                  <Input value={fonteFinanciamento} onChange={e => setFonteFinanciamento(e.target.value)} />
-                </div>
-              </div>
-            ) : (
-              <>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Data de Submissão</span>
-                  <span className="font-medium">
-                    {processo.criado_em ? format(new Date(processo.criado_em), "dd/MM/yyyy HH:mm", { locale: pt }) : "-"}
-                  </span>
-                </div>
-                <Separator />
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Data do Contrato</span>
-                  <span className="font-medium">
-                    {dataContrato ? format(new Date(dataContrato), "dd/MM/yyyy", { locale: pt }) : "-"}
-                  </span>
-                </div>
-                <Separator />
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Valor do Contrato</span>
-                  <span className="font-medium">{formatCurrency(processo.valor_contrato)}</span>
-                </div>
-                <Separator />
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Fonte de Financiamento</span>
-                  <span className="font-medium">{fonteFinanciamento || "-"}</span>
-                </div>
-              </>
-            )}
-          </CardContent>
+        <Card className="p-4 border-l-4 border-l-accent">
+          <div className="flex items-center gap-3">
+            <FileCheck className="h-8 w-8 text-accent" />
+            <div>
+              <p className="text-sm text-muted-foreground">Natureza</p>
+              <p className="font-semibold text-foreground text-sm">{naturezaVisto || "-"}</p>
+            </div>
+          </div>
         </Card>
 
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <User className="h-4 w-4 text-primary" />
-              Objecto e Observações
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3 text-sm">
-            {editing ? (
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label>Objecto do Contrato *</Label>
-                  <Textarea value={objeto} onChange={e => setObjeto(e.target.value)} rows={3} />
-                </div>
-                <div className="space-y-2">
-                  <Label>Observações</Label>
-                  <Textarea value={observacoes} onChange={e => setObservacoes(e.target.value)} rows={3} />
-                </div>
-              </div>
-            ) : (
-              <>
-                <div>
-                  <span className="text-muted-foreground">Objecto do Contrato</span>
-                  <p className="font-medium mt-1">{objeto || "-"}</p>
-                </div>
-                <Separator />
-                <div>
-                  <span className="text-muted-foreground">Observações</span>
-                  <p className="font-medium mt-1">{observacoes || "Sem observações"}</p>
-                </div>
-              </>
-            )}
-          </CardContent>
+        <Card className="p-4 border-l-4 border-l-orange-500">
+          <div className="flex items-center gap-3">
+            <Clock className="h-8 w-8 text-orange-500" />
+            <div>
+              <p className="text-sm text-muted-foreground">Data de Submissão</p>
+              <p className="font-semibold text-foreground">
+                {processo.criado_em ? format(new Date(processo.criado_em), "dd/MM/yyyy", { locale: pt }) : "-"}
+              </p>
+            </div>
+          </div>
         </Card>
       </div>
+
+      {/* Additional Info Row */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card className="p-4">
+          <div className="space-y-2">
+            <div className="flex justify-between">
+              <span className="text-sm text-muted-foreground">Objecto:</span>
+              <span className="text-sm font-medium text-foreground text-right max-w-[60%]">{objeto || "-"}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-sm text-muted-foreground">Tipo de Visto:</span>
+              <Badge variant="outline" className="border-primary text-primary">{tipoVisto || "-"}</Badge>
+            </div>
+          </div>
+        </Card>
+
+        <Card className="p-4">
+          <div className="space-y-2">
+            <div className="flex justify-between">
+              <span className="text-sm text-muted-foreground">Contratada:</span>
+              <span className="text-sm font-medium text-foreground text-right max-w-[60%]">{entidadeContratada || "-"}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-sm text-muted-foreground">NIF:</span>
+              <span className="text-sm font-medium text-foreground">{nifContratada || "-"}</span>
+            </div>
+          </div>
+        </Card>
+
+        <Card className="p-4">
+          <div className="space-y-2">
+            <div className="flex justify-between">
+              <span className="text-sm text-muted-foreground">Fonte Financ.:</span>
+              <span className="text-sm font-medium text-foreground">{fonteFinanciamento || "-"}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-sm text-muted-foreground">Data Contrato:</span>
+              <span className="text-sm font-medium text-foreground">
+                {dataContrato ? format(new Date(dataContrato), "dd/MM/yyyy", { locale: pt }) : "-"}
+              </span>
+            </div>
+          </div>
+        </Card>
+      </div>
+
+      {/* Tabs: Tramitação, Informações, Observações */}
+      <Tabs defaultValue="tramitacao" className="space-y-6">
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="tramitacao" className="font-bold">Tramitação</TabsTrigger>
+          <TabsTrigger value="informacoes" className="font-bold">Informações</TabsTrigger>
+          <TabsTrigger value="observacoes" className="font-bold">Observações</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="tramitacao">
+          <div className="space-y-4">
+            <Card className="p-4 bg-primary/5 border-primary">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center">
+                  <FileText className="h-5 w-5 text-primary-foreground" />
+                </div>
+                <div>
+                  <p className="font-semibold text-foreground">Etapa Atual</p>
+                  <p className="text-lg font-bold text-primary">{etapaAtual}</p>
+                </div>
+              </div>
+            </Card>
+
+            {processo.numero_acta && (
+              <Card className="p-4 bg-green-50 border-green-200">
+                <div className="flex items-center gap-3">
+                  <FileCheck className="h-6 w-6 text-green-600" />
+                  <div>
+                    <p className="font-semibold text-green-800">Acta de Recepção Gerada</p>
+                    <p className="text-sm text-green-600">Nº {processo.numero_acta}</p>
+                  </div>
+                </div>
+              </Card>
+            )}
+
+            <Card>
+              <CardContent className="pt-6">
+                <div className="space-y-0">
+                  {tramitacao.map((step, index) => (
+                    <div key={index} className="flex gap-4">
+                      <div className="flex flex-col items-center">
+                        <div className={`h-8 w-8 rounded-full flex items-center justify-center text-xs font-bold ${
+                          step.status === "Concluído" 
+                            ? "bg-green-500 text-white" 
+                            : step.status === "Em Andamento" 
+                            ? "bg-primary text-primary-foreground animate-pulse" 
+                            : "bg-muted text-muted-foreground"
+                        }`}>
+                          {step.status === "Concluído" ? <CheckCircle className="h-4 w-4" /> : index + 1}
+                        </div>
+                        {index < tramitacao.length - 1 && (
+                          <div className={`w-0.5 h-8 ${
+                            step.status === "Concluído" ? "bg-green-300" : "bg-muted"
+                          }`} />
+                        )}
+                      </div>
+                      <div className="pb-4">
+                        <p className={`font-medium text-sm ${
+                          step.status === "Concluído" ? "text-green-700" : 
+                          step.status === "Em Andamento" ? "text-primary font-bold" : 
+                          "text-muted-foreground"
+                        }`}>
+                          {step.etapa}
+                        </p>
+                        <p className="text-xs text-muted-foreground">{step.data}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="informacoes">
+          {editing ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Card>
+                <CardHeader><CardTitle className="text-sm">Informações Gerais</CardTitle></CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <Label>Assunto *</Label>
+                    <Input value={assunto} onChange={e => setAssunto(e.target.value)} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Tipo de Visto *</Label>
+                    <Select value={tipoVisto} onValueChange={setTipoVisto}>
+                      <SelectTrigger><SelectValue placeholder="Seleccione" /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Visto Prévio">Visto Prévio</SelectItem>
+                        <SelectItem value="Visto Sucessivo">Visto Sucessivo</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Natureza *</Label>
+                    <Select value={naturezaVisto} onValueChange={setNaturezaVisto}>
+                      <SelectTrigger><SelectValue placeholder="Seleccione" /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Normal">Normal</SelectItem>
+                        <SelectItem value="Urgente">Urgente</SelectItem>
+                        <SelectItem value="Muito Urgente">Muito Urgente</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader><CardTitle className="text-sm">Partes e Valores</CardTitle></CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <Label>Entidade Contratada *</Label>
+                    <Input value={entidadeContratada} onChange={e => setEntidadeContratada(e.target.value)} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>NIF Contratada</Label>
+                    <Input value={nifContratada} onChange={e => setNifContratada(e.target.value)} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Valor do Contrato</Label>
+                    <CurrencyInput value={valorContrato} onChange={setValorContrato} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Fonte de Financiamento</Label>
+                    <Input value={fonteFinanciamento} onChange={e => setFonteFinanciamento(e.target.value)} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Objecto do Contrato *</Label>
+                    <Textarea value={objeto} onChange={e => setObjeto(e.target.value)} rows={3} />
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Card>
+                <CardHeader><CardTitle className="text-sm flex items-center gap-2"><FileCheck className="h-4 w-4 text-primary" /> Informações Gerais</CardTitle></CardHeader>
+                <CardContent className="space-y-3 text-sm">
+                  <div className="flex justify-between"><span className="text-muted-foreground">Assunto</span><span className="font-medium text-right max-w-[60%]">{assunto}</span></div>
+                  <Separator />
+                  <div className="flex justify-between"><span className="text-muted-foreground">Tipo de Visto</span><span className="font-medium">{tipoVisto || "-"}</span></div>
+                  <Separator />
+                  <div className="flex justify-between"><span className="text-muted-foreground">Natureza</span><span className="font-medium">{naturezaVisto || "-"}</span></div>
+                  <Separator />
+                  <div className="flex justify-between"><span className="text-muted-foreground">Nº Contrato</span><span className="font-medium">{processo.numero_contrato || "-"}</span></div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader><CardTitle className="text-sm flex items-center gap-2"><Building className="h-4 w-4 text-primary" /> Partes Contratantes</CardTitle></CardHeader>
+                <CardContent className="space-y-3 text-sm">
+                  <div className="flex justify-between"><span className="text-muted-foreground">Contratante</span><span className="font-medium text-right max-w-[60%]">{processo.entidade_contratante || "-"}</span></div>
+                  <Separator />
+                  <div className="flex justify-between"><span className="text-muted-foreground">Contratada</span><span className="font-medium text-right max-w-[60%]">{entidadeContratada || "-"}</span></div>
+                  <Separator />
+                  <div className="flex justify-between"><span className="text-muted-foreground">NIF Contratada</span><span className="font-medium">{nifContratada || "-"}</span></div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+        </TabsContent>
+
+        <TabsContent value="observacoes">
+          <Card>
+            <CardHeader><CardTitle className="text-sm">Objecto e Observações</CardTitle></CardHeader>
+            <CardContent className="space-y-4 text-sm">
+              {editing ? (
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label>Objecto do Contrato *</Label>
+                    <Textarea value={objeto} onChange={e => setObjeto(e.target.value)} rows={3} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Observações</Label>
+                    <Textarea value={observacoes} onChange={e => setObservacoes(e.target.value)} rows={3} />
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <div>
+                    <span className="text-muted-foreground">Objecto do Contrato</span>
+                    <p className="font-medium mt-1">{objeto || "-"}</p>
+                  </div>
+                  <Separator />
+                  <div>
+                    <span className="text-muted-foreground">Observações</span>
+                    <p className="font-medium mt-1">{observacoes || "Sem observações"}</p>
+                  </div>
+                </>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
