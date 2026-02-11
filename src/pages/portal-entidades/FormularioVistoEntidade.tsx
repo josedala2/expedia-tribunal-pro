@@ -37,7 +37,9 @@ export function FormularioVistoEntidade({ entidadeId, entidadeNome, onBack, onSu
   // Validation errors
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const DOCUMENTOS_DISPONIVEIS = [
+  const isPrestacaoContas = tipoVisto === "prestacao_contas";
+
+  const DOCUMENTOS_VISTO = [
     "Ofício de Solicitação de Visto",
     "Minuta do Contrato",
     "Cabimento Orçamental",
@@ -48,11 +50,32 @@ export function FormularioVistoEntidade({ entidadeId, entidadeNome, onBack, onSu
     "Declaração de Regularidade com Segurança Social",
   ] as const;
 
-  const DOCUMENTOS_OBRIGATORIOS = [
+  const DOCUMENTOS_VISTO_OBRIGATORIOS = [
     "Ofício de Solicitação de Visto",
     "Minuta do Contrato",
     "Cabimento Orçamental",
   ] as const;
+
+  const DOCUMENTOS_PRESTACAO = [
+    "Ofício de Remessa da Conta",
+    "Balancete Analítico",
+    "Relatório de Gestão / Relatório de Actividades",
+    "Demonstrações Financeiras",
+    "Parecer do Órgão de Fiscalização Interna",
+    "Certidão de Quitação / Declaração de Conformidade",
+    "Mapa de Execução Orçamental",
+    "Documentos Justificativos de Despesas",
+  ] as const;
+
+  const DOCUMENTOS_PRESTACAO_OBRIGATORIOS = [
+    "Ofício de Remessa da Conta",
+    "Balancete Analítico",
+    "Relatório de Gestão / Relatório de Actividades",
+    "Demonstrações Financeiras",
+  ] as const;
+
+  const DOCUMENTOS_DISPONIVEIS = isPrestacaoContas ? DOCUMENTOS_PRESTACAO : DOCUMENTOS_VISTO;
+  const DOCUMENTOS_OBRIGATORIOS = isPrestacaoContas ? DOCUMENTOS_PRESTACAO_OBRIGATORIOS : DOCUMENTOS_VISTO_OBRIGATORIOS;
 
   const [documentosFicheiros, setDocumentosFicheiros] = useState<Map<string, File>>(new Map());
   useEffect(() => {
@@ -62,19 +85,21 @@ export function FormularioVistoEntidade({ entidadeId, entidadeNome, onBack, onSu
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
 
-    if (!tipoVisto) newErrors.tipoVisto = "O tipo de visto é obrigatório";
-    if (!naturezaVisto) newErrors.naturezaVisto = "A natureza do visto é obrigatória";
-    if (!entidadeContratante) newErrors.entidadeContratante = "A entidade contratante é obrigatória";
+    if (!tipoVisto) newErrors.tipoVisto = "O tipo de processo é obrigatório";
+    if (!isPrestacaoContas && !naturezaVisto) newErrors.naturezaVisto = "A natureza do visto é obrigatória";
+    if (!entidadeContratante) newErrors.entidadeContratante = "A entidade é obrigatória";
 
-    if (!entidadeContratada || entidadeContratada.length < 2) {
-      newErrors.entidadeContratada = "O nome da entidade contratada deve ter pelo menos 2 caracteres";
-    } else {
-      const nameVal = validateName(entidadeContratada);
-      if (!nameVal.valid) newErrors.entidadeContratada = nameVal.message || "Nome inválido";
-    }
+    if (!isPrestacaoContas) {
+      if (!entidadeContratada || entidadeContratada.length < 2) {
+        newErrors.entidadeContratada = "O nome da entidade contratada deve ter pelo menos 2 caracteres";
+      } else {
+        const nameVal = validateName(entidadeContratada);
+        if (!nameVal.valid) newErrors.entidadeContratada = nameVal.message || "Nome inválido";
+      }
 
-    if (!nifContratada || !/^\d{9}$/.test(nifContratada)) {
-      newErrors.nifContratada = "O NIF deve ter exactamente 9 dígitos";
+      if (!nifContratada || !/^\d{9}$/.test(nifContratada)) {
+        newErrors.nifContratada = "O NIF deve ter exactamente 9 dígitos";
+      }
     }
 
     if (!objeto || objeto.length < 10) {
@@ -211,10 +236,12 @@ export function FormularioVistoEntidade({ entidadeId, entidadeNome, onBack, onSu
           <div>
             <h1 className="text-2xl font-bold text-foreground flex items-center gap-3">
               <FileText className="h-7 w-7 text-primary" />
-              Nova Submissão de Processo
+              {isPrestacaoContas ? "Registo de Expediente de Prestação de Contas" : "Novo Pedido de Visto"}
             </h1>
             <p className="text-sm text-muted-foreground">
-              Registo de expediente para pedido de visto ou prestação de contas
+              {isPrestacaoContas 
+                ? "Submissão de contas para apreciação do Tribunal de Contas" 
+                : "Registo de expediente para pedido de visto prévio ou sucessivo"}
             </p>
           </div>
         </div>
@@ -239,6 +266,7 @@ export function FormularioVistoEntidade({ entidadeId, entidadeNome, onBack, onSu
                 {errors.tipoVisto && <p className="text-sm text-destructive">{errors.tipoVisto}</p>}
               </div>
 
+              {!isPrestacaoContas && (
               <div className="space-y-2">
                 <Label>Natureza do Visto *</Label>
                 <Select value={naturezaVisto} onValueChange={setNaturezaVisto}>
@@ -253,12 +281,13 @@ export function FormularioVistoEntidade({ entidadeId, entidadeNome, onBack, onSu
                 </Select>
                 {errors.naturezaVisto && <p className="text-sm text-destructive">{errors.naturezaVisto}</p>}
               </div>
+              )}
             </div>
           </Card>
 
           {/* Partes Contratantes */}
           <Card className="p-6">
-            <h3 className="text-lg font-semibold mb-4 text-foreground">Partes Contratantes</h3>
+            <h3 className="text-lg font-semibold mb-4 text-foreground">{isPrestacaoContas ? "Dados da Entidade" : "Partes Contratantes"}</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <Label>Entidade Contratante (Pública) *</Label>
@@ -270,6 +299,7 @@ export function FormularioVistoEntidade({ entidadeId, entidadeNome, onBack, onSu
                 <p className="text-xs text-muted-foreground">Preenchido automaticamente com a sua entidade</p>
               </div>
 
+              {!isPrestacaoContas && (
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label>Entidade Contratada *</Label>
@@ -294,15 +324,16 @@ export function FormularioVistoEntidade({ entidadeId, entidadeNome, onBack, onSu
                   {errors.nifContratada && <p className="text-sm text-destructive">{errors.nifContratada}</p>}
                 </div>
               </div>
+              )}
             </div>
           </Card>
 
-          {/* Dados do Contrato */}
+          {/* Dados do Contrato / Exercício */}
           <Card className="p-6">
-            <h3 className="text-lg font-semibold mb-4 text-foreground">Dados do Contrato</h3>
+            <h3 className="text-lg font-semibold mb-4 text-foreground">{isPrestacaoContas ? "Dados da Prestação de Contas" : "Dados do Contrato"}</h3>
             <div className="space-y-6">
               <div className="space-y-2">
-                <Label>Objecto do Contrato *</Label>
+                <Label>{isPrestacaoContas ? "Descrição / Objecto da Prestação de Contas *" : "Objecto do Contrato *"}</Label>
                 <Textarea
                   value={objeto}
                   onChange={(e) => setObjeto(e.target.value)}
@@ -372,7 +403,7 @@ export function FormularioVistoEntidade({ entidadeId, entidadeNome, onBack, onSu
               requiredDocuments={[...DOCUMENTOS_OBRIGATORIOS]}
               selectedDocuments={[...DOCUMENTOS_OBRIGATORIOS]}
               onFilesChange={setDocumentosFicheiros}
-              label="Documentação Anexa ao Pedido de Visto"
+              label={isPrestacaoContas ? "Documentação Anexa à Prestação de Contas" : "Documentação Anexa ao Pedido de Visto"}
             />
             {errors.documentos && (
               <p className="text-sm text-destructive mt-2">{errors.documentos}</p>
@@ -400,7 +431,7 @@ export function FormularioVistoEntidade({ entidadeId, entidadeNome, onBack, onSu
             </Button>
             <Button type="submit" disabled={isSubmitting} className="gap-2">
               <Save className="h-4 w-4" />
-              {isSubmitting ? "A Submeter..." : "Submeter Pedido de Visto"}
+              {isSubmitting ? "A Submeter..." : isPrestacaoContas ? "Submeter Prestação de Contas" : "Submeter Pedido de Visto"}
             </Button>
           </div>
         </form>
