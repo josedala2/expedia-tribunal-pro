@@ -478,32 +478,6 @@ function DetalheProcesso({ processo, onBack, onUpdated }: { processo: any; onBac
 
         <TabsContent value="documentos">
           <div className="space-y-4">
-            {/* Acta de Recepção */}
-            {processo.numero_acta && (
-              <Card className="border-green-200">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-sm flex items-center gap-2 text-green-700">
-                    <FileCheck className="h-4 w-4" />
-                    Acta de Recepção
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
-                    <div className="flex items-center gap-3">
-                      <div className="h-10 w-10 rounded-lg bg-green-100 flex items-center justify-center">
-                        <FileText className="h-5 w-5 text-green-600" />
-                      </div>
-                      <div>
-                        <p className="font-medium text-sm">Acta de Recepção</p>
-                        <p className="text-xs text-muted-foreground">Nº {processo.numero_acta}</p>
-                      </div>
-                    </div>
-                    <Badge className="bg-green-100 text-green-700">Gerada</Badge>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
             {/* Documentos Submetidos */}
             <Card>
               <CardHeader className="pb-3">
@@ -543,10 +517,11 @@ function DetalheProcesso({ processo, onBack, onUpdated }: { processo: any; onBac
                   <div className="flex justify-center py-10">
                     <Loader2 className="h-6 w-6 animate-spin text-primary" />
                   </div>
-                ) : documentos.length > 0 ? (
+                ) : (
                   <div className="space-y-2">
-                    {documentos.map((doc: any, index: number) => (
-                      <div key={index} className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50">
+                    {/* Documentos submetidos pela entidade */}
+                    {documentos.length > 0 && documentos.map((doc: any, index: number) => (
+                      <div key={`sub-${index}`} className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50">
                         <div className="flex items-center gap-3">
                           <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
                             <FileText className="h-5 w-5 text-primary" />
@@ -557,8 +532,9 @@ function DetalheProcesso({ processo, onBack, onUpdated }: { processo: any; onBac
                               {doc.nome || doc.name || `Documento ${index + 1}`}
                             </p>
                             <p className="text-xs text-muted-foreground">
-                              {doc.tipo || doc.type || "Documento"}
-                              {doc.tamanho ? ` • ${doc.tamanho}` : ""}
+                              {doc.tipo || doc.type || "Documento"} 
+                              {doc.tamanho ? ` • ${(doc.tamanho / 1024).toFixed(0)} KB` : ""}
+                              <Badge variant="outline" className="ml-2 text-[10px] py-0 px-1">Submetido</Badge>
                             </p>
                           </div>
                         </div>
@@ -575,11 +551,32 @@ function DetalheProcesso({ processo, onBack, onUpdated }: { processo: any; onBac
                         )}
                       </div>
                     ))}
-                  </div>
-                ) : (
-                  <div className="py-8 text-center text-muted-foreground">
-                    <File className="h-10 w-10 mx-auto mb-2 opacity-30" />
-                    <p className="text-sm">Nenhum documento submetido</p>
+
+                    {/* Documentos Gerados pelo Sistema */}
+                    {processo.numero_acta && (
+                      <div className="flex items-center justify-between p-3 border border-green-200 rounded-lg bg-green-50/50 hover:bg-green-50">
+                        <div className="flex items-center gap-3">
+                          <div className="h-10 w-10 rounded-lg bg-green-100 flex items-center justify-center">
+                            <FileCheck className="h-5 w-5 text-green-600" />
+                          </div>
+                          <div>
+                            <p className="font-medium text-sm text-green-800">Acta de Recepção</p>
+                            <p className="text-xs text-muted-foreground">
+                              Nº {processo.numero_acta}
+                              <Badge className="ml-2 bg-green-100 text-green-700 text-[10px] py-0 px-1">Gerado</Badge>
+                            </p>
+                          </div>
+                        </div>
+                        <Badge className="bg-green-100 text-green-700">Gerada</Badge>
+                      </div>
+                    )}
+
+                    {documentos.length === 0 && !processo.numero_acta && (
+                      <div className="py-8 text-center text-muted-foreground">
+                        <File className="h-10 w-10 mx-auto mb-2 opacity-30" />
+                        <p className="text-sm">Nenhum documento submetido</p>
+                      </div>
+                    )}
                   </div>
                 )}
               </CardContent>
