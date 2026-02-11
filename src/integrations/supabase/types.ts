@@ -2009,6 +2009,96 @@ export type Database = {
         }
         Relationships: []
       }
+      processos_prestacao_contas: {
+        Row: {
+          ano_gerencia: string | null
+          assunto: string
+          atualizado_em: string
+          criado_em: string
+          criado_por: string | null
+          data_referencia: string | null
+          descricao: string | null
+          dias_restantes: number | null
+          divisao: string | null
+          documentos: Json | null
+          entidade_id: string | null
+          entidade_nome: string
+          etapa_atual: string | null
+          fonte_financiamento: string | null
+          id: string
+          juiz_relator: string | null
+          numero_processo: string
+          observacoes: string | null
+          prazo_dias: number | null
+          status: string | null
+          submissao_id: string | null
+          valor_conta: number | null
+        }
+        Insert: {
+          ano_gerencia?: string | null
+          assunto: string
+          atualizado_em?: string
+          criado_em?: string
+          criado_por?: string | null
+          data_referencia?: string | null
+          descricao?: string | null
+          dias_restantes?: number | null
+          divisao?: string | null
+          documentos?: Json | null
+          entidade_id?: string | null
+          entidade_nome: string
+          etapa_atual?: string | null
+          fonte_financiamento?: string | null
+          id?: string
+          juiz_relator?: string | null
+          numero_processo: string
+          observacoes?: string | null
+          prazo_dias?: number | null
+          status?: string | null
+          submissao_id?: string | null
+          valor_conta?: number | null
+        }
+        Update: {
+          ano_gerencia?: string | null
+          assunto?: string
+          atualizado_em?: string
+          criado_em?: string
+          criado_por?: string | null
+          data_referencia?: string | null
+          descricao?: string | null
+          dias_restantes?: number | null
+          divisao?: string | null
+          documentos?: Json | null
+          entidade_id?: string | null
+          entidade_nome?: string
+          etapa_atual?: string | null
+          fonte_financiamento?: string | null
+          id?: string
+          juiz_relator?: string | null
+          numero_processo?: string
+          observacoes?: string | null
+          prazo_dias?: number | null
+          status?: string | null
+          submissao_id?: string | null
+          valor_conta?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "processos_prestacao_contas_entidade_id_fkey"
+            columns: ["entidade_id"]
+            isOneToOne: false
+            referencedRelation: "entidades_externas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "processos_prestacao_contas_submissao_id_fkey"
+            columns: ["submissao_id"]
+            isOneToOne: false
+            referencedRelation: "submissoes_entidade"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       processos_visto: {
         Row: {
           atualizado_em: string | null
@@ -2695,6 +2785,7 @@ export type Database = {
           nif_contratada: string | null
           numero_acta: string | null
           numero_contrato: string | null
+          numero_processo_interno: string | null
           numero_referencia: string
           objeto: string | null
           observacoes: string | null
@@ -2722,6 +2813,7 @@ export type Database = {
           nif_contratada?: string | null
           numero_acta?: string | null
           numero_contrato?: string | null
+          numero_processo_interno?: string | null
           numero_referencia: string
           objeto?: string | null
           observacoes?: string | null
@@ -2749,6 +2841,7 @@ export type Database = {
           nif_contratada?: string | null
           numero_acta?: string | null
           numero_contrato?: string | null
+          numero_processo_interno?: string | null
           numero_referencia?: string
           objeto?: string | null
           observacoes?: string | null
@@ -2975,6 +3068,7 @@ export type Database = {
       }
       cleanup_inactive_sessions: { Args: never; Returns: undefined }
       cleanup_old_auth_logs: { Args: never; Returns: undefined }
+      gerar_numero_processo_pc: { Args: never; Returns: string }
       get_user_permissions: {
         Args: { _user_id: string }
         Returns: Database["public"]["Enums"]["permissao_sistema"][]

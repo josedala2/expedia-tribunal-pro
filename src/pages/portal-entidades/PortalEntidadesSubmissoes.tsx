@@ -132,7 +132,12 @@ export function PortalEntidadesSubmissoes({ entidadeId, entidadeNome, onBack, ti
                       </div>
                       <h3 className="font-semibold">{s.assunto}</h3>
                       <p className="text-sm text-muted-foreground">{s.tipo_processo}</p>
-                      {s.entidade_contratante && (
+                      {s.numero_processo_interno && (
+                        <p className="text-xs font-mono text-primary font-semibold">
+                          Processo: {s.numero_processo_interno}
+                        </p>
+                      )}
+                      {s.entidade_contratante && !isPrestacao && (
                         <p className="text-xs text-muted-foreground">
                           Contratante: {s.entidade_contratante} | Contratada: {s.entidade_contratada}
                         </p>
