@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import { DetalhePrestacaoContas } from "./DetalhePrestacaoContas";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -748,6 +749,15 @@ export function PortalEntidadesProcessos({ entidadeId }: { entidadeId: string })
   };
 
   if (selectedProcesso) {
+    // Use dedicated detail view for Prestação de Contas
+    if (selectedProcesso.tipo_processo === "Prestação de Contas") {
+      return (
+        <DetalhePrestacaoContas
+          processo={selectedProcesso}
+          onBack={() => setSelectedProcesso(null)}
+        />
+      );
+    }
     return (
       <DetalheProcesso
         processo={selectedProcesso}
