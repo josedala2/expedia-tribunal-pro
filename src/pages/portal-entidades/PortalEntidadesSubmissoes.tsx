@@ -82,7 +82,7 @@ export function PortalEntidadesSubmissoes({ entidadeId, entidadeNome, onBack }: 
             </div>
           </div>
           <Button onClick={() => setShowForm(true)}>
-            <Plus className="h-4 w-4 mr-2" /> Novo Pedido de Visto
+            <Plus className="h-4 w-4 mr-2" /> Nova Submissão
           </Button>
         </div>
 

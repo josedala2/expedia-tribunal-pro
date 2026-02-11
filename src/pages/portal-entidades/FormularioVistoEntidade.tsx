@@ -116,8 +116,8 @@ export function FormularioVistoEntidade({ entidadeId, entidadeNome, onBack, onSu
           .replace(/_+/g, "_")
           .slice(0, 120);
 
-      const numero = `SUB-VP-${Date.now().toString(36).toUpperCase()}`;
-      const tipoLabel = tipoVisto === "previo" ? "Visto Prévio" : "Visto Sucessivo";
+      const numero = `SUB-${tipoVisto === "prestacao_contas" ? "PC" : "VP"}-${Date.now().toString(36).toUpperCase()}`;
+      const tipoLabel = tipoVisto === "previo" ? "Visto Prévio" : tipoVisto === "sucessivo" ? "Visto Sucessivo" : "Prestação de Contas";
 
       // 1) Criar a submissão
       const { data: submissaoCriada, error: insertError } = await supabase
@@ -188,7 +188,7 @@ export function FormularioVistoEntidade({ entidadeId, entidadeNome, onBack, onSu
         if (docsError) throw docsError;
       }
 
-      toast.success("Pedido de visto submetido com sucesso!", {
+      toast.success("Processo submetido com sucesso!", {
         description: `Referência: ${numero}. A Secretaria do Tribunal será notificada.`,
       });
       onSuccess();
@@ -211,10 +211,10 @@ export function FormularioVistoEntidade({ entidadeId, entidadeNome, onBack, onSu
           <div>
             <h1 className="text-2xl font-bold text-foreground flex items-center gap-3">
               <FileText className="h-7 w-7 text-primary" />
-              Novo Pedido de Visto
+              Nova Submissão de Processo
             </h1>
             <p className="text-sm text-muted-foreground">
-              Registo de expediente para pedido de visto prévio ou sucessivo
+              Registo de expediente para pedido de visto ou prestação de contas
             </p>
           </div>
         </div>
@@ -222,10 +222,10 @@ export function FormularioVistoEntidade({ entidadeId, entidadeNome, onBack, onSu
         <form onSubmit={handleSubmit} className="space-y-6 max-w-4xl">
           {/* Tipo e Natureza */}
           <Card className="p-6">
-            <h3 className="text-lg font-semibold mb-4 text-foreground">Tipo e Natureza do Visto</h3>
+            <h3 className="text-lg font-semibold mb-4 text-foreground">Tipo de Processo</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label>Tipo de Visto *</Label>
+                <Label>Tipo de Processo *</Label>
                 <Select value={tipoVisto} onValueChange={setTipoVisto}>
                   <SelectTrigger className={errors.tipoVisto ? "border-destructive" : ""}>
                     <SelectValue placeholder="Seleccione o tipo" />
@@ -233,6 +233,7 @@ export function FormularioVistoEntidade({ entidadeId, entidadeNome, onBack, onSu
                   <SelectContent className="bg-card z-50">
                     <SelectItem value="previo">Visto Prévio</SelectItem>
                     <SelectItem value="sucessivo">Visto Sucessivo</SelectItem>
+                    <SelectItem value="prestacao_contas">Prestação de Contas</SelectItem>
                   </SelectContent>
                 </Select>
                 {errors.tipoVisto && <p className="text-sm text-destructive">{errors.tipoVisto}</p>}
