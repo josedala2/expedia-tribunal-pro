@@ -97,7 +97,7 @@ export function PortalEntidadesSubmissoes({ entidadeId, entidadeNome, onBack, ti
             </div>
           </div>
           <Button onClick={() => setShowForm(true)}>
-            <Plus className="h-4 w-4 mr-2" /> Nova Submissão
+            <Plus className="h-4 w-4 mr-2" /> {isPrestacao ? "Submeter Prestação de Contas" : "Novo Pedido de Visto"}
           </Button>
         </div>
 
@@ -111,7 +111,9 @@ export function PortalEntidadesSubmissoes({ entidadeId, entidadeNome, onBack, ti
               <FileText className="h-12 w-12 mx-auto mb-3 opacity-30" />
               <p>Nenhuma submissão encontrada</p>
               <p className="text-sm">
-                Clique em "Novo Pedido de Visto" para submeter um processo
+                {isPrestacao 
+                  ? "Clique em \"Submeter Prestação de Contas\" para submeter um processo"
+                  : "Clique em \"Novo Pedido de Visto\" para submeter um processo"}
               </p>
             </CardContent>
           </Card>
