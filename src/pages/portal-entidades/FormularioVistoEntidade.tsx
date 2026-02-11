@@ -263,7 +263,6 @@ export function FormularioVistoEntidade({ entidadeId, entidadeNome, onBack, onSu
                   <SelectContent className="bg-card z-50">
                     <SelectItem value="previo">Visto Prévio</SelectItem>
                     <SelectItem value="sucessivo">Visto Sucessivo</SelectItem>
-                    <SelectItem value="prestacao_contas">Prestação de Contas</SelectItem>
                   </SelectContent>
                 </Select>
                 {errors.tipoVisto && <p className="text-sm text-destructive">{errors.tipoVisto}</p>}
