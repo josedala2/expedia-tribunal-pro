@@ -84,6 +84,8 @@ export const AcaoProcesso = ({ processoId, etapaAtual }: AcaoProcessoProps) => {
                 <SelectItem value="analisar">Analisar Processo</SelectItem>
                 <SelectItem value="distribuir">Distribuir Processo</SelectItem>
                 <SelectItem value="validar">Validar Relatório</SelectItem>
+                <SelectItem value="validado-secretaria">Validado na Secretaria</SelectItem>
+                <SelectItem value="recusado-secretaria">Recusado na Secretaria</SelectItem>
                 <SelectItem value="solicitar-elementos">Solicitar Elementos em Falta</SelectItem>
                 <SelectItem value="aprovar">Aprovar e Avançar</SelectItem>
                 <SelectItem value="concessao-visto">Conceder Visto</SelectItem>
@@ -133,14 +135,16 @@ export const AcaoProcesso = ({ processoId, etapaAtual }: AcaoProcessoProps) => {
             </p>
           </div>
 
-          {(acao === "rejeitar" || acao === "solicitar") && (
+          {(acao === "rejeitar" || acao === "solicitar" || acao === "recusado-secretaria") && (
             <div className="space-y-2">
               <Label htmlFor="justificativa">Justificativa Detalhada *</Label>
               <Textarea
                 id="justificativa"
                 value={justificativa}
                 onChange={(e) => setJustificativa(e.target.value)}
-                placeholder="Forneça uma justificativa detalhada para esta decisão..."
+                placeholder={acao === "recusado-secretaria" 
+                  ? "Indique obrigatoriamente o motivo da recusa na secretaria..." 
+                  : "Forneça uma justificativa detalhada para esta decisão..."}
                 className="min-h-[100px]"
               />
             </div>
@@ -201,6 +205,29 @@ export const AcaoProcesso = ({ processoId, etapaAtual }: AcaoProcessoProps) => {
               >
                 <XCircle className="mr-2 h-4 w-4" />
                 Rejeitar
+              </Button>
+            )}
+
+            {acao === "validado-secretaria" && (
+              <Button 
+                onClick={() => handleAcao("aprovar")}
+                disabled={!acao}
+                className="w-full"
+              >
+                <CheckCircle className="mr-2 h-4 w-4" />
+                Validar na Secretaria
+              </Button>
+            )}
+
+            {acao === "recusado-secretaria" && (
+              <Button 
+                variant="destructive"
+                onClick={() => handleAcao("rejeitar")}
+                disabled={!acao || !justificativa}
+                className="w-full"
+              >
+                <XCircle className="mr-2 h-4 w-4" />
+                Recusar na Secretaria
               </Button>
             )}
           </div>
