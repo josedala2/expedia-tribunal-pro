@@ -106,6 +106,30 @@ export default function PortalEntidadesDashboard() {
         </div>
       </header>
 
+      {/* Horizontal Menu Bar */}
+      <nav className="bg-white border-b shadow-sm">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center gap-1 overflow-x-auto scrollbar-hide">
+            {menuItems.map((item) => {
+              const Icon = item.icon;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => setCurrentView(item.id)}
+                  className="flex items-center gap-2 px-5 py-3 text-sm font-medium text-muted-foreground hover:text-primary hover:bg-primary/5 border-b-2 border-transparent hover:border-primary transition-all whitespace-nowrap relative"
+                >
+                  <Icon className={`h-4 w-4 ${item.color}`} />
+                  <span>{item.label}</span>
+                  {item.badge ? (
+                    <Badge className="h-5 min-w-[20px] px-1 flex items-center justify-center text-[10px] bg-red-500">{item.badge}</Badge>
+                  ) : null}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </nav>
+
       {/* Content */}
       <div className="container mx-auto px-4 py-6 space-y-6">
         {/* Welcome */}
@@ -164,31 +188,6 @@ export default function PortalEntidadesDashboard() {
               </div>
             </CardContent>
           </Card>
-        </div>
-
-        {/* Menu */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          {menuItems.map((item) => {
-            const Icon = item.icon;
-            return (
-              <Card
-                key={item.id}
-                className="cursor-pointer hover:shadow-md transition-all hover:-translate-y-0.5 group"
-                onClick={() => setCurrentView(item.id)}
-              >
-                <CardContent className="p-6 text-center space-y-3">
-                  <div className={`w-14 h-14 rounded-xl ${item.bg} flex items-center justify-center mx-auto group-hover:scale-110 transition-transform relative`}>
-                    <Icon className={`h-7 w-7 ${item.color}`} />
-                    {item.badge ? (
-                      <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-[10px] bg-red-500">{item.badge}</Badge>
-                    ) : null}
-                  </div>
-                  <h3 className="font-semibold">{item.label}</h3>
-                  <p className="text-xs text-muted-foreground">{item.description}</p>
-                </CardContent>
-              </Card>
-            );
-          })}
         </div>
 
         {/* Consulta de Processos inline */}
