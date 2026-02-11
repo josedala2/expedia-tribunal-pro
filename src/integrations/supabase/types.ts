@@ -672,6 +672,7 @@ export type Database = {
           responsavel_recepcao_nome: string | null
           resposta_a: string | null
           status: string | null
+          submissao_entidade_id: string | null
           telefone_externo: string | null
           tipo: string
         }
@@ -708,6 +709,7 @@ export type Database = {
           responsavel_recepcao_nome?: string | null
           resposta_a?: string | null
           status?: string | null
+          submissao_entidade_id?: string | null
           telefone_externo?: string | null
           tipo: string
         }
@@ -744,10 +746,19 @@ export type Database = {
           responsavel_recepcao_nome?: string | null
           resposta_a?: string | null
           status?: string | null
+          submissao_entidade_id?: string | null
           telefone_externo?: string | null
           tipo?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "expedientes_submissao_entidade_id_fkey"
+            columns: ["submissao_entidade_id"]
+            isOneToOne: false
+            referencedRelation: "submissoes_entidade"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       expedientes_processuais: {
         Row: {
