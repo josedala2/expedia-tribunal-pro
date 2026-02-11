@@ -9,6 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CurrencyInput } from "@/components/ui/currency-input";
+import { DocumentChecklist } from "@/components/ui/document-checklist";
 import { supabase } from "@/integrations/supabase/client";
 import { Search, Loader2, FileText, Filter, Clock, CheckCircle, XCircle, ArrowLeft, Building, Calendar, User, FileCheck, Pencil, Save, DollarSign, Eye, Download, File } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -44,6 +45,23 @@ const statusIcons: Record<string, React.ReactNode> = {
 
 const canEdit = (status: string) => status === "submetido";
 
+const DOCUMENTOS_DISPONIVEIS = [
+  "Ofício de Solicitação de Visto",
+  "Minuta do Contrato",
+  "Cabimento Orçamental",
+  "Proposta de Adjudicação / Despacho de Adjudicação",
+  "Programa de Concurso / Caderno de Encargos",
+  "Documentos de Habilitação da Empresa",
+  "Certidão Negativa de Dívidas Fiscais",
+  "Declaração de Regularidade com Segurança Social",
+] as const;
+
+const DOCUMENTOS_OBRIGATORIOS = [
+  "Ofício de Solicitação de Visto",
+  "Minuta do Contrato",
+  "Cabimento Orçamental",
+] as const;
+
 function DetalheProcesso({ processo, onBack, onUpdated }: { processo: any; onBack: () => void; onUpdated: (updated: any) => void }) {
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -59,8 +77,121 @@ function DetalheProcesso({ processo, onBack, onUpdated }: { processo: any; onBac
   const [dataContrato, setDataContrato] = useState(processo.data_contrato || "");
   const [observacoes, setObservacoes] = useState(processo.observacoes || "");
 
+  const [documentos, setDocumentos] = useState<any[]>([]);
+  const [documentosLoading, setDocumentosLoading] = useState(false);
+  const [documentosFicheiros, setDocumentosFicheiros] = useState<Map<string, File>>(new Map());
+  const [documentosUploading, setDocumentosUploading] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+
+    const loadSignedUrls = async () => {
+      const docs = Array.isArray(processo.documentos) ? processo.documentos : [];
+      if (docs.length === 0) {
+        setDocumentos([]);
+        return;
+      }
+
+      setDocumentosLoading(true);
+      try {
+        const hydrated = await Promise.all(
+          docs.map(async (doc: any) => {
+            if (!doc) return doc;
+            if (doc.url) return doc;
+            if (!doc.storage_path) return doc;
+
+            const { data, error } = await supabase.storage
+              .from("processo-documentos")
+              .createSignedUrl(doc.storage_path, 3600);
+
+            if (error) return doc;
+            return { ...doc, url: data?.signedUrl };
+          })
+        );
+
+        if (active) setDocumentos(hydrated.filter(Boolean));
+      } finally {
+        if (active) setDocumentosLoading(false);
+      }
+    };
+
+    loadSignedUrls();
+
+    return () => {
+      active = false;
+    };
+  }, [processo.documentos]);
+
   const formatCurrency = (val: number | null) =>
     val != null ? new Intl.NumberFormat("pt-AO", { style: "currency", currency: "AOA" }).format(val) : "-";
+
+  const handleUploadDocumentos = async () => {
+    if (documentosFicheiros.size === 0) {
+      toast.error("Seleccione pelo menos um documento para anexar.");
+      return;
+    }
+
+    setDocumentosUploading(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error("Sessão expirada");
+
+      const sanitizeFileName = (name: string) =>
+        name
+          .normalize("NFKD")
+          .replace(/[^\w.\-]+/g, "_")
+          .replace(/_+/g, "_")
+          .slice(0, 120);
+
+      const existingDocs = Array.isArray(processo.documentos) ? processo.documentos : [];
+      const newDocs: any[] = [];
+
+      for (const [etiqueta, file] of Array.from(documentosFicheiros.entries())) {
+        const safeName = sanitizeFileName(file.name);
+        const storagePath = `${session.user.id}/${processo.id}/${Date.now()}-${Math.random().toString(36).slice(2)}-${safeName}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from("processo-documentos")
+          .upload(storagePath, file, { contentType: file.type, upsert: false });
+
+        if (uploadError) {
+          toast.error("Erro ao anexar documento", {
+            description: `Não foi possível anexar "${file.name}".`,
+          });
+          continue;
+        }
+
+        newDocs.push({
+          etiqueta,
+          nome: file.name,
+          tipo: file.type,
+          tamanho: file.size,
+          storage_path: storagePath,
+        });
+      }
+
+      const merged = [...existingDocs, ...newDocs];
+
+      const { data: updated, error } = await supabase
+        .from("submissoes_entidade")
+        .update({ documentos: merged })
+        .eq("id", processo.id)
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      toast.success("Documentos anexados com sucesso");
+      setDocumentosFicheiros(new Map());
+      onUpdated(updated);
+    } catch (e: any) {
+      toast.error("Erro ao anexar documentos", {
+        description: e?.message || "Ocorreu um erro inesperado.",
+      });
+    } finally {
+      setDocumentosUploading(false);
+    }
+  };
 
   const handleSave = async () => {
     setSaving(true);
@@ -381,28 +512,65 @@ function DetalheProcesso({ processo, onBack, onUpdated }: { processo: any; onBac
                   Documentos Submetidos
                 </CardTitle>
               </CardHeader>
-              <CardContent>
-                {processo.documentos && Array.isArray(processo.documentos) && processo.documentos.length > 0 ? (
+              <CardContent className="space-y-4">
+                {editable && (
+                  <div className="space-y-3">
+                    <DocumentChecklist
+                      documents={[...DOCUMENTOS_DISPONIVEIS]}
+                      requiredDocuments={[...DOCUMENTOS_OBRIGATORIOS]}
+                      onFilesChange={setDocumentosFicheiros}
+                      label="Anexar Documentos (PDF)"
+                    />
+                    <div className="flex justify-end">
+                      <Button
+                        type="button"
+                        onClick={handleUploadDocumentos}
+                        disabled={documentosUploading}
+                        className="gap-2"
+                      >
+                        {documentosUploading ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <Save className="h-4 w-4" />
+                        )}
+                        Anexar Documentos
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                {documentosLoading ? (
+                  <div className="flex justify-center py-10">
+                    <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                  </div>
+                ) : documentos.length > 0 ? (
                   <div className="space-y-2">
-                    {processo.documentos.map((doc: any, index: number) => (
+                    {documentos.map((doc: any, index: number) => (
                       <div key={index} className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50">
                         <div className="flex items-center gap-3">
                           <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
                             <FileText className="h-5 w-5 text-primary" />
                           </div>
                           <div>
-                            <p className="font-medium text-sm">{doc.nome || doc.name || `Documento ${index + 1}`}</p>
+                            <p className="font-medium text-sm">
+                              {doc.etiqueta ? `${doc.etiqueta}: ` : ""}
+                              {doc.nome || doc.name || `Documento ${index + 1}`}
+                            </p>
                             <p className="text-xs text-muted-foreground">
-                              {doc.tipo || doc.type || "Documento"} 
+                              {doc.tipo || doc.type || "Documento"}
                               {doc.tamanho ? ` • ${doc.tamanho}` : ""}
                             </p>
                           </div>
                         </div>
-                        {doc.url && (
+                        {doc.url ? (
                           <Button variant="ghost" size="sm" asChild>
                             <a href={doc.url} target="_blank" rel="noopener noreferrer">
                               <Download className="h-4 w-4" />
                             </a>
+                          </Button>
+                        ) : (
+                          <Button variant="ghost" size="sm" disabled title="Documento indisponível">
+                            <Download className="h-4 w-4" />
                           </Button>
                         )}
                       </div>
