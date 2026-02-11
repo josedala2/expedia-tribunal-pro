@@ -213,39 +213,39 @@ function DetalheProcesso({ processo, onBack, onUpdated }: { processo: any; onBac
       {/* Additional Info Row */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card className="p-4">
-          <div className="space-y-2">
-            <div className="flex justify-between">
-              <span className="text-sm text-muted-foreground">Objecto:</span>
-              <span className="text-sm font-medium text-foreground text-right max-w-[60%]">{objeto || "-"}</span>
+          <div className="space-y-3">
+            <div>
+              <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Objecto</span>
+              <p className="text-sm font-medium text-foreground mt-1 line-clamp-4">{objeto || "-"}</p>
             </div>
-            <div className="flex justify-between">
-              <span className="text-sm text-muted-foreground">Tipo de Visto:</span>
-              <Badge variant="outline" className="border-primary text-primary">{tipoVisto || "-"}</Badge>
-            </div>
-          </div>
-        </Card>
-
-        <Card className="p-4">
-          <div className="space-y-2">
-            <div className="flex justify-between">
-              <span className="text-sm text-muted-foreground">Contratada:</span>
-              <span className="text-sm font-medium text-foreground text-right max-w-[60%]">{entidadeContratada || "-"}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-sm text-muted-foreground">NIF:</span>
-              <span className="text-sm font-medium text-foreground">{nifContratada || "-"}</span>
+            <div className="flex items-center justify-between pt-2 border-t">
+              <span className="text-xs text-muted-foreground">Tipo de Visto</span>
+              <Badge variant="outline" className="border-primary text-primary text-xs">{tipoVisto || "-"}</Badge>
             </div>
           </div>
         </Card>
 
         <Card className="p-4">
-          <div className="space-y-2">
-            <div className="flex justify-between">
-              <span className="text-sm text-muted-foreground">Fonte Financ.:</span>
-              <span className="text-sm font-medium text-foreground">{fonteFinanciamento || "-"}</span>
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Contratada</span>
+              <span className="text-sm font-semibold text-foreground">{entidadeContratada || "-"}</span>
             </div>
-            <div className="flex justify-between">
-              <span className="text-sm text-muted-foreground">Data Contrato:</span>
+            <div className="flex items-center justify-between pt-2 border-t">
+              <span className="text-xs text-muted-foreground">NIF</span>
+              <span className="text-sm font-mono font-medium text-foreground">{nifContratada || "-"}</span>
+            </div>
+          </div>
+        </Card>
+
+        <Card className="p-4">
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Fonte Financiamento</span>
+              <span className="text-sm font-semibold text-foreground uppercase">{fonteFinanciamento || "-"}</span>
+            </div>
+            <div className="flex items-center justify-between pt-2 border-t">
+              <span className="text-xs text-muted-foreground">Data Contrato</span>
               <span className="text-sm font-medium text-foreground">
                 {dataContrato ? format(new Date(dataContrato), "dd/MM/yyyy", { locale: pt }) : "-"}
               </span>
