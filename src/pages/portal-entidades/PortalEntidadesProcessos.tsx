@@ -10,18 +10,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CurrencyInput } from "@/components/ui/currency-input";
 import { supabase } from "@/integrations/supabase/client";
-import { Search, Loader2, FileText, Filter, Clock, CheckCircle, XCircle, ArrowLeft, Building, Calendar, User, FileCheck, Pencil, Save, DollarSign } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Search, Loader2, FileText, Filter, Clock, CheckCircle, XCircle, ArrowLeft, Building, Calendar, User, FileCheck, Pencil, Save, DollarSign, Eye } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { format } from "date-fns";
 import { pt } from "date-fns/locale";
 import { toast } from "sonner";
-
-interface Props {
-  entidadeId: string;
-  open: boolean;
-  onClose: () => void;
-}
 
 const statusColors: Record<string, string> = {
   submetido: "bg-blue-500 text-white",
@@ -455,16 +448,15 @@ function DetalheProcesso({ processo, onBack, onUpdated }: { processo: any; onBac
   );
 }
 
-export function PortalEntidadesProcessos({ entidadeId, open, onClose }: Props) {
+export function PortalEntidadesProcessos({ entidadeId }: { entidadeId: string }) {
   const [processos, setProcessos] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [selectedProcesso, setSelectedProcesso] = useState<any>(null);
 
   useEffect(() => {
-    if (open) loadProcessos();
-    if (!open) setSelectedProcesso(null);
-  }, [open]);
+    loadProcessos();
+  }, [entidadeId]);
 
   const loadProcessos = async () => {
     setLoading(true);
@@ -488,98 +480,90 @@ export function PortalEntidadesProcessos({ entidadeId, open, onClose }: Props) {
     setProcessos(prev => prev.map(p => p.id === updated.id ? updated : p));
   };
 
+  if (selectedProcesso) {
+    return (
+      <DetalheProcesso
+        processo={selectedProcesso}
+        onBack={() => setSelectedProcesso(null)}
+        onUpdated={handleProcessoUpdated}
+      />
+    );
+  }
+
   return (
-    <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-6xl max-h-[85vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="text-xl font-bold">
-            {selectedProcesso ? "Detalhes do Processo" : "Consulta de Processos"}
-          </DialogTitle>
-        </DialogHeader>
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-lg flex items-center gap-2">
+          <Eye className="h-5 w-5 text-primary" />
+          Consulta de Processos
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="flex gap-4">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Pesquisar por número, assunto ou tipo..."
+              className="pl-9"
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+            />
+          </div>
+        </div>
 
-        {selectedProcesso ? (
-          <DetalheProcesso
-            processo={selectedProcesso}
-            onBack={() => setSelectedProcesso(null)}
-            onUpdated={handleProcessoUpdated}
-          />
+        {loading ? (
+          <div className="flex justify-center py-8">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          </div>
+        ) : filtered.length === 0 ? (
+          <div className="py-8 text-center text-muted-foreground">
+            <FileText className="h-12 w-12 mx-auto mb-3 opacity-30" />
+            <p>Nenhum processo encontrado</p>
+          </div>
         ) : (
-          <div className="space-y-4 mt-2">
-            <div className="flex gap-4">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Pesquisar por número, assunto ou departamento..."
-                  className="pl-9"
-                  value={search}
-                  onChange={e => setSearch(e.target.value)}
-                />
-              </div>
-              <Button variant="outline" className="gap-2">
-                <Filter className="h-4 w-4" />
-                Filtros
-              </Button>
-            </div>
-
-            {loading ? (
-              <div className="flex justify-center py-12">
-                <Loader2 className="h-8 w-8 animate-spin text-primary" />
-              </div>
-            ) : filtered.length === 0 ? (
-              <div className="py-12 text-center text-muted-foreground">
-                <FileText className="h-12 w-12 mx-auto mb-3 opacity-30" />
-                <p>Nenhum processo encontrado</p>
-              </div>
-            ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Nº Referência</TableHead>
-                    <TableHead>Tipo</TableHead>
-                    <TableHead>Assunto</TableHead>
-                    <TableHead>Prioridade</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Data</TableHead>
-                    <TableHead>Acções</TableHead>
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Nº Referência</TableHead>
+                  <TableHead className="hidden md:table-cell">Tipo</TableHead>
+                  <TableHead>Assunto</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="hidden md:table-cell">Data</TableHead>
+                  <TableHead>Acções</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filtered.map((p) => (
+                  <TableRow key={p.id}>
+                    <TableCell className="font-medium">{p.numero_referencia}</TableCell>
+                    <TableCell className="hidden md:table-cell">
+                      <Badge variant="outline" className="border-primary text-primary">
+                        {p.tipo_processo}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="max-w-xs truncate">{p.assunto}</TableCell>
+                    <TableCell>
+                      <Badge className={`${statusColors[p.status] || "bg-muted"} gap-1`}>
+                        {statusIcons[p.status]}
+                        {statusLabels[p.status] || p.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-sm hidden md:table-cell">
+                      {p.criado_em ? format(new Date(p.criado_em), "dd/MM/yyyy", { locale: pt }) : "-"}
+                    </TableCell>
+                    <TableCell>
+                      <Button variant="outline" size="sm" onClick={() => setSelectedProcesso(p)}>
+                        Ver Detalhes
+                      </Button>
+                    </TableCell>
                   </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filtered.map((p) => (
-                    <TableRow key={p.id}>
-                      <TableCell className="font-medium">{p.numero_referencia}</TableCell>
-                      <TableCell>
-                        <Badge variant="outline" className="border-primary text-primary">
-                          {p.tipo_processo}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="max-w-xs truncate">{p.assunto}</TableCell>
-                      <TableCell>
-                        <Badge variant="secondary" className="bg-muted">
-                          Normal
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Badge className={`${statusColors[p.status] || "bg-muted"} gap-1`}>
-                          {statusIcons[p.status]}
-                          {statusLabels[p.status] || p.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-sm">
-                        {p.criado_em ? format(new Date(p.criado_em), "dd/MM/yyyy", { locale: pt }) : "-"}
-                      </TableCell>
-                      <TableCell>
-                        <Button variant="outline" size="sm" onClick={() => setSelectedProcesso(p)}>
-                          Ver Detalhes
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            )}
+                ))}
+              </TableBody>
+            </Table>
           </div>
         )}
-      </DialogContent>
-    </Dialog>
+      </CardContent>
+    </Card>
   );
 }
