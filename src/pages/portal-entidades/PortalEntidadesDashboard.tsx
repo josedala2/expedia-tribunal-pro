@@ -7,14 +7,14 @@ import { supabase } from "@/integrations/supabase/client";
 import logoTC from "@/assets/logo-tc.png";
 import {
   Building2, FileText, Bell, DollarSign, Send, LogOut,
-  ClipboardList
+  ClipboardList, BookOpen
 } from "lucide-react";
 import { PortalEntidadesSubmissoes } from "./PortalEntidadesSubmissoes";
 import { PortalEntidadesProcessos } from "./PortalEntidadesProcessos";
 import { PortalEntidadesNotificacoes } from "./PortalEntidadesNotificacoes";
 import { PortalEntidadesPagamentos } from "./PortalEntidadesPagamentos";
 
-type PortalView = "dashboard" | "submissoes" | "notificacoes" | "pagamentos";
+type PortalView = "dashboard" | "submissoes" | "submissoes_prestacao" | "notificacoes" | "pagamentos";
 
 export default function PortalEntidadesDashboard() {
   const navigate = useNavigate();
@@ -70,12 +70,14 @@ export default function PortalEntidadesDashboard() {
   if (!entidade) return null;
 
   const menuItems = [
-    { id: "submissoes" as const, label: "Submeter Processo", icon: Send, description: "Submeter novos processos ao tribunal", color: "text-blue-600", bg: "bg-blue-50" },
+    { id: "submissoes" as const, label: "Processo de Visto", icon: Send, description: "Submeter pedidos de visto ao tribunal", color: "text-blue-600", bg: "bg-blue-50" },
+    { id: "submissoes_prestacao" as const, label: "Prestação de Contas", icon: BookOpen, description: "Submeter prestação de contas", color: "text-emerald-600", bg: "bg-emerald-50" },
     { id: "notificacoes" as const, label: "Notificações", icon: Bell, description: "Despachos, ofícios e comunicações", color: "text-amber-600", bg: "bg-amber-50", badge: stats.notificacoesNaoLidas },
     { id: "pagamentos" as const, label: "Emolumentos", icon: DollarSign, description: "Consultar e gerir pagamentos", color: "text-purple-600", bg: "bg-purple-50", badge: stats.pagamentosPendentes },
   ];
 
-  if (currentView === "submissoes") return <PortalEntidadesSubmissoes entidadeId={entidade.id} entidadeNome={entidade.nome} onBack={() => setCurrentView("dashboard")} />;
+  if (currentView === "submissoes") return <PortalEntidadesSubmissoes entidadeId={entidade.id} entidadeNome={entidade.nome} onBack={() => setCurrentView("dashboard")} tipoFiltro="visto" />;
+  if (currentView === "submissoes_prestacao") return <PortalEntidadesSubmissoes entidadeId={entidade.id} entidadeNome={entidade.nome} onBack={() => setCurrentView("dashboard")} tipoFiltro="prestacao" />;
   if (currentView === "notificacoes") return <PortalEntidadesNotificacoes entidadeId={entidade.id} onBack={() => setCurrentView("dashboard")} />;
   if (currentView === "pagamentos") return <PortalEntidadesPagamentos entidadeId={entidade.id} onBack={() => setCurrentView("dashboard")} />;
 

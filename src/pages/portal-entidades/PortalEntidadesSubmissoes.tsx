@@ -12,6 +12,7 @@ interface Props {
   entidadeId: string;
   entidadeNome: string;
   onBack: () => void;
+  tipoFiltro?: "visto" | "prestacao";
 }
 
 const statusColors: Record<string, string> = {
@@ -32,10 +33,11 @@ const statusLabels: Record<string, string> = {
   devolvido: "Devolvido",
 };
 
-export function PortalEntidadesSubmissoes({ entidadeId, entidadeNome, onBack }: Props) {
+export function PortalEntidadesSubmissoes({ entidadeId, entidadeNome, onBack, tipoFiltro }: Props) {
   const [submissoes, setSubmissoes] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
+  const isPrestacao = tipoFiltro === "prestacao";
 
   useEffect(() => {
     loadSubmissoes();
@@ -43,11 +45,19 @@ export function PortalEntidadesSubmissoes({ entidadeId, entidadeNome, onBack }: 
 
   const loadSubmissoes = async () => {
     setLoading(true);
-    const { data } = await supabase
+    let query = supabase
       .from("submissoes_entidade")
       .select("*")
       .eq("entidade_id", entidadeId)
       .order("criado_em", { ascending: false });
+    
+    if (tipoFiltro === "prestacao") {
+      query = query.eq("tipo_processo", "Prestação de Contas");
+    } else if (tipoFiltro === "visto") {
+      query = query.neq("tipo_processo", "Prestação de Contas");
+    }
+    
+    const { data } = await query;
     setSubmissoes(data || []);
     setLoading(false);
   };
@@ -62,6 +72,7 @@ export function PortalEntidadesSubmissoes({ entidadeId, entidadeNome, onBack }: 
           setShowForm(false);
           loadSubmissoes();
         }}
+        defaultTipo={isPrestacao ? "prestacao_contas" : undefined}
       />
     );
   }
@@ -75,9 +86,13 @@ export function PortalEntidadesSubmissoes({ entidadeId, entidadeNome, onBack }: 
               <ArrowLeft className="h-4 w-4" />
             </Button>
             <div>
-              <h1 className="text-2xl font-bold">Submissão de Processos</h1>
+              <h1 className="text-2xl font-bold">
+                {isPrestacao ? "Prestação de Contas" : "Processos de Visto"}
+              </h1>
               <p className="text-sm text-muted-foreground">
-                Submeta novos processos ao Tribunal de Contas
+                {isPrestacao 
+                  ? "Submissões de prestação de contas ao Tribunal de Contas" 
+                  : "Pedidos de visto submetidos ao Tribunal de Contas"}
               </p>
             </div>
           </div>

@@ -16,14 +16,15 @@ interface Props {
   entidadeNome: string;
   onBack: () => void;
   onSuccess: () => void;
+  defaultTipo?: string;
 }
 
-export function FormularioVistoEntidade({ entidadeId, entidadeNome, onBack, onSuccess }: Props) {
+export function FormularioVistoEntidade({ entidadeId, entidadeNome, onBack, onSuccess, defaultTipo }: Props) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [numeroContratoGerado, setNumeroContratoGerado] = useState("");
 
   // Form state
-  const [tipoVisto, setTipoVisto] = useState("");
+  const [tipoVisto, setTipoVisto] = useState(defaultTipo || "");
   const [naturezaVisto, setNaturezaVisto] = useState("");
   const [entidadeContratante, setEntidadeContratante] = useState(entidadeNome);
   const [entidadeContratada, setEntidadeContratada] = useState("");
