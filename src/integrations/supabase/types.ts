@@ -2682,6 +2682,7 @@ export type Database = {
           motivo_devolucao: string | null
           natureza_visto: string | null
           nif_contratada: string | null
+          numero_acta: string | null
           numero_contrato: string | null
           numero_referencia: string
           objeto: string | null
@@ -2708,6 +2709,7 @@ export type Database = {
           motivo_devolucao?: string | null
           natureza_visto?: string | null
           nif_contratada?: string | null
+          numero_acta?: string | null
           numero_contrato?: string | null
           numero_referencia: string
           objeto?: string | null
@@ -2734,6 +2736,7 @@ export type Database = {
           motivo_devolucao?: string | null
           natureza_visto?: string | null
           nif_contratada?: string | null
+          numero_acta?: string | null
           numero_contrato?: string | null
           numero_referencia?: string
           objeto?: string | null
