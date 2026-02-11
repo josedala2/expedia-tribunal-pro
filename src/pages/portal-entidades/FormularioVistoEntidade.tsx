@@ -254,6 +254,7 @@ export function FormularioVistoEntidade({ entidadeId, entidadeNome, onBack, onSu
           <Card className="p-6">
             <h3 className="text-lg font-semibold mb-4 text-foreground">Tipo de Processo</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {!defaultTipo ? (
               <div className="space-y-2">
                 <Label>Tipo de Processo *</Label>
                 <Select value={tipoVisto} onValueChange={setTipoVisto}>
@@ -267,6 +268,12 @@ export function FormularioVistoEntidade({ entidadeId, entidadeNome, onBack, onSu
                 </Select>
                 {errors.tipoVisto && <p className="text-sm text-destructive">{errors.tipoVisto}</p>}
               </div>
+              ) : (
+              <div className="space-y-2">
+                <Label>Tipo de Processo</Label>
+                <Input value={isPrestacaoContas ? "Prestação de Contas" : tipoVisto} disabled className="bg-muted" />
+              </div>
+              )}
 
               {!isPrestacaoContas && (
               <div className="space-y-2">
