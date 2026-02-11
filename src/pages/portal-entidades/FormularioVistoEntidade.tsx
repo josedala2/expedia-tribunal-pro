@@ -104,10 +104,12 @@ export function FormularioVistoEntidade({ entidadeId, entidadeNome, onBack, onSu
     }
 
     if (!objeto || objeto.length < 10) {
-      newErrors.objeto = "O objecto do contrato deve ter pelo menos 10 caracteres";
+      newErrors.objeto = isPrestacaoContas 
+        ? "A descrição da prestação de contas deve ter pelo menos 10 caracteres"
+        : "O objecto do contrato deve ter pelo menos 10 caracteres";
     }
 
-    if (!valorContrato) newErrors.valorContrato = "O valor do contrato é obrigatório";
+    if (!valorContrato) newErrors.valorContrato = isPrestacaoContas ? "O valor total da conta é obrigatório" : "O valor do contrato é obrigatório";
     if (!fonteFinanciamento) newErrors.fonteFinanciamento = "A fonte de financiamento é obrigatória";
 
     if (!dataContrato) {
@@ -291,7 +293,7 @@ export function FormularioVistoEntidade({ entidadeId, entidadeNome, onBack, onSu
             <h3 className="text-lg font-semibold mb-4 text-foreground">{isPrestacaoContas ? "Dados da Entidade" : "Partes Contratantes"}</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label>Entidade Contratante (Pública) *</Label>
+                <Label>{isPrestacaoContas ? "Entidade *" : "Entidade Contratante (Pública) *"}</Label>
                 <Input
                   value={entidadeContratante}
                   disabled
@@ -338,7 +340,7 @@ export function FormularioVistoEntidade({ entidadeId, entidadeNome, onBack, onSu
                 <Textarea
                   value={objeto}
                   onChange={(e) => setObjeto(e.target.value)}
-                  placeholder="Descreva o objecto do contrato..."
+                  placeholder={isPrestacaoContas ? "Descreva o objecto da prestação de contas..." : "Descreva o objecto do contrato..."}
                   className={`min-h-[100px] ${errors.objeto ? "border-destructive" : ""}`}
                 />
                 {errors.objeto && <p className="text-sm text-destructive">{errors.objeto}</p>}
@@ -346,7 +348,7 @@ export function FormularioVistoEntidade({ entidadeId, entidadeNome, onBack, onSu
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="space-y-2">
-                  <Label>Valor do Contrato *</Label>
+                  <Label>{isPrestacaoContas ? "Valor Total da Conta *" : "Valor do Contrato *"}</Label>
                   <CurrencyInput
                     value={valorContrato}
                     onChange={(value) => setValorContrato(value)}
@@ -356,14 +358,16 @@ export function FormularioVistoEntidade({ entidadeId, entidadeNome, onBack, onSu
                   {errors.valorContrato && <p className="text-sm text-destructive">{errors.valorContrato}</p>}
                 </div>
 
+                {!isPrestacaoContas && (
                 <div className="space-y-2">
                   <Label>Nº do Contrato (Automático)</Label>
                   <Input value={numeroContratoGerado} disabled className="bg-muted" />
                   <p className="text-xs text-muted-foreground">Gerado automaticamente</p>
                 </div>
+                )}
 
                 <div className="space-y-2">
-                  <Label>Data do Contrato *</Label>
+                  <Label>{isPrestacaoContas ? "Data de Referência / Exercício *" : "Data do Contrato *"}</Label>
                   <Input
                     type="date"
                     value={dataContrato}
