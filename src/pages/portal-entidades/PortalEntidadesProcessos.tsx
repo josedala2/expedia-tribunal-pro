@@ -556,40 +556,6 @@ function DetalheProcesso({ processo, onBack, onUpdated }: { processo: any; onBac
               </CardContent>
             </Card>
 
-            {/* Formulário de upload — apenas para processos editáveis */}
-            {editable && (
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-sm flex items-center gap-2">
-                    <Save className="h-4 w-4 text-primary" />
-                    Anexar Novos Documentos
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <DocumentChecklist
-                    documents={[...DOCUMENTOS_DISPONIVEIS]}
-                    requiredDocuments={[...DOCUMENTOS_OBRIGATORIOS]}
-                    onFilesChange={setDocumentosFicheiros}
-                    label="Anexar Documentos (PDF)"
-                  />
-                  <div className="flex justify-end">
-                    <Button
-                      type="button"
-                      onClick={handleUploadDocumentos}
-                      disabled={documentosUploading}
-                      className="gap-2"
-                    >
-                      {documentosUploading ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                      ) : (
-                        <Save className="h-4 w-4" />
-                      )}
-                      Anexar Documentos
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
           </div>
         </TabsContent>
 
