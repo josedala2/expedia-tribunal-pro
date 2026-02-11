@@ -6,15 +6,15 @@ import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import logoTC from "@/assets/logo-tc.png";
 import {
-  Building2, FileText, Bell, DollarSign, Send, Eye, LogOut, User,
-  ClipboardList, AlertCircle, CheckCircle, Clock, BarChart3
+  Building2, FileText, Bell, DollarSign, Send, LogOut,
+  ClipboardList
 } from "lucide-react";
 import { PortalEntidadesSubmissoes } from "./PortalEntidadesSubmissoes";
 import { PortalEntidadesProcessos } from "./PortalEntidadesProcessos";
 import { PortalEntidadesNotificacoes } from "./PortalEntidadesNotificacoes";
 import { PortalEntidadesPagamentos } from "./PortalEntidadesPagamentos";
 
-type PortalView = "dashboard" | "submissoes" | "processos" | "notificacoes" | "pagamentos";
+type PortalView = "dashboard" | "submissoes" | "notificacoes" | "pagamentos";
 
 export default function PortalEntidadesDashboard() {
   const navigate = useNavigate();
@@ -71,13 +71,11 @@ export default function PortalEntidadesDashboard() {
 
   const menuItems = [
     { id: "submissoes" as const, label: "Submeter Processo", icon: Send, description: "Submeter novos processos ao tribunal", color: "text-blue-600", bg: "bg-blue-50" },
-    { id: "processos" as const, label: "Consultar Processos", icon: Eye, description: "Acompanhar o estado dos processos", color: "text-emerald-600", bg: "bg-emerald-50" },
     { id: "notificacoes" as const, label: "Notificações", icon: Bell, description: "Despachos, ofícios e comunicações", color: "text-amber-600", bg: "bg-amber-50", badge: stats.notificacoesNaoLidas },
     { id: "pagamentos" as const, label: "Emolumentos", icon: DollarSign, description: "Consultar e gerir pagamentos", color: "text-purple-600", bg: "bg-purple-50", badge: stats.pagamentosPendentes },
   ];
 
   if (currentView === "submissoes") return <PortalEntidadesSubmissoes entidadeId={entidade.id} entidadeNome={entidade.nome} onBack={() => setCurrentView("dashboard")} />;
-  const showProcessosDialog = currentView === "processos";
   if (currentView === "notificacoes") return <PortalEntidadesNotificacoes entidadeId={entidade.id} onBack={() => setCurrentView("dashboard")} />;
   if (currentView === "pagamentos") return <PortalEntidadesPagamentos entidadeId={entidade.id} onBack={() => setCurrentView("dashboard")} />;
 
@@ -169,7 +167,7 @@ export default function PortalEntidadesDashboard() {
         </div>
 
         {/* Menu */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {menuItems.map((item) => {
             const Icon = item.icon;
             return (
@@ -192,12 +190,10 @@ export default function PortalEntidadesDashboard() {
             );
           })}
         </div>
+
+        {/* Consulta de Processos inline */}
+        <PortalEntidadesProcessos entidadeId={entidade.id} />
       </div>
-      <PortalEntidadesProcessos
-        entidadeId={entidade.id}
-        open={showProcessosDialog}
-        onClose={() => setCurrentView("dashboard")}
-      />
     </div>
   );
 }
