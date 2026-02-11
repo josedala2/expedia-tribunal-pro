@@ -19,6 +19,7 @@ import { toast } from "sonner";
 const statusColors: Record<string, string> = {
   submetido: "bg-blue-500 text-white",
   em_analise: "bg-amber-500 text-white",
+  aguarda_validacao_chefe: "bg-purple-500 text-white",
   aceite: "bg-green-500 text-white",
   rejeitado: "bg-red-500 text-white",
   devolvido: "bg-orange-500 text-white",
@@ -27,6 +28,7 @@ const statusColors: Record<string, string> = {
 const statusLabels: Record<string, string> = {
   submetido: "Submetido",
   em_analise: "Em Análise",
+  aguarda_validacao_chefe: "Aguarda Validação Chefe",
   aceite: "Aceite",
   rejeitado: "Rejeitado",
   devolvido: "Devolvido",

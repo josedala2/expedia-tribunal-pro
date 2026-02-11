@@ -8,6 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { pt } from "date-fns/locale";
+import { AceitarExpedienteDialog } from "@/components/expedientes/AceitarExpedienteDialog";
 
 interface ExpedientesProps {
   onBack: () => void;
@@ -18,6 +19,8 @@ export const Expedientes = ({ onBack, onNavigate }: ExpedientesProps) => {
   const [expedientes, setExpedientes] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [expedienteSelecionado, setExpedienteSelecionado] = useState<any>(null);
+  const [showAceitarDialog, setShowAceitarDialog] = useState(false);
 
   useEffect(() => {
     loadExpedientes();
@@ -219,14 +222,28 @@ export const Expedientes = ({ onBack, onNavigate }: ExpedientesProps) => {
                         : "-"}
                     </TableCell>
                     <TableCell>
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="hover:bg-secondary"
-                        onClick={() => onNavigate?.("detalhe-expediente")}
-                      >
-                        Ver Detalhes
-                      </Button>
+                      <div className="flex gap-1">
+                        {!expediente.aceito_destinatario && expediente.status === "Pendente" && expediente.submissao_entidade_id && (
+                          <Button 
+                            variant="default" 
+                            size="sm"
+                            onClick={() => {
+                              setExpedienteSelecionado(expediente);
+                              setShowAceitarDialog(true);
+                            }}
+                          >
+                            Aceitar
+                          </Button>
+                        )}
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="hover:bg-secondary"
+                          onClick={() => onNavigate?.("detalhe-expediente")}
+                        >
+                          Ver Detalhes
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))
@@ -235,6 +252,15 @@ export const Expedientes = ({ onBack, onNavigate }: ExpedientesProps) => {
           </Table>
         )}
       </Card>
+
+      {expedienteSelecionado && (
+        <AceitarExpedienteDialog
+          open={showAceitarDialog}
+          onOpenChange={setShowAceitarDialog}
+          expediente={expedienteSelecionado}
+          onAceito={loadExpedientes}
+        />
+      )}
     </div>
   );
 };
