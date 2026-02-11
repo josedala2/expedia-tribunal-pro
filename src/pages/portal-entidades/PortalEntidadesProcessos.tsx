@@ -292,36 +292,53 @@ function DetalheProcesso({ processo, onBack, onUpdated }: { processo: any; onBac
             <Card>
               <CardContent className="pt-6">
                 <div className="space-y-0">
-                  {tramitacao.map((step, index) => (
-                    <div key={index} className="flex gap-4">
-                      <div className="flex flex-col items-center">
-                        <div className={`h-8 w-8 rounded-full flex items-center justify-center text-xs font-bold ${
-                          step.status === "Concluído" 
-                            ? "bg-green-500 text-white" 
-                            : step.status === "Em Andamento" 
-                            ? "bg-primary text-primary-foreground animate-pulse" 
-                            : "bg-muted text-muted-foreground"
-                        }`}>
-                          {step.status === "Concluído" ? <CheckCircle className="h-4 w-4" /> : index + 1}
+                  {(() => {
+                    // Mostrar apenas: etapas concluídas, etapa actual (Em Andamento) e a próxima (Pendente)
+                    const currentIndex = tramitacao.findIndex(t => t.status === "Em Andamento");
+                    const firstPendingIndex = tramitacao.findIndex(t => t.status === "Pendente");
+                    
+                    // Determinar qual é a "etapa actual" e a "próxima"
+                    const activeIndex = currentIndex >= 0 ? currentIndex : firstPendingIndex;
+                    const nextIndex = activeIndex >= 0 ? activeIndex + 1 : -1;
+
+                    const visibleSteps = tramitacao.filter((step, index) => {
+                      if (step.status === "Concluído") return true;
+                      if (index === activeIndex) return true;
+                      if (index === nextIndex) return true;
+                      return false;
+                    });
+
+                    return visibleSteps.map((step, idx) => (
+                      <div key={idx} className="flex gap-4">
+                        <div className="flex flex-col items-center">
+                          <div className={`h-8 w-8 rounded-full flex items-center justify-center text-xs font-bold ${
+                            step.status === "Concluído" 
+                              ? "bg-green-500 text-white" 
+                              : step.status === "Em Andamento" 
+                              ? "bg-primary text-primary-foreground animate-pulse" 
+                              : "bg-muted text-muted-foreground"
+                          }`}>
+                            {step.status === "Concluído" ? <CheckCircle className="h-4 w-4" /> : tramitacao.indexOf(step) + 1}
+                          </div>
+                          {idx < visibleSteps.length - 1 && (
+                            <div className={`w-0.5 h-8 ${
+                              step.status === "Concluído" ? "bg-green-300" : "bg-muted"
+                            }`} />
+                          )}
                         </div>
-                        {index < tramitacao.length - 1 && (
-                          <div className={`w-0.5 h-8 ${
-                            step.status === "Concluído" ? "bg-green-300" : "bg-muted"
-                          }`} />
-                        )}
+                        <div className="pb-4">
+                          <p className={`font-medium text-sm ${
+                            step.status === "Concluído" ? "text-green-700" : 
+                            step.status === "Em Andamento" ? "text-primary font-bold" : 
+                            "text-muted-foreground"
+                          }`}>
+                            {step.etapa}
+                          </p>
+                          <p className="text-xs text-muted-foreground">{step.data}</p>
+                        </div>
                       </div>
-                      <div className="pb-4">
-                        <p className={`font-medium text-sm ${
-                          step.status === "Concluído" ? "text-green-700" : 
-                          step.status === "Em Andamento" ? "text-primary font-bold" : 
-                          "text-muted-foreground"
-                        }`}>
-                          {step.etapa}
-                        </p>
-                        <p className="text-xs text-muted-foreground">{step.data}</p>
-                      </div>
-                    </div>
-                  ))}
+                    ));
+                  })()}
                 </div>
               </CardContent>
             </Card>
