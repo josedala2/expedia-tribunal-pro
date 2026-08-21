@@ -34,10 +34,23 @@ export const LoginForm = ({ onSuccess }: LoginFormProps) => {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
   });
+
+  const credenciaisDemo = [
+    { label: "Presidente", email: "presidente.tc@tc.gov.ao", password: "demo123" },
+    { label: "Chefe de Secção", email: "chefe.seccao@tc.gov.ao", password: "demo123" },
+    { label: "Técnico", email: "tecnico@tc.gov.ao", password: "demo123" },
+    { label: "Utilizador Teste", email: "teste@tc.gov.ao", password: "teste123" },
+  ];
+
+  const preencherCredenciais = (email: string, password: string) => {
+    setValue("email", email, { shouldValidate: true });
+    setValue("password", password, { shouldValidate: true });
+  };
 
   const onSubmit = async (data: LoginFormData) => {
     setIsLoading(true);
@@ -112,6 +125,31 @@ export const LoginForm = ({ onSuccess }: LoginFormProps) => {
           "Iniciar Sessão"
         )}
       </Button>
+
+      <div className="rounded-md border border-border bg-muted/40 p-3 space-y-2">
+        <p className="text-xs font-medium text-foreground">
+          Credenciais de acesso (demonstração)
+        </p>
+        <ul className="space-y-1">
+          {credenciaisDemo.map((c) => (
+            <li key={c.email} className="flex items-center justify-between gap-2">
+              <span className="text-xs text-muted-foreground truncate">
+                {c.label}: <span className="font-mono">{c.email}</span> / <span className="font-mono">{c.password}</span>
+              </span>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="h-6 px-2 text-xs shrink-0"
+                disabled={isLoading}
+                onClick={() => preencherCredenciais(c.email, c.password)}
+              >
+                Usar
+              </Button>
+            </li>
+          ))}
+        </ul>
+      </div>
     </form>
   );
 };
