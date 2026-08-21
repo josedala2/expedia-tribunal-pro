@@ -125,6 +125,31 @@ export const LoginForm = ({ onSuccess }: LoginFormProps) => {
           "Iniciar Sessão"
         )}
       </Button>
+
+      <div className="rounded-md border border-border bg-muted/40 p-3 space-y-2">
+        <p className="text-xs font-medium text-foreground">
+          Credenciais de acesso (demonstração)
+        </p>
+        <ul className="space-y-1">
+          {credenciaisDemo.map((c) => (
+            <li key={c.email} className="flex items-center justify-between gap-2">
+              <span className="text-xs text-muted-foreground truncate">
+                {c.label}: <span className="font-mono">{c.email}</span> / <span className="font-mono">{c.password}</span>
+              </span>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="h-6 px-2 text-xs shrink-0"
+                disabled={isLoading}
+                onClick={() => preencherCredenciais(c.email, c.password)}
+              >
+                Usar
+              </Button>
+            </li>
+          ))}
+        </ul>
+      </div>
     </form>
   );
 };
